@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":"flase","async":true,"transition":{"post_block":"fadeIn","post_header":"fadeIn","post_body":"fadeIn","coll_header":"fadeIn","sidebar":"fadeIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="备忘。">
+<meta name="keywords" content="c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="libuv简介">
+<meta property="og:url" content="http://suntus.github.io/2020/11/11/libuv简介/index.html">
+<meta property="og:site_name" content="Morning~Sun。">
+<meta property="og:description" content="备忘。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://suntus.github.io/img/hkdf/loop_iteration.png">
+<meta property="og:updated_time" content="2020-11-11T12:07:36.799Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="libuv简介">
+<meta name="twitter:description" content="备忘。">
+<meta name="twitter:image" content="http://suntus.github.io/img/hkdf/loop_iteration.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Morning~Sun。" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://suntus.github.io/2020/11/11/libuv简介/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>libuv简介 | Morning~Sun。</title>
+  
+
+
+
+
+  <script async src="//www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-55322469-1');
+  </script>
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Morning~Sun。</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">ha</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://suntus.github.io/2020/11/11/libuv简介/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun。">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">libuv简介
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-11-11 18:50 18:50:37" itemprop="dateCreated datePublished" datetime="2020-11-11T18:50:37+08:00">2020-11-11 18:50</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-11-11 20:07 20:07:36" itemprop="dateModified" datetime="2020-11-11T20:07:36+08:00">2020-11-11 20:07</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>备忘。<br><a id="more"></a></p>
+<h1 id="1-错误处理"><a href="#1-错误处理" class="headerlink" title="1. 错误处理"></a>1. 错误处理</h1><p>一个库，让用户知道内部错误，一般就是返回错误码，直接从函数返回；或者用一个错误接口统一起来，在函数调用后告诉用户(类似openssl)。libuv用的是前一种。</p>
+<p>关于错误码libuv提供有几个常用的接口，自己写库的时候也可以参考。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错误码---&gt;错误描述字符串</span></span><br><span class="line"><span class="function"><span class="keyword">const</span> <span class="keyword">char</span>* <span class="title">uv_strerror</span><span class="params">(<span class="keyword">int</span> err)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 错误码---&gt;错误描述符字符串，返回给用户提供的内存中</span></span><br><span class="line"><span class="function"><span class="keyword">char</span>* <span class="title">uv_strerror_r</span><span class="params">(<span class="keyword">int</span> err, <span class="keyword">char</span>* buf, <span class="keyword">size_t</span> buflen)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 错误码---&gt;字符描述的错误码</span></span><br><span class="line"><span class="function"><span class="keyword">const</span> <span class="keyword">char</span>* <span class="title">uv_err_name</span><span class="params">(<span class="keyword">int</span> err)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 错误码---&gt;字符描述的错误码，返回给用户提供的内存中</span></span><br><span class="line"><span class="function"><span class="keyword">char</span>* <span class="title">uv_err_name_r</span><span class="params">(<span class="keyword">int</span> err, <span class="keyword">char</span>* buf, <span class="keyword">size_t</span> buflen)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将系统上的错误码转换成libuv中的错误码，</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">uv_translate_sys_error</span><span class="params">(<span class="keyword">int</span> sys_errno)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<h1 id="2-版本号的处理"><a href="#2-版本号的处理" class="headerlink" title="2. 版本号的处理"></a>2. 版本号的处理</h1><p>libuv提供有几个宏，用于在编译时候区分版本:<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">UV_VERSION_MAJOR</span><br><span class="line">UV_VERSION_MINOR</span><br><span class="line">UV_VERSION_PATCH</span><br><span class="line"></span><br><span class="line">UV_VERSION_IS_RELEASE</span><br><span class="line">UV_VERSION_SUFFIX</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 一个版本号的整数，这样算出来的</span><br><span class="line"><span class="regexp">//</span> <span class="comment">#define UV_VERSION_HEX  ((UV_VERSION_MAJOR &lt;&lt; 16) | \</span></span><br><span class="line"><span class="regexp">//</span>                          (UV_VERSION_MINOR &lt;&lt;  <span class="number">8</span>) | \</span><br><span class="line"><span class="regexp">//</span>                          (UV_VERSION_PATCH))</span><br><span class="line"><span class="regexp">//</span> 比如<span class="number">1.2</span>.<span class="number">3</span>就是 <span class="number">0</span>x010203,当然<span class="number">1.11</span>.<span class="number">3</span>就是 <span class="number">0</span>x010b03 了</span><br><span class="line">UV_VERSION_HEX</span><br></pre></td></tr></table></figure></p>
+<p>还有两个用于在运行时区分版本的函数：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回 UV_VERSION_HEX</span></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">uv_version</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 返回一个版本号的字符串</span></span><br><span class="line"><span class="function"><span class="keyword">const</span> <span class="keyword">char</span>* <span class="title">uv_version_string</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>编译时和运行时都需要，所以要给用户提供宏和函数两种形式的版本号。</p>
+<h1 id="3-libuv中的对象"><a href="#3-libuv中的对象" class="headerlink" title="3. libuv中的对象"></a>3. libuv中的对象</h1><p>libuv中组对象的方式很有意思，比如说 <code>uv_handle_t</code> 这样定义:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">uv_handle_s</span> <span class="title">uv_handle_t</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">uv_handle_s</span> &#123;</span></span><br><span class="line">  UV_HANDLE_FIELDS</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>然后<code>uv_stream_t</code>是这样定义的:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">uv_stream_s</span> <span class="title">uv_stream_t</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">uv_stream_s</span> &#123;</span></span><br><span class="line">  UV_HANDLE_FIELDS</span><br><span class="line">  UV_STREAM_FIELDS</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>另外还有 <code>uv_tcp_t</code>:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">uv_tcp_s</span> <span class="title">uv_tcp_t</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">uv_tcp_s</span> &#123;</span></span><br><span class="line">  UV_HANDLE_FIELDS</span><br><span class="line">  UV_STREAM_FIELDS</span><br><span class="line">  UV_TCP_PRIVATE_FIELDS</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到 <code>uv_handle_t, uv_stream_t, uv_tcp_t</code> 第一个都是 <code>UV_HANDLE_FIELDS</code>; <code>uv_stream_t, uv_tcp_t</code>第二个都是 <code>UV_STREAM_FIELDS</code>，这样就可以把 <code>uv_handle_t</code>当成父类，<code>uv_stream_t, uv_tcp_t</code>当成子类和孙子——当然要用到c的强制类型转换。这其实不算是个很好的用法，但好在简单。</p>
+<p>有些对象中的字段可以给用户使用，但其实所有字段对用户都是公开的，这就需要做好注释，没有办法用编译器去约束。</p>
+<p>libuv中主要对象有以下这些:</p>
+<ol>
+<li><code>uv_loop_t</code>: libuv的事件驱动对象，也就是主循环在这上边挂着，关于事件相关的上下文都在这里;</li>
+<li><code>uv_handle_t</code>：表示一个双工连接对象，比如一个tcp连接，这个相当于父类，下边还有子类；</li>
+<li><code>uv_req_t</code>: 一个连接上的具体请求，比如说在tcp上调用 <code>int uv_write(uv_write_t* req, uv_stream_t* handle, const uv_buf_t bufs[], unsigned int nbufs, uv_write_cb cb)</code> 进行一次写操作, 这个操作会立马返回，写成功之后的结果会在 <code>void (*uv_write_cb)(uv_write_t* req, int status)</code> 中返回给用户，这里 <code>uv_req_t</code> 相当于在 <code>uv_write()</code> 和 <code>uv_write_cb()</code> 之间传递libuv和用户自己的一些数据的。可以看到这也是个父类;</li>
+</ol>
+<p><strong><code>uv_handle_t</code></strong> 下又分:</p>
+<ol>
+<li><code>uv_timer_t</code>: 定时器;</li>
+<li><code>uv_prepare_t</code>: 每次轮训io之前，会调用这个事件句柄一次;</li>
+<li><code>uv_check_t</code>: 每次轮训io之后，会调用这个;</li>
+<li><code>uv_idle_t</code>: 每次循环在 <code>uv_prepare_t</code> 之前会调用这个，跟 <code>uv_prepare_t</code> 不同的是，如果有 <code>uv_idle_t</code> 句柄，<code>epoll</code> 会立马返回，不会阻塞(超时等待);</li>
+<li><code>uv_async_t</code>: 提供一个异步通知句柄，可以将当前任务放到额外的线程去做，然后用该句柄通知主循环最后的结果。有 <code>eventfd</code> 就用 <code>eventfd</code> 实现，没有就用 <code>pipe</code> 实现;</li>
+<li><code>uv_poll_t</code>: 有些第三方库依赖socket事件通知进行驱动，该句柄可以将这些句柄接入libuv的主循环去监听读写和连接的事件;</li>
+<li><code>uv_signal_t</code>: 信号封装;</li>
+<li><code>uv_process_t</code>: 进程封装;</li>
+<li><code>uv_stream_t</code>: 双工连接句柄。有三个子类: <code>uv_tcp_t, uv_pipe_t, uv_tty_t</code>。还有几个相关的 <code>uv_req_t</code> 子类: <code>uv_connect_t, uv_shutdown_t, uv_write_t</code>;</li>
+<li><code>uv_udp_t</code>: 封装UDP通信句柄，还有个相关的 <code>req</code> 子类: <code>uv_udp_send_t</code>;</li>
+<li><code>uv_fs_event_t</code>: 可以监听一个文件路径的变化，比如文件重命名等。</li>
+<li><code>uv_fs_poll_t</code>: 跟 <code>uv_fs_event_t</code> 类似，但使用 <code>state</code> 去监听路径变化。</li>
+</ol>
+<p><strong><code>uv_req_t</code></strong> 下又分:</p>
+<ol>
+<li><code>uv_connect_t</code>: <code>uv_stream_t</code> 建立连接的请求</li>
+<li><code>uv_shutdown_t</code>: <code>uv_stream_t</code> 关闭连接</li>
+<li><code>uv_write_t</code>: <code>uv_stream_t</code> 写请求</li>
+<li><code>uv_udp_send_t</code>: <code>uv_udp_t</code> 写请求</li>
+<li><code>uv_fs_t</code>: 文件异步操作请求</li>
+<li><code>uv_work_t</code>: 线程池异步任务请求</li>
+<li><code>uv_getaddrinfo_t</code> 和 <code>uv_getnameinfo_t</code>: 对DNS的异步请求</li>
+<li><code>uv_random_t</code>: 生成随机数的请求</li>
+</ol>
+<h1 id="4-事件驱动的一个常规流程"><a href="#4-事件驱动的一个常规流程" class="headerlink" title="4. 事件驱动的一个常规流程"></a>4. 事件驱动的一个常规流程</h1><p>就是这个图了<br><img src="/img/hkdf/loop_iteration.png" alt="事件驱动流程"></p>
+<p><strong>参考:</strong><br><a href="http://docs.libuv.org/en/v1.x/index.html" target="_blank" rel="noopener">http://docs.libuv.org/en/v1.x/index.html</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+    <div>
+ 
+ 
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+      <strong>本文作者：</strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="/2020/11/11/libuv简介/" title="libuv简介">2020/11/11/libuv简介/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权： </strong>
+    本站文章均采用 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0 CN</a> 许可协议，请勿用于商业，转载注明出处！
+  </li>
+</ul>
+
+</div>
+      
+        <div class="post-tags">
+          
+            <a href="/tags/c/" rel="tag"># c</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/11/11/dtls12跟tls12的不同/" rel="next" title="dtls1.2跟tls1.2的不同">
+                <i class="fa fa-chevron-left"></i> dtls1.2跟tls1.2的不同
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/11/11/tls12/" rel="prev" title="tls1.2">
+                tls1.2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">suntus</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">95</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-错误处理"><span class="nav-text">1. 错误处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-版本号的处理"><span class="nav-text">2. 版本号的处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-libuv中的对象"><span class="nav-text">3. libuv中的对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-事件驱动的一个常规流程"><span class="nav-text">4. 事件驱动的一个常规流程</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

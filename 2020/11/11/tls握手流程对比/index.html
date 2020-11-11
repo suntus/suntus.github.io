@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":"flase","async":true,"transition":{"post_block":"fadeIn","post_header":"fadeIn","post_body":"fadeIn","coll_header":"fadeIn","sidebar":"fadeIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="几个TLS协议的握手流程备忘">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tls握手流程对比">
+<meta property="og:url" content="http://suntus.github.io/2020/11/11/tls握手流程对比/index.html">
+<meta property="og:site_name" content="Morning~Sun。">
+<meta property="og:description" content="几个TLS协议的握手流程备忘">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-11-11T11:54:49.589Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="tls握手流程对比">
+<meta name="twitter:description" content="几个TLS协议的握手流程备忘">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Morning~Sun。" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://suntus.github.io/2020/11/11/tls握手流程对比/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>tls握手流程对比 | Morning~Sun。</title>
+  
+
+
+
+
+  <script async src="//www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-55322469-1');
+  </script>
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Morning~Sun。</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">ha</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://suntus.github.io/2020/11/11/tls握手流程对比/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun。">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">tls握手流程对比
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-11-11 18:51 18:51:07" itemprop="dateCreated datePublished" datetime="2020-11-11T18:51:07+08:00">2020-11-11 18:51</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-11-11 19:54 19:54:49" itemprop="dateModified" datetime="2020-11-11T19:54:49+08:00">2020-11-11 19:54</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>几个TLS协议的握手流程备忘<br><a id="more"></a></p>
+<h1 id="1-标准流程对比"><a href="#1-标准流程对比" class="headerlink" title="1. 标准流程对比"></a>1. 标准流程对比</h1><h2 id="1-1-TLS1-0-1-1-1-2-GMv1-1"><a href="#1-1-TLS1-0-1-1-1-2-GMv1-1" class="headerlink" title="1.1. TLS1.0,1.1,1.2,GMv1.1"></a>1.1. TLS1.0,1.1,1.2,GMv1.1</h2><h3 id="1-1-1-完整握手"><a href="#1-1-1-完整握手" class="headerlink" title="1.1.1. 完整握手"></a>1.1.1. 完整握手</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Client                                               Server</span><br><span class="line"></span><br><span class="line">ClientHello                  --------&gt;</span><br><span class="line">                                                ServerHello</span><br><span class="line">                                               Certificate*</span><br><span class="line">                                         ServerKeyExchange*</span><br><span class="line">                                        CertificateRequest*</span><br><span class="line">                             &lt;--------      ServerHelloDone</span><br><span class="line">Certificate*</span><br><span class="line">ClientKeyExchange</span><br><span class="line">CertificateVerify*</span><br><span class="line">[ChangeCipherSpec]</span><br><span class="line">Finished                     --------&gt;</span><br><span class="line">                                         [ChangeCipherSpec]</span><br><span class="line">                             &lt;--------             Finished</span><br><span class="line">Application Data             &lt;-------&gt;     Application Data</span><br></pre></td></tr></table></figure>
+<h3 id="1-1-2-会话恢复"><a href="#1-1-2-会话恢复" class="headerlink" title="1.1.2. 会话恢复"></a>1.1.2. 会话恢复</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Client                                                Server</span><br><span class="line"></span><br><span class="line">ClientHello                   --------&gt;</span><br><span class="line">                                                 ServerHello</span><br><span class="line">                                          [ChangeCipherSpec]</span><br><span class="line">                              &lt;--------             Finished</span><br><span class="line">[ChangeCipherSpec]</span><br><span class="line">Finished                      --------&gt;</span><br><span class="line">Application Data              &lt;-------&gt;     Application Data</span><br></pre></td></tr></table></figure>
+<h2 id="1-2-TLS1-3"><a href="#1-2-TLS1-3" class="headerlink" title="1.2. TLS1.3"></a>1.2. TLS1.3</h2><h3 id="1-2-1-完整握手"><a href="#1-2-1-完整握手" class="headerlink" title="1.2.1. 完整握手"></a>1.2.1. 完整握手</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">      <span class="built_in"> Client </span>                                          Server</span><br><span class="line"></span><br><span class="line">Key  ^ ClientHello</span><br><span class="line">Exch | + key_share*</span><br><span class="line">     | + signature_algorithms*</span><br><span class="line">     | + psk_key_exchange_modes*</span><br><span class="line">     v + pre_shared_key*       --------&gt;</span><br><span class="line">                                                  ServerHello  ^ Key</span><br><span class="line">                                                 + key_share*  | Exch</span><br><span class="line">                                            + pre_shared_key*  v</span><br><span class="line">                                        &#123;EncryptedExtensions&#125;  ^  Server</span><br><span class="line">                                        &#123;CertificateRequest*&#125;  v  Params</span><br><span class="line">                                               &#123;Certificate*&#125;  ^</span><br><span class="line">                                         &#123;CertificateVerify*&#125;  | Auth</span><br><span class="line">                                                   &#123;Finished&#125;  v</span><br><span class="line">                               &lt;--------  [Application Data*]</span><br><span class="line">     ^ &#123;Certificate*&#125;</span><br><span class="line">Auth | &#123;CertificateVerify*&#125;</span><br><span class="line">     v &#123;Finished&#125;              --------&gt;</span><br><span class="line">       [Application Data]      &lt;-------&gt;  [Application Data]</span><br></pre></td></tr></table></figure>
+<h3 id="1-2-2-DHE共享密钥不合适时候的握手"><a href="#1-2-2-DHE共享密钥不合适时候的握手" class="headerlink" title="1.2.2. DHE共享密钥不合适时候的握手"></a>1.2.2. DHE共享密钥不合适时候的握手</h3><figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml">Client                                               Server</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">ClientHello</span></span><br><span class="line"><span class="xml">+ key_share             --------&gt;</span></span><br><span class="line"><span class="xml">                                          HelloRetryRequest</span></span><br><span class="line"><span class="xml">                        <span class="tag">&lt;<span class="name">--------</span>               + <span class="attr">key_share</span></span></span></span><br><span class="line"><span class="xml">ClientHello</span></span><br><span class="line"><span class="xml">+ key_share             --------&gt;</span></span><br><span class="line"><span class="xml">                                                ServerHello</span></span><br><span class="line"><span class="xml">                                                + key_share</span></span><br><span class="line"><span class="xml">                                      </span><span class="template-variable">&#123;EncryptedExtensions&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml">                                      </span><span class="template-variable">&#123;CertificateRequest*&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml">                                             </span><span class="template-variable">&#123;Certificate*&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml">                                       </span><span class="template-variable">&#123;CertificateVerify*&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml">                                                 </span><span class="template-variable">&#123;Finished&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml">                        <span class="tag">&lt;<span class="name">--------</span>       [<span class="attr">Application</span> <span class="attr">Data</span>*]</span></span></span><br><span class="line"><span class="xml"></span><span class="template-variable">&#123;Certificate*&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml"></span><span class="template-variable">&#123;CertificateVerify*&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml"></span><span class="template-variable">&#123;Finished&#125;</span><span class="xml">              --------&gt;</span></span><br><span class="line"><span class="xml">[Application Data]      <span class="tag">&lt;<span class="name">-------</span>&gt;</span>        [Application Data]</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-2-3-会话恢复和PSK"><a href="#1-2-3-会话恢复和PSK" class="headerlink" title="1.2.3. 会话恢复和PSK"></a>1.2.3. 会话恢复和PSK</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">      <span class="built_in"> Client </span>                                              Server</span><br><span class="line"></span><br><span class="line">Initial Handshake:</span><br><span class="line">       ClientHello</span><br><span class="line">       + key_share               --------&gt;</span><br><span class="line">                                                       ServerHello</span><br><span class="line">                                                       + key_share</span><br><span class="line">                                             &#123;EncryptedExtensions&#125;</span><br><span class="line">                                             &#123;CertificateRequest*&#125;</span><br><span class="line">                                                    &#123;Certificate*&#125;</span><br><span class="line">                                              &#123;CertificateVerify*&#125;</span><br><span class="line">                                                        &#123;Finished&#125;</span><br><span class="line">                                 &lt;--------     [Application Data*]</span><br><span class="line">       &#123;Certificate*&#125;</span><br><span class="line">       &#123;CertificateVerify*&#125;</span><br><span class="line">       &#123;Finished&#125;                --------&gt;</span><br><span class="line">                                 &lt;--------      [NewSessionTicket]</span><br><span class="line">       [Application Data]        &lt;-------&gt;      [Application Data]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Subsequent Handshake:</span><br><span class="line">       ClientHello</span><br><span class="line">       + key_share*</span><br><span class="line">       + pre_shared_key          --------&gt;</span><br><span class="line">                                                       ServerHello</span><br><span class="line">                                                  + pre_shared_key</span><br><span class="line">                                                      + key_share*</span><br><span class="line">                                             &#123;EncryptedExtensions&#125;</span><br><span class="line">                                                        &#123;Finished&#125;</span><br><span class="line">                                 &lt;--------     [Application Data*]</span><br><span class="line">       &#123;Finished&#125;                --------&gt;</span><br><span class="line">       [Application Data]        &lt;-------&gt;      [Application Data]</span><br></pre></td></tr></table></figure>
+<h3 id="1-2-4-0-RTT"><a href="#1-2-4-0-RTT" class="headerlink" title="1.2.4. 0-RTT"></a>1.2.4. 0-RTT</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Client                                               Server</span><br><span class="line"></span><br><span class="line">ClientHello</span><br><span class="line">+ early_data</span><br><span class="line">+ key_share*</span><br><span class="line">+ psk_key_exchange_modes</span><br><span class="line">+ pre_shared_key</span><br><span class="line">(Application Data*)     --------&gt;</span><br><span class="line">                                                ServerHello</span><br><span class="line">                                           + pre_shared_key</span><br><span class="line">                                               + key_share*</span><br><span class="line">                                      &#123;EncryptedExtensions&#125;</span><br><span class="line">                                              + early_data*</span><br><span class="line">                                                 &#123;Finished&#125;</span><br><span class="line">                        &lt;--------       [Application Data*]</span><br><span class="line">(EndOfEarlyData)</span><br><span class="line">&#123;Finished&#125;              --------&gt;</span><br><span class="line">[Application Data]      &lt;-------&gt;        [Application Data]</span><br></pre></td></tr></table></figure>
+<h2 id="1-3-DTLS1-2"><a href="#1-3-DTLS1-2" class="headerlink" title="1.3. DTLS1.2"></a>1.3. DTLS1.2</h2><h3 id="1-3-1-防DDOS攻击"><a href="#1-3-1-防DDOS攻击" class="headerlink" title="1.3.1. 防DDOS攻击"></a>1.3.1. 防DDOS攻击</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Client                             Server</span><br><span class="line">------                             ------</span><br><span class="line">ClientHello (<span class="attribute">seq</span>=0)  ------&gt;</span><br><span class="line"></span><br><span class="line">                        X&lt;-- HelloVerifyRequest (<span class="attribute">seq</span>=0)</span><br><span class="line">                                        (lost)</span><br><span class="line"></span><br><span class="line">[Timer Expires]</span><br><span class="line"></span><br><span class="line">ClientHello (<span class="attribute">seq</span>=0)  ------&gt;</span><br><span class="line">(retransmit)</span><br><span class="line"></span><br><span class="line">                     &lt;------ HelloVerifyRequest (<span class="attribute">seq</span>=0)</span><br><span class="line"></span><br><span class="line">ClientHello (<span class="attribute">seq</span>=1)  ------&gt;</span><br><span class="line">(with cookie)</span><br><span class="line"></span><br><span class="line">                     &lt;------        ServerHello (<span class="attribute">seq</span>=1)</span><br><span class="line">                     &lt;------        Certificate (<span class="attribute">seq</span>=2)</span><br><span class="line">                     &lt;------    ServerHelloDone (<span class="attribute">seq</span>=3)</span><br><span class="line"></span><br><span class="line">[Rest of handshake]</span><br></pre></td></tr></table></figure>
+<h3 id="1-3-2-完整握手flight"><a href="#1-3-2-完整握手flight" class="headerlink" title="1.3.2. 完整握手flight"></a>1.3.2. 完整握手flight</h3><figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Client</span>                                          <span class="type">Server</span></span><br><span class="line"><span class="comment">------                                          ------</span></span><br><span class="line"></span><br><span class="line"><span class="type">ClientHello</span>             <span class="comment">--------&gt;                           Flight 1</span></span><br><span class="line"></span><br><span class="line">                        &lt;-<span class="comment">------    HelloVerifyRequest      Flight 2</span></span><br><span class="line"></span><br><span class="line"><span class="type">ClientHello</span>             <span class="comment">--------&gt;                           Flight 3</span></span><br><span class="line"></span><br><span class="line">                                           <span class="type">ServerHello</span>    \</span><br><span class="line">                                          <span class="type">Certificate</span>*     \</span><br><span class="line">                                    <span class="type">ServerKeyExchange</span>*      <span class="type">Flight</span> <span class="number">4</span></span><br><span class="line">                                   <span class="type">CertificateRequest</span>*     /</span><br><span class="line">                        &lt;-<span class="comment">-------      ServerHelloDone    /</span></span><br><span class="line"></span><br><span class="line"><span class="type">Certificate</span>*                                              \</span><br><span class="line"><span class="type">ClientKeyExchange</span>                                          \</span><br><span class="line"><span class="type">CertificateVerify</span>*                                          <span class="type">Flight</span> <span class="number">5</span></span><br><span class="line">[<span class="type">ChangeCipherSpec</span>]                                         /</span><br><span class="line"><span class="type">Finished</span>                <span class="comment">--------&gt;                         /</span></span><br><span class="line"></span><br><span class="line">                                    [<span class="type">ChangeCipherSpec</span>]    \ <span class="type">Flight</span> <span class="number">6</span></span><br><span class="line">                        &lt;-<span class="comment">-------             Finished    /</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-3-3-会话恢复flight"><a href="#1-3-3-会话恢复flight" class="headerlink" title="1.3.3. 会话恢复flight"></a>1.3.3. 会话恢复flight</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Client                                           Server</span><br><span class="line">------                                           ------</span><br><span class="line"></span><br><span class="line">ClientHello             --------&gt;                          Flight 1</span><br><span class="line"></span><br><span class="line">                                           ServerHello    \</span><br><span class="line">                                    [ChangeCipherSpec]     Flight 2</span><br><span class="line">                         &lt;--------             Finished    /</span><br><span class="line"></span><br><span class="line">[ChangeCipherSpec]                                         \Flight 3</span><br><span class="line">Finished                 --------&gt;                         /</span><br></pre></td></tr></table></figure>
+<h1 id="2-简化"><a href="#2-简化" class="headerlink" title="2. 简化"></a>2. 简化</h1><p>握手过程主要目标是2个：</p>
+<ol>
+<li>协商各种加密参数</li>
+<li>认证，包括client和server认证</li>
+</ol>
+<h2 id="2-1-TLS1-0-1-1-1-2-GM1-1"><a href="#2-1-TLS1-0-1-1-1-2-GM1-1" class="headerlink" title="2.1. TLS1.0,1.1,1.2,GM1.1"></a>2.1. TLS1.0,1.1,1.2,GM1.1</h2><h3 id="2-1-1-完整握手"><a href="#2-1-1-完整握手" class="headerlink" title="2.1.1. 完整握手"></a>2.1.1. 完整握手</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Client                                               Server</span><br><span class="line"></span><br><span class="line">ClientHello                  --------&gt;</span><br><span class="line">                                                ServerHello</span><br><span class="line">                             &lt;--------                证书*</span><br><span class="line">密钥</span><br><span class="line">[ChangeCipherSpec]</span><br><span class="line">Finished校验                 --------&gt;</span><br><span class="line">                                         [ChangeCipherSpec]</span><br><span class="line">                             &lt;--------         Finished校验</span><br><span class="line">Application Data             &lt;-------&gt;     Application Data</span><br></pre></td></tr></table></figure>
+<h3 id="2-1-2-会话恢复"><a href="#2-1-2-会话恢复" class="headerlink" title="2.1.2. 会话恢复"></a>2.1.2. 会话恢复</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Client                                                Server</span><br><span class="line"></span><br><span class="line">ClientHello                   --------&gt;</span><br><span class="line">                                                 ServerHello</span><br><span class="line">                                          [ChangeCipherSpec]</span><br><span class="line">                              &lt;--------         Finished校验</span><br><span class="line">[ChangeCipherSpec]</span><br><span class="line">Finished校验                  --------&gt;</span><br><span class="line">Application Data              &lt;-------&gt;     Application Data</span><br></pre></td></tr></table></figure>
+<h2 id="2-2-TLS1-3"><a href="#2-2-TLS1-3" class="headerlink" title="2.2. TLS1.3"></a>2.2. TLS1.3</h2><h3 id="2-2-1-完整握手"><a href="#2-2-1-完整握手" class="headerlink" title="2.2.1. 完整握手"></a>2.2.1. 完整握手</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">  <span class="built_in"> Client </span>                                          Server</span><br><span class="line"></span><br><span class="line">^ ClientHello</span><br><span class="line"> v + 密钥*                 --------&gt;</span><br><span class="line">                                              ServerHello  ^ Key</span><br><span class="line">                                                  + 密钥*  | Exch</span><br><span class="line">                                    &#123;EncryptedExtensions&#125;  ^  Server</span><br><span class="line">                                                  &#123;证书*&#125;  ^</span><br><span class="line">                                           &#123;Finished校验&#125;  v</span><br><span class="line">                           &lt;--------  [Application Data*]</span><br><span class="line"> ^ &#123;证书*&#125;</span><br><span class="line"> v &#123;Finished校验&#125;           --------&gt;</span><br><span class="line">   [Application Data]      &lt;-------&gt;  [Application Data]</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-2-会话恢复"><a href="#2-2-2-会话恢复" class="headerlink" title="2.2.2 会话恢复"></a>2.2.2 会话恢复</h3><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ClientHello</span><br><span class="line">+ 预主密钥<span class="built_in">id</span>          <span class="comment">--------&gt;</span></span><br><span class="line">                                                ServerHello</span><br><span class="line">                                                + 预主密钥<span class="built_in">id</span></span><br><span class="line">                                      &#123;EncryptedExtensions&#125;</span><br><span class="line">                                              &#123;Finished校验&#125;</span><br><span class="line">                     &lt;<span class="comment">--------           [Application Data*]</span></span><br><span class="line">&#123;Finished校验&#125;        <span class="comment">--------&gt;</span></span><br><span class="line">[Application Data]    &lt;<span class="comment">-------&gt;           [Application Data]</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-2-3-0-RTT"><a href="#2-2-3-0-RTT" class="headerlink" title="2.2.3. 0-RTT"></a>2.2.3. 0-RTT</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Client                                               Server</span><br><span class="line"></span><br><span class="line">ClientHello</span><br><span class="line">+ 预主密钥id</span><br><span class="line">(早期应用数据*)          --------&gt;</span><br><span class="line">                                                ServerHello</span><br><span class="line">                                               + 预主密钥id</span><br><span class="line">                                      &#123;EncryptedExtensions&#125;</span><br><span class="line">                                              + 早期数据指示*</span><br><span class="line">                                             &#123;Finished校验&#125;</span><br><span class="line">                        &lt;--------       [Application Data*]</span><br><span class="line">(早期应用数据结束标志)</span><br><span class="line">&#123;Finished校验&#125;          --------&gt;</span><br><span class="line">[Application Data]      &lt;-------&gt;        [Application Data]</span><br></pre></td></tr></table></figure>
+<h1 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a>3. 总结</h1><p>TLS1.0,1.1,1.2,GMv1.1, DTLS1.2完整握手基本一样，都是先发送证书，再交换密钥，最后进行握手认证(Finished)；会话恢复也都一样，先发送 <code>session id</code> 或 <code>ticket</code> 恢复密钥和认证，在进行握手认证(Finished)。<br>TLS1.3的先交换密钥，再发送证书，最后进行握手认证(Finished)。基本差不多。</p>
+<p><strong>参考:</strong></p>
+<ol>
+<li><a href="https://tools.ietf.org/html/rfc2246" target="_blank" rel="noopener">tls1.0-rfc2246</a></li>
+<li><a href="https://tools.ietf.org/html/rfc4346" target="_blank" rel="noopener">tls1.1-rfc4346</a></li>
+<li><a href="https://tools.ietf.org/html/rfc5246" target="_blank" rel="noopener">tls1.2-rfc5246</a></li>
+<li><a href="https://tools.ietf.org/html/rfc8446" target="_blank" rel="noopener">tls1.3-rfc8446</a></li>
+<li><a href="https://tools.ietf.org/html/rfc6347" target="_blank" rel="noopener">dtls1.2-rfc6347</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+    <div>
+ 
+ 
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+      <strong>本文作者：</strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="/2020/11/11/tls握手流程对比/" title="tls握手流程对比">2020/11/11/tls握手流程对比/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权： </strong>
+    本站文章均采用 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0 CN</a> 许可协议，请勿用于商业，转载注明出处！
+  </li>
+</ul>
+
+</div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/11/11/tls12/" rel="next" title="tls1.2">
+                <i class="fa fa-chevron-left"></i> tls1.2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/11/11/tls_dtls_connection_id_08/" rel="prev" title="tls_dtls_connection_id_08">
+                tls_dtls_connection_id_08 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">suntus</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">95</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-标准流程对比"><span class="nav-text">1. 标准流程对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-TLS1-0-1-1-1-2-GMv1-1"><span class="nav-text">1.1. TLS1.0,1.1,1.2,GMv1.1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-完整握手"><span class="nav-text">1.1.1. 完整握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-会话恢复"><span class="nav-text">1.1.2. 会话恢复</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-TLS1-3"><span class="nav-text">1.2. TLS1.3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-完整握手"><span class="nav-text">1.2.1. 完整握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2-DHE共享密钥不合适时候的握手"><span class="nav-text">1.2.2. DHE共享密钥不合适时候的握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-3-会话恢复和PSK"><span class="nav-text">1.2.3. 会话恢复和PSK</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-4-0-RTT"><span class="nav-text">1.2.4. 0-RTT</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-DTLS1-2"><span class="nav-text">1.3. DTLS1.2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-防DDOS攻击"><span class="nav-text">1.3.1. 防DDOS攻击</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-完整握手flight"><span class="nav-text">1.3.2. 完整握手flight</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-3-会话恢复flight"><span class="nav-text">1.3.3. 会话恢复flight</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-简化"><span class="nav-text">2. 简化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-TLS1-0-1-1-1-2-GM1-1"><span class="nav-text">2.1. TLS1.0,1.1,1.2,GM1.1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-完整握手"><span class="nav-text">2.1.1. 完整握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-会话恢复"><span class="nav-text">2.1.2. 会话恢复</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-TLS1-3"><span class="nav-text">2.2. TLS1.3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-完整握手"><span class="nav-text">2.2.1. 完整握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-会话恢复"><span class="nav-text">2.2.2 会话恢复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-0-RTT"><span class="nav-text">2.2.3. 0-RTT</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-总结"><span class="nav-text">3. 总结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
