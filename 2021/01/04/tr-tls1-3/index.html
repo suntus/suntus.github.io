@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Morning~Sun。">
 <meta property="og:description" content="tls1.3翻译备忘">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2021-01-05T12:14:50.444Z">
+<meta property="og:updated_time" content="2021-01-07T11:52:36.117Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[tr]tls1.3">
 <meta name="twitter:description" content="tls1.3翻译备忘">
@@ -380,7 +380,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-01-05 20:14 20:14:50" itemprop="dateModified" datetime="2021-01-05T20:14:50+08:00">2021-01-05 20:14</time>
+                <time title="修改时间：2021-01-07 19:52 19:52:36" itemprop="dateModified" datetime="2021-01-07T19:52:36+08:00">2021-01-07 19:52</time>
               
             
           </span>
@@ -564,7 +564,8 @@
 <p>TLS1.3的client收到表示TLS1.2或更早的<code>ServerHello</code>的时候，必须检查随机数最后8字节是否等于这些值。TLS1.2的client应该检查是否等于第二个值。如果匹配，client必须用发送”illegal_parameter”告警中止握手。该机制提供了除<code>Finished</code>交换之外的防降级攻击: 因为TLS1.2或之前的版本中出现的<code>ServerKeyExchange</code>消息中包含两个随机值的签名，只要使用了瞬时加密套件，主动攻击者就没办法更改随机数而不被两端发现。但使用静态RSA的时候，就不提供防降级保护了。</p>
 <p>注意：这是跟[RFC5246]不一样，所以实际上很多TLS1.2的client和server不会按照上边描述的那样处理。</p>
 <p>一个旧版本的client跟TLS1.2或之前的版本进行重新协商的时候，如果收到了TLS1.3的<code>ServerHello</code>，必须发送”protocol_version”告警中止握手。注意TLS1.3中没有重新协商的操作。</p>
-<h3 id="4-1-4-Hello-Retry-Request"><a href="#4-1-4-Hello-Retry-Request" class="headerlink" title="4.1.4. Hello Retry Request"></a>4.1.4. Hello Retry Request</h3>
+<h3 id="4-1-4-Hello-Retry-Request"><a href="#4-1-4-Hello-Retry-Request" class="headerlink" title="4.1.4. Hello Retry Request"></a>4.1.4. Hello Retry Request</h3><p>如果server能协商出一套参数，但<code>ClientHello</code>没有提供足够的信息以使握手继续，server就会回复该消息。4.1.3节中说过，<code>HelloRetryRequest</code>消息跟<code>ServerHello</code>消息的结构是一样的，并且”legacy_version, legacy_session_id_echo, cipher_suite, and legacy_compression_method”字段都有相同的意思。但为了方便，本文将”HelloRetryRequest”认为是个单独的消息。</p>
+
       
     </div>
 
