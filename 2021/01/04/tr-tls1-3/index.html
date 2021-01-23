@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Morning~Sun。">
 <meta property="og:description" content="tls1.3翻译备忘">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2021-01-14T11:17:12.756Z">
+<meta property="og:updated_time" content="2021-01-23T03:42:46.283Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[tr]tls1.3">
 <meta name="twitter:description" content="tls1.3翻译备忘">
@@ -380,7 +380,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-01-14 19:17 19:17:12" itemprop="dateModified" datetime="2021-01-14T19:17:12+08:00">2021-01-14 19:17</time>
+                <time title="修改时间：2021-01-23 11:42 11:42:46" itemprop="dateModified" datetime="2021-01-23T11:42:46+08:00">2021-01-23 11:42</time>
               
             
           </span>
@@ -565,6 +565,7 @@
 <p>注意：这是跟[RFC5246]不一样，所以实际上很多TLS1.2的client和server不会按照上边描述的那样处理。</p>
 <p>一个旧版本的client跟TLS1.2或之前的版本进行重新协商的时候，如果收到了TLS1.3的<code>ServerHello</code>，必须发送”protocol_version”告警中止握手。注意TLS1.3中没有重新协商的操作。</p>
 <h3 id="4-1-4-Hello-Retry-Request"><a href="#4-1-4-Hello-Retry-Request" class="headerlink" title="4.1.4. Hello Retry Request"></a>4.1.4. Hello Retry Request</h3><p>如果server能协商出一套参数，但<code>ClientHello</code>没有提供足够的信息以使握手继续，server就会回复该消息。4.1.3节中说过，<code>HelloRetryRequest</code>消息跟<code>ServerHello</code>消息的结构是一样的，并且”legacy_version, legacy_session_id_echo, cipher_suite, and legacy_compression_method”字段都有相同的意思。但为了方便，本文将”HelloRetryRequest”认为是个单独的消息。</p>
+<p>server的扩展项必须包含”supported_versions”。另外，应该包含让client生成正确的 <code>ClientHello</code> 对的最小必须扩展项集合。跟<code>ServerHello</code>一样，除了”cookie”扩展项，<code>HelloRetryRequest</code>不能包含任何第一个<code>ClientHello</code>中没有提供的扩展项。</p>
 
       
     </div>
@@ -703,7 +704,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">98</span>
+                    <span class="site-state-item-count">99</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
