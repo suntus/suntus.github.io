@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="dtls connection id 翻译备忘">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tls_dtls_connection_id_08">
+<meta property="og:url" content="https://suntus.github.io/2020/11/11/tls_dtls_connection_id_08/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="dtls connection id 翻译备忘">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-11T10:51:20.000Z">
+<meta property="article:modified_time" content="2021-06-20T15:52:05.100Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tls">
+<meta property="article:tag" content="tr">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2020/11/11/tls_dtls_connection_id_08/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>tls_dtls_connection_id_08 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2020/11/11/tls_dtls_connection_id_08/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          tls_dtls_connection_id_08
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-11 18:51:20" itemprop="dateCreated datePublished" datetime="2020-11-11T18:51:20+08:00">2020-11-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-20 23:52:05" itemprop="dateModified" datetime="2021-06-20T23:52:05+08:00">2021-06-20</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/draft-ietf-tls-dtls-connection-id/">dtls connection id</a> 翻译备忘</p>
+<span id="more"></span>
+
+<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>本文档定义了DTLS1.2的 Connection ID(CID)。</p>
+<p>CID是记录层头给接收端定位相应加密上下文的一个额外信息标识。在”经典的”DTLS中，选择一个DTLS记录层入包的相应加密信息需要使用5元组，如果在session的生命周期内源IP或源端口改变了，接收端就无法定位相应的加密上下文了。</p>
+<h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h1><p>DTLS(RFC6347)是为加密无连接状态传输通道而设计的，比如说UDP。跟TLS一样，DTLS一开始的握手非常耗费计算资源(特别是用到公钥加密时)。在成功握手后，会使用对称加密来对数据进行认证，以及完整性和私密性保护。这样的两步允许终端将开始的握手性能资源消耗平摊到后续的应用数据加密上去。理想状态下，加密应用数据的第二阶段应该维持尽可能长的时间，直到秘钥过期才去重新协商。</p>
+<p>在RFC 6347中，对端的IP地址和端口用来标识跟DLTS连接的关联。但在有些情况下，比如NAT重绑定，会导致这些值不够用。这种情况在IoT环境中更普遍，比如设备进入睡眠状态以节省电量。NAT重绑定会导致连接失败，进而导致重新握手，消耗更多计算资源。</p>
+<p>本文档定义了一个DTLS1.2的扩展项，在DTLS记录层加上一个CID。是否使用CID通过DTLS扩展项协商而来。</p>
+<h1 id="2-惯例和术语"><a href="#2-惯例和术语" class="headerlink" title="2. 惯例和术语"></a>2. 惯例和术语</h1><pre><code>**MUST**...
+</code></pre>
+<h1 id="3-“connection-id”扩展项"><a href="#3-“connection-id”扩展项" class="headerlink" title="3. “connection_id”扩展项"></a>3. “connection_id”扩展项</h1><p>本文档定义”connection_id”扩展项，用于 <code>ClientHello</code> 和 <code>ServerHello</code> 消息中。</p>
+<p>扩展项类型如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">enum &#123;</span><br><span class="line">   connection_id(TBD1), (65535)</span><br><span class="line">&#125; ExtensionType;</span><br></pre></td></tr></table></figure>
+
+<p><code>ClientHello</code>中该扩展项的<code>extension_data</code> 字段必须包含 <code>ConnectionId</code> 结构体。该结构体包含client希望server发送消息给client时候使用的CID的值。0长CID值表示client准备好发送带CID的消息，但不希望server发来的消息带CID。或者说，0长CID意味着client希望server使用0长CID，结果是一样的。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">struct &#123;</span><br><span class="line">    opaque cid&lt;0..2^8-1&gt;;</span><br><span class="line">&#125; ConnectionId;</span><br></pre></td></tr></table></figure>
+
+<p>server如果希望使用CID，会在 <code>ServerHello</code> 中回复一个”connection_id”扩展项，包含它希望client发送消息给自己的时候使用的CID的值。0长CID表示server会用client的CID发送消息，但不希望client发来的消息包含CID(或者说，使用0长CID)。</p>
+<p>因为每个端点在”connection_id”扩展项中发送的值是它希望收到的加密记录数据包中的CID，因此端点有责任为这样的连接标识使用全局统一的长度值，比如在编译阶段确定CID长度的值，这样反过来还可以方便解析和连接查找。但同时，实现必须能发送不同长度值以适应不同的对端。如果实现希望使用可变长的CID值，则需要自己构造CID，以在接收的时候能确定CID的长度。要注意记录层本身是没有CID长度信息的。</p>
+<p>在DTLS1.2中，CID只在session最开始进行交换。没有在session建立好之后专门用于”CID update”的消息，因为DTLS1.2通常没有类似TLS1.3那种握手后消息。当DTLS会话被复用或者重新写上，”connection_id”扩展项会重新协商。</p>
+<p>如果DTLS终端没有协商使用CID，就必须用RFC6347定义的记录层格式和内容类型。</p>
+<p>如果DTLS终端使用 <code>ClientHello 和 ServerHello</code> 协商出需要使用CID，接下来需要按照如下步骤进行。</p>
+<p>DTLS终端决定出包或入包数据是否需要使用新的记录层格式，比如，新的记录层格式包含CID。一旦开始加密，就使用带 tls12_cid 内容类型的新记录层格式。明文负载从不使用新的记录层格式和CID内容类型。</p>
+<p>发送时，如果协商使用了0长CID，就必须使用RFC6347定义的记录层格式和内容类型(见RFC6347 #4.1)，否则必须使用下图3中定义的带 tls12_cid 内容类型的新数据格式。</p>
+<p>当传输带 tls12_cid 内容类型的数据包时，必须使用 #5 中定义的新的MAC计算方式。</p>
+<p>接收时，如果设置了 tls12_cid 内容类型，就需要使用 CID 去查找连接和加密上下文。如果没有设置 tls12_cid 类型，就使用5元组去查找连接和加密上下文，另外还必须检查期望的 CID 是否就是0长的；如果检查失败，必须丢弃数据包。</p>
+<p>当接收一个带 tls12_cid 类型的数据包时，必须使用 #5 中定义的新的MAC计算方式。如果收到一个RFC6347定义的记录层格式数据包，必须使用RFC6347-#4.1.2中定义的MAC计算方式。</p>
+<h1 id="4-记录层扩展"><a href="#4-记录层扩展" class="headerlink" title="4. 记录层扩展"></a>4. 记录层扩展</h1><p>本段定义DTLS1.2记录层格式，[I-D.ietf-tls-dtls13]中定义如何在DTLS1.3中使用 CID。</p>
+<p>为了让接收者确定一个记录包是否带有 CID，协商使用 CID 的连接使用一个单独的记录类型 tls12_cid(TBD2)。该内容类型的使用意味着：</p>
+<ul>
+<li>CID 字段存在，并且包含1个或更多字节</li>
+<li>MAC的计算方式按照 #5 所述</li>
+<li>真正的内容类型包含在加密信封中，如下所述</li>
+</ul>
+<p>明文记录包不受该扩展影响，并且 DTLSPlaintext 结构体没有变动，如图1所示:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">struct &#123;</span><br><span class="line">    ContentType type;</span><br><span class="line">    ProtocolVersion version;</span><br><span class="line">    uint16 epoch;</span><br><span class="line">    uint48 sequence_number;</span><br><span class="line">    uint16 length;</span><br><span class="line">    opaque fragment[DTLSPlaintext.length];</span><br><span class="line">&#125; DTLSPlaintext;</span><br><span class="line"></span><br><span class="line">       Figure 1: DTLS 1.2 Plaintext Record Payload.</span><br></pre></td></tr></table></figure>
+
+<p>当使用 CID 时，先将待发送的内容用自己的内容类型和可选的padding封装进 DTLSInnerPlaintext 结构中。这个新引入的结构如图2所示。 然后再加密 DTLSInnerPlaintext，图3显示了加上 CID 之后组成的 DTLSCiphertext 结构。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct &#123;</span><br><span class="line">    opaque content[length];</span><br><span class="line">    ContentType real_type;</span><br><span class="line">    uint8 zeros[length_of_padding];</span><br><span class="line">&#125; DTLSInnerPlaintext;</span><br><span class="line"></span><br><span class="line">    Figure 2: New DTLSInnerPlaintext Payload Structure.</span><br></pre></td></tr></table></figure>
+<p><em>content</em>: 对应给定长度的fragment<br><em>real_type</em>: 负载的内容类型<br><em>zeros</em>: 明文中在类型字段之后可以填充任意长度的0。这给发送者提供了一个可以将DTLS记录包填充到给定长度的机制，只要填充的长度在记录层大小限制内。更多细节见 RFC8446 #5.4。(注意 RFC8446 中 TLSInnerPlaintext 指的就是这里的 DTLSInnerPlaintext。)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">struct &#123;</span><br><span class="line">    ContentType outer_type = tls12_cid;</span><br><span class="line">    ProtocolVersion version;</span><br><span class="line">    uint16 epoch;</span><br><span class="line">    uint48 sequence_number;</span><br><span class="line">    opaque cid[cid_length];               // New field</span><br><span class="line">    uint16 length;</span><br><span class="line">    opaque enc_content[DTLSCiphertext.length];</span><br><span class="line">&#125; DTLSCiphertext;</span><br><span class="line"></span><br><span class="line">    Figure 3: DTLS 1.2 CID-enhanced Ciphertext Record.</span><br></pre></td></tr></table></figure>
+<ul>
+<li><em>outer_type</em>: 带 CID 的 DTLSCiphertext 记录包的外层负载类型总是设置成 tls12_cid(TBD2)。真正的负载类型解密后在 DTLSInnerPlaintext.real_type 中存放。</li>
+<li><em>cid</em>: CID 的值，长度是扩展项协商时候定好的 cid_length。回忆一下(之前讨论过的)，每个终端自己选择CID的值，用这个值来标识当前连接，因此实现可以选择总是接收一个固定长度的 CID 值。但是如果实现的时候选择可以接收不同长度的 CID，CID的值就必须能自己描述自己的长度，因为没有其他机制来决定选择哪条连接。</li>
+<li><em>enc_content</em>: 序列化后的 DTLSInnerPlaintext 结构的加密后数据。</li>
+</ul>
+<p>其他字段在 RFC6347 中定义。</p>
+<h1 id="5-记录层负载保护"><a href="#5-记录层负载保护" class="headerlink" title="5. 记录层负载保护"></a>5. 记录层负载保护</h1><p>TLS和DTLS已经定义了几种加密套件，套件中 MAC 的计算方法有些不一样。</p>
+<p>针对带 tls12_cid 的记录层数据包，本文档调整了 RFC6347 和 RFC7366 中定义的 MAC 计算方法，也调整了 RFC6347 提供的用于 AEAD 套件的额外数据的定义方式。调整的算法不能用于不带CID的记录包，也就是负载类型不是 tls12_cid 的那些记录包。</p>
+<p>接下来的字段在本文档定义，其他字段都在参考文档中定义。</p>
+<ul>
+<li><em>cid</em>: 协商好的CID的值(可变长度)</li>
+<li><em>cid_length</em>: 表示协商好的CID长度的1字节字段</li>
+<li><em>length_of_DTLSInnerPlaintext</em>: 序列化后的 DLTSInnerPlaintext 的长度(2字节字段，单位是bytes)。该长度不能超过 2^14。</li>
+<li>“+” 表示连接符。</li>
+</ul>
+<h2 id="5-1-块加密套件"><a href="#5-1-块加密套件" class="headerlink" title="5.1. 块加密套件"></a>5.1. 块加密套件</h2><p>下边这个 MAC 算法用于 RFC7366 中描述的不使用 Encrypt-then-MAC 过程的块加密套件。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">MAC(MAC_write_key, seq_num +</span><br><span class="line">    tls12_cid +</span><br><span class="line">    DTLSCiphertext.version +</span><br><span class="line">    cid +</span><br><span class="line">    cid_length +</span><br><span class="line">    length_of_DTLSInnerPlaintext +</span><br><span class="line">    DTLSInnerPlaintext.content +</span><br><span class="line">    DTLSInnerPlaintext.real_type +</span><br><span class="line">    DTLSInnerPlaintext.zeros</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-2-使用-Encrypt-then-MAC-处理的块加密套件"><a href="#5-2-使用-Encrypt-then-MAC-处理的块加密套件" class="headerlink" title="5.2. 使用 Encrypt-then-MAC 处理的块加密套件"></a>5.2. 使用 Encrypt-then-MAC 处理的块加密套件</h2><p>下边这个 MAC 算法用于 RFC7366 中描述的使用 Encrypt-then-MAC 过程的块加密套件。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">MAC(MAC_write_key, seq_num +</span><br><span class="line">    tls12_cid +</span><br><span class="line">    DTLSCipherText.version +</span><br><span class="line">    cid +</span><br><span class="line">    cid_length +</span><br><span class="line">    length of (IV + DTLSCiphertext.enc_content) +</span><br><span class="line">    IV +</span><br><span class="line">    DTLSCiphertext.enc_content);</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-3-AEAD-加密套件"><a href="#5-3-AEAD-加密套件" class="headerlink" title="5.3. AEAD 加密套件"></a>5.3. AEAD 加密套件</h2><p>对利用附加数据进行认证的加密算法，下边是调整后的附加数据计算方法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">additional_data = seq_num +</span><br><span class="line">                  tls12_cid +</span><br><span class="line">                  DTLSCipherText.version +</span><br><span class="line">                  cid +</span><br><span class="line">                  cid_length +</span><br><span class="line">                  length_of_DTLSInnerPlaintext;</span><br></pre></td></tr></table></figure>
+
+<h1 id="6-对端地址更新"><a href="#6-对端地址更新" class="headerlink" title="6. 对端地址更新"></a>6. 对端地址更新</h1><p>当收到一个带 CID 的记录包时，如果该数据包源地址跟当前使用的 DTLS 连接中设置的不同，那除非满足下边3个条件，否则接收者不会更新发送地址：</p>
+<ul>
+<li>数据包已经被 DTLS 记录层处理验证通过了</li>
+<li>接收到的记录包比已经收到的都要”新”(epoch 和 seq number 都是最新的)。地址更新之前已经被发出去的数据包经过重新排序，可能会将一个有效的地址更新重新变回去。这可以限制攻击者使用重放数据包伪造一个假的地址变动，假的地址变动可能会引起 DoS。要是攻击者能改变源地址并且让重放的数据包比源数据包更早到达，还是可以触发地址更新的。</li>
+<li>有其他方法能保证新的对端地址能接收和处理 DTLS 记录包。本文档没有定义相应的测试方法。</li>
+</ul>
+<p>上边的是防止通过伪造地址和重放数据包触发攻击的必要条件。注意这里没有要求必须使用 DTLS1.2 #4.1.2.6 定义的防重放攻击窗口机制。”anti-replay window” 和 “newer” 算法这两种方法都能防止重放攻击时地址更新，后者只适用于对端地址更新，前者会使用于任何应用层流量。</p>
+<p>注意通过了 DTLS 解密检查但并未触发对端地址更新的数据包也是有效的DTLS数据包，也要传递给应用。</p>
+<p>应用协议可以依赖对端地址更新事件实现自己的防攻击机制。当传递了这个事件，就可以触发应用层对地址有效性检查的机制，例如依赖最少多少次来回通信后就更新地址的机制。或者应用 [I-D.tschofenig-tls-dtls-rrc] 描述的一个DTLS特定机制。</p>
+<p>DTLS 的实现必须静默丢掉那些解密失败的记录包。</p>
+<h1 id="7-例子"><a href="#7-例子" class="headerlink" title="7. 例子"></a>7. 例子</h1><p>图4展示了一个从 client 到 server 单向使用 CID 的例子。我们使用 “connection_id&#x3D;empty” 表示 “connection_id” 扩展项中出现了0长 CID。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">Client                                             Server</span><br><span class="line">------                                             ------</span><br><span class="line"></span><br><span class="line">ClientHello                 --------&gt;</span><br><span class="line">(connection_id=empty)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                            &lt;--------      HelloVerifyRequest</span><br><span class="line">                                                     (cookie)</span><br><span class="line"></span><br><span class="line">ClientHello                 --------&gt;</span><br><span class="line">(connection_id=empty)</span><br><span class="line">(cookie)</span><br><span class="line"></span><br><span class="line">                                                  ServerHello</span><br><span class="line">                                          (connection_id=100)</span><br><span class="line">                                                  Certificate</span><br><span class="line">                                            ServerKeyExchange</span><br><span class="line">                                           CertificateRequest</span><br><span class="line">                            &lt;--------         ServerHelloDone</span><br><span class="line"></span><br><span class="line">Certificate</span><br><span class="line">ClientKeyExchange</span><br><span class="line">CertificateVerify</span><br><span class="line">[ChangeCipherSpec]</span><br><span class="line">Finished                    --------&gt;</span><br><span class="line">&lt;CID=100&gt;</span><br><span class="line"></span><br><span class="line">                                           [ChangeCipherSpec]</span><br><span class="line">                            &lt;--------                Finished</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Application Data            ========&gt;</span><br><span class="line">&lt;CID=100&gt;</span><br><span class="line"></span><br><span class="line">                            &lt;========        Application Data</span><br><span class="line"></span><br><span class="line">Legend:</span><br><span class="line"></span><br><span class="line">&lt;...&gt; indicates that a connection id is used in the record layer</span><br><span class="line">(...) indicates an extension</span><br><span class="line">[...] indicates a payload other than a handshake message</span><br><span class="line"></span><br><span class="line">            Figure 4: Example DTLS 1.2 Exchange with CID</span><br></pre></td></tr></table></figure>
+
+<p><em>注意</em>: 例子中一旦开始对记录层进行加密，记录包就加上了 CID。 在 DTLS1.2 握手中只有一个 Finished 消息被加密了。例子显示了从client发送到 server 的数据包如何使用 CID，所以只有负载包含 Finished 消息或应用数据的记录包才带 CID。</p>
+<h1 id="8-机密性考虑"><a href="#8-机密性考虑" class="headerlink" title="8. 机密性考虑"></a>8. 机密性考虑</h1><p>CID 替换了之前使用的5元组，但也引入了在 DTLS 连接生命期内都持续存在的标识。如 RFC6973 所述，任何标识都会增加连接性泄露的风险。</p>
+<p>一个在 DTLS client 和 server 之间的线上攻击者能根据同一ID对儿来关联同一条DTLS流的所有数据包。抛开多宿主和移动性，使用 CID 会跟使用5元组暴露出的信息一样。</p>
+<p>如果带上多宿主，被动攻击者可以区分两路以上的通信，通过CID的改变和seq number，可以关联某一路的数据包。DTLS1.2中 CID 更新机制的缺失会导致该扩展在必须考虑关联性的移动场景下不适用。在多宿主环境中部署DTLS的话，如果必须考虑这些方面，就不要在DTLS1.2中使用 CID，或者切换到 DTLS1.3，在DTLS1.3中会有 CID 更新机制，并且seq number 是被加密的。</p>
+<p>本文档在带 CID 的记录层中引入了填充，该保密机制在原始的DTLS1.2中不存在。填充让基于长度的流量分析变得更困难。更多关于记录层填充的描述见 RFC8446 #5.4 和 附录 E.3。</p>
+<p>最后，终端可以用 CID 去关联给定连接上的连接相关数据。这会给线上攻击者一种跟每连接信息通信的机制。除了含有任意 CID 值，也没有什么直接的方法能处理这种情况。顾虑这些的话，使用者应该拒绝使用 CID。</p>
+<h1 id="9-安全性考虑"><a href="#9-安全性考虑" class="headerlink" title="9. 安全性考虑"></a>9. 安全性考虑</h1><p>一个线上攻击者可以实施针对第三方的反射攻击，因为 DTLS 终端无法将正常的地址更新事件(因为NAT重新绑定)和有害的区分开。当请求&#x2F;响应消息之间的大小非常不对称的时候，这种攻击就需要纳入考虑了。</p>
+<p>另外，攻击者能够观察两个DTLS终端之间的数据流，然后能够修改IP&#x2F;PORT来重放数据包。</p>
+<p>对端地址更新在 #6 中有讨论。</p>
+<h1 id="10-IANA相关"><a href="#10-IANA相关" class="headerlink" title="10. IANA相关"></a>10. IANA相关</h1><h1 id="11-引用"><a href="#11-引用" class="headerlink" title="11. 引用"></a>11. 引用</h1>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2020/11/11/tls_dtls_connection_id_08/" title="tls_dtls_connection_id_08">https://suntus.github.io/2020/11/11/tls_dtls_connection_id_08/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tls/" rel="tag"># tls</a>
+              <a href="/tags/tr/" rel="tag"># tr</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/11/tls%E6%8F%A1%E6%89%8B%E6%B5%81%E7%A8%8B%E5%AF%B9%E6%AF%94/" rel="prev" title="tls握手流程对比">
+      <i class="fa fa-chevron-left"></i> tls握手流程对比
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/25/AEAD%E6%8E%A5%E5%8F%A3%E5%92%8CGCM%E7%AE%97%E6%B3%95/" rel="next" title="AEAD接口和GCM算法">
+      AEAD接口和GCM算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">1. 介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%83%AF%E4%BE%8B%E5%92%8C%E6%9C%AF%E8%AF%AD"><span class="nav-number">3.</span> <span class="nav-text">2. 惯例和术语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E2%80%9Cconnection-id%E2%80%9D%E6%89%A9%E5%B1%95%E9%A1%B9"><span class="nav-number">4.</span> <span class="nav-text">3. “connection_id”扩展项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E8%AE%B0%E5%BD%95%E5%B1%82%E6%89%A9%E5%B1%95"><span class="nav-number">5.</span> <span class="nav-text">4. 记录层扩展</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E8%AE%B0%E5%BD%95%E5%B1%82%E8%B4%9F%E8%BD%BD%E4%BF%9D%E6%8A%A4"><span class="nav-number">6.</span> <span class="nav-text">5. 记录层负载保护</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E5%9D%97%E5%8A%A0%E5%AF%86%E5%A5%97%E4%BB%B6"><span class="nav-number">6.1.</span> <span class="nav-text">5.1. 块加密套件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-%E4%BD%BF%E7%94%A8-Encrypt-then-MAC-%E5%A4%84%E7%90%86%E7%9A%84%E5%9D%97%E5%8A%A0%E5%AF%86%E5%A5%97%E4%BB%B6"><span class="nav-number">6.2.</span> <span class="nav-text">5.2. 使用 Encrypt-then-MAC 处理的块加密套件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-AEAD-%E5%8A%A0%E5%AF%86%E5%A5%97%E4%BB%B6"><span class="nav-number">6.3.</span> <span class="nav-text">5.3. AEAD 加密套件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E5%AF%B9%E7%AB%AF%E5%9C%B0%E5%9D%80%E6%9B%B4%E6%96%B0"><span class="nav-number">7.</span> <span class="nav-text">6. 对端地址更新</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-%E4%BE%8B%E5%AD%90"><span class="nav-number">8.</span> <span class="nav-text">7. 例子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-%E6%9C%BA%E5%AF%86%E6%80%A7%E8%80%83%E8%99%91"><span class="nav-number">9.</span> <span class="nav-text">8. 机密性考虑</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-%E5%AE%89%E5%85%A8%E6%80%A7%E8%80%83%E8%99%91"><span class="nav-number">10.</span> <span class="nav-text">9. 安全性考虑</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-IANA%E7%9B%B8%E5%85%B3"><span class="nav-number">11.</span> <span class="nav-text">10. IANA相关</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-%E5%BC%95%E7%94%A8"><span class="nav-number">12.</span> <span class="nav-text">11. 引用</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

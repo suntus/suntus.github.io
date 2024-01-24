@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="看内核之前需要了解一些体系结构相关的知识，本文介绍IA32常用的几个寄存器。- 通用寄存器：EAX,EBX,ECX,EDX,ESI,EDI,EBP,ESP- 段寄存器：CS,DS,ES,FS,GS,SS- EFLAGES寄存器- EIP寄存器- 控制寄存器：CR0,CR1,CR2,CR3,CR4- GDTR,LDTR,IDTR寄存器- TR寄存器1. 通用寄存器用于存放：　　1. 算数和逻辑操作的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IA32常用寄存器">
+<meta property="og:url" content="https://suntus.github.io/2017/08/12/IA32%E5%B8%B8%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="看内核之前需要了解一些体系结构相关的知识，本文介绍IA32常用的几个寄存器。- 通用寄存器：EAX,EBX,ECX,EDX,ESI,EDI,EBP,ESP- 段寄存器：CS,DS,ES,FS,GS,SS- EFLAGES寄存器- EIP寄存器- 控制寄存器：CR0,CR1,CR2,CR3,CR4- GDTR,LDTR,IDTR寄存器- TR寄存器1. 通用寄存器用于存放：　　1. 算数和逻辑操作的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/280482-ffec51fb130990cd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/280482-e00572d62610c5ac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/280482-e5b7ac1693891e48.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2017-08-12T14:51:33.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.604Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="os">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/280482-ffec51fb130990cd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+<link rel="canonical" href="https://suntus.github.io/2017/08/12/IA32%E5%B8%B8%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>IA32常用寄存器 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2017/08/12/IA32%E5%B8%B8%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          IA32常用寄存器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-12 22:51:33" itemprop="dateCreated datePublished" datetime="2017-08-12T22:51:33+08:00">2017-08-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="看内核之前需要了解一些体系结构相关的知识，本文介绍IA32常用的几个寄存器。-通用寄存器：EAX-EBX-ECX-EDX-ESI-EDI-EBP-ESP-段寄存器：CS-DS-ES-FS-GS-SS-EFLAGES寄存器-EIP寄存器-控制寄存器：CR0-CR1-CR2-CR3-CR4-GDTR-LDTR-IDTR寄存器-TR寄存器"><a href="#看内核之前需要了解一些体系结构相关的知识，本文介绍IA32常用的几个寄存器。-通用寄存器：EAX-EBX-ECX-EDX-ESI-EDI-EBP-ESP-段寄存器：CS-DS-ES-FS-GS-SS-EFLAGES寄存器-EIP寄存器-控制寄存器：CR0-CR1-CR2-CR3-CR4-GDTR-LDTR-IDTR寄存器-TR寄存器" class="headerlink" title="看内核之前需要了解一些体系结构相关的知识，本文介绍IA32常用的几个寄存器。- 通用寄存器：EAX,EBX,ECX,EDX,ESI,EDI,EBP,ESP- 段寄存器：CS,DS,ES,FS,GS,SS- EFLAGES寄存器- EIP寄存器- 控制寄存器：CR0,CR1,CR2,CR3,CR4- GDTR,LDTR,IDTR寄存器- TR寄存器"></a>看内核之前需要了解一些体系结构相关的知识，本文介绍IA32常用的几个寄存器。<!--more  --><br>- 通用寄存器：EAX,EBX,ECX,EDX,ESI,EDI,EBP,ESP<br>- 段寄存器：CS,DS,ES,FS,GS,SS<br>- EFLAGES寄存器<br>- EIP寄存器<br>- 控制寄存器：CR0,CR1,CR2,CR3,CR4<br>- GDTR,LDTR,IDTR寄存器<br>- TR寄存器</h2><h2 id="1-通用寄存器"><a href="#1-通用寄存器" class="headerlink" title="1. 通用寄存器"></a>1. 通用寄存器</h2><p>用于存放：<br>　　1. 算数和逻辑操作的操作数<br>　　2. 地址操作的操作数<br>　　3. 内存指针<br>这些寄存器通常可以存放任何东西，但有时候会用作特定用途，比如：<br>　　<strong>EAX</strong>——存放累加操作数和结果，传递参数和结果等<br>　　<strong>EBX</strong>——指向DS数据段中数据的指针<br>　　<strong>ECX</strong>——字符串和循环操作的计数器<br>　　<strong>EDX</strong>——I&#x2F;O指针<br>　　<strong>ESI</strong>——指向DS数据段中数据的指针；字符串操作的源指针<br>　　<strong>EDI</strong>——跟ES配合，指向目的数据的指针；字符串操作的目的指针<br>　　<strong>ESP</strong>——栈指针（在SS段中）<br>　　<strong>EBP</strong>——指向栈中的数据（SS段中），一般用作函数嵌套调用时的栈帧基址</p>
+<h2 id="2-段寄存器"><a href="#2-段寄存器" class="headerlink" title="2. 段寄存器"></a>2. 段寄存器</h2><p>当用平坦内存模型(flat memory model)的时候，段寄存器都指向0，不分段。<br>当用段内存模型(segmented memory model)的时候，段寄存器指向各自的段，且有CPU的保护机制。<br>保护模式下(段内存模型)：<br>　　<strong>CS</strong>：保存当前指向代码段的段选择子，配合EIP，可以找到下一个要执行的代码。<br>　　<strong>DS,ES,FS,GS</strong>：保存四个数据段的段选择子，可以让当前任务同时获取四个数据段，比如一个指向当前特权级的数据段，另一个指向更高特权级的数据段，第三个指向动态创建的数据结构，第四个指向跟另一个程序共享的数据段。<br>　　<strong>SS</strong>：保存当前栈的段选择子。<br>段寄存器中保存着段选择子，根据该选择子可以选择GDTR(或LDTR)指向的GDT(或LDT)表中的某一项（段描述符），然后根据该项可以找到相应的段（选择的时候CPU可以进行权限检查等）。如果CPU每次都从段寄存器拿到段选择子，再根据GDTR找到相应的项，再找到段就太麻烦了，所以这几个段寄存器都有个隐藏的寄存器，不暴露给开发人员，只是CPU内部使用的，用于缓存段地址，加快处理速度。如下图：<br><img src="http://upload-images.jianshu.io/upload_images/280482-ffec51fb130990cd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="段寄存器"></p>
+<h2 id="3-EFLAGS"><a href="#3-EFLAGS" class="headerlink" title="3. EFLAGS"></a>3. EFLAGS</h2><p>　　存储CPU的一些内部状态。<br><img src="http://upload-images.jianshu.io/upload_images/280482-e00572d62610c5ac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="EFLAGS寄存器"></p>
+<h2 id="4-EIP寄存器"><a href="#4-EIP寄存器" class="headerlink" title="4. EIP寄存器"></a>4. EIP寄存器</h2><p>　　用于存放下一个要执行的代码的地址，非常重要，通过特定的指令（JMP,Jcc,CALL,RET,IRET）可以改变值，不能被直接读取，只能在call调用的时候从栈中读取，可以直接赋值，然后用RET或IRET跳转（内核用于向高特权级翻转）。</p>
+<h2 id="5-控制寄存器"><a href="#5-控制寄存器" class="headerlink" title="5. 控制寄存器"></a>5. 控制寄存器</h2><p><img src="http://upload-images.jianshu.io/upload_images/280482-e5b7ac1693891e48.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="控制寄存器"><br>CR0——包含控制处理器操作模式和状态的标志<br>CR1——保留<br>CR2——包含缺页中断时的线性地址<br>CR3——包含分页的第一层结构的基址和两个标志位（PCD,PWT）<br>CR4——包含一些架构扩展，指定特定的处理器兼容。<br>一些位解释如下：<br>PG： Paging，是否分页<br>CD：Cache Disable，是否使用物理缓存<br>PE：Protection Enable，打开保护模式，该标志位不会启动分页，只会启动基于段的保护（分页和段都是保护，其实是重复的，linux只用了分页保护）。</p>
+<h2 id="6-GDTR-LDTR-IDTR"><a href="#6-GDTR-LDTR-IDTR" class="headerlink" title="6. GDTR,LDTR,IDTR"></a>6. GDTR,LDTR,IDTR</h2><p>存放GDT,LDT,IDT的基址。</p>
+<p><strong>GDT</strong>：Global Descriptor Table，全局描述符表，存放全局的段描述符的数组，只有1份，通过该表可以找到所有的段，也只有通过该表才能实现处理器基于段的保护。</p>
+<p><strong>LDT</strong>：Local Descriptor Table，局部描述符表，存放局部的段描述符的数组，可以有多份，当前的LDT基址存放在LDTR中。另外，每一份LDT都要在GDT中有一个描述符（说明一个LDT本身也是内存中的一个段）。通过LDT可以获取当前任务的相关段。</p>
+<p><strong>IDT</strong>：Interrupt Descriptor Table，中断描述符，存放处理器的各个中断的地方。</p>
+<h2 id="7-TR寄存器"><a href="#7-TR寄存器" class="headerlink" title="7. TR寄存器"></a>7. TR寄存器</h2><p>存放当前TSS的基址。<br>CPU处理多任务的时候，需要在各个任务之间切换，保存当前任务状态，加载下一个任务的状态，然后执行下一个任务，状态保存在多个地方，其中栈的相关信息保存在TSS中。</p>
+<hr>
+<p>参考：</p>
+<ol>
+<li>《Intel® 64 and IA-32 Architectures Software Developer’s Manual<br>Combined Volumes: 1, 2A, 2B, 2C, 2D, 3A, 3B, 3C, 3D and 4》</li>
+<li>《Understanding the Linux Kernel 3rd Edition》</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2017/08/12/IA32%E5%B8%B8%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8/" title="IA32常用寄存器">https://suntus.github.io/2017/08/12/IA32常用寄存器/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/os/" rel="tag"># os</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/08/12/%E3%80%8AOrange-s%EF%BC%9A%E4%B8%80%E4%B8%AA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%AE%9E%E7%8E%B0%E3%80%8B/" rel="prev" title="《Orange's：一个操作系统的实现》">
+      <i class="fa fa-chevron-left"></i> 《Orange's：一个操作系统的实现》
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/08/12/%E3%80%8A%E9%A2%98%E9%BE%99%E9%98%B3%E5%8E%BF%E9%9D%92%E8%8D%89%E6%B9%96%E3%80%8B%E2%80%94%E2%80%94%E5%94%90%E6%B8%A9%E5%A6%82/" rel="next" title="《题龙阳县青草湖》  ——唐温如">
+      《题龙阳县青草湖》  ——唐温如 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%8B%E5%86%85%E6%A0%B8%E4%B9%8B%E5%89%8D%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%E4%B8%80%E4%BA%9B%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%E7%9A%84%E7%9F%A5%E8%AF%86%EF%BC%8C%E6%9C%AC%E6%96%87%E4%BB%8B%E7%BB%8DIA32%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%A0%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E3%80%82-%E9%80%9A%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%9AEAX-EBX-ECX-EDX-ESI-EDI-EBP-ESP-%E6%AE%B5%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%9ACS-DS-ES-FS-GS-SS-EFLAGES%E5%AF%84%E5%AD%98%E5%99%A8-EIP%E5%AF%84%E5%AD%98%E5%99%A8-%E6%8E%A7%E5%88%B6%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%9ACR0-CR1-CR2-CR3-CR4-GDTR-LDTR-IDTR%E5%AF%84%E5%AD%98%E5%99%A8-TR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">看内核之前需要了解一些体系结构相关的知识，本文介绍IA32常用的几个寄存器。- 通用寄存器：EAX,EBX,ECX,EDX,ESI,EDI,EBP,ESP- 段寄存器：CS,DS,ES,FS,GS,SS- EFLAGES寄存器- EIP寄存器- 控制寄存器：CR0,CR1,CR2,CR3,CR4- GDTR,LDTR,IDTR寄存器- TR寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E9%80%9A%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">1. 通用寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%AE%B5%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">3.</span> <span class="nav-text">2. 段寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-EFLAGS"><span class="nav-number">4.</span> <span class="nav-text">3. EFLAGS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-EIP%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text">4. EIP寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%8E%A7%E5%88%B6%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">6.</span> <span class="nav-text">5. 控制寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-GDTR-LDTR-IDTR"><span class="nav-number">7.</span> <span class="nav-text">6. GDTR,LDTR,IDTR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-TR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">8.</span> <span class="nav-text">7. TR寄存器</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="对TLS1.3中用到的ECC相关算法，比如ECDH, ECDSA, X25519等进行一下基础说明，起码知道group、curve之类的是什么意思。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ECC算法">
+<meta property="og:url" content="https://suntus.github.io/2019/05/31/ECC%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="对TLS1.3中用到的ECC相关算法，比如ECDH, ECDSA, X25519等进行一下基础说明，起码知道group、curve之类的是什么意思。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-05-31T11:04:38.000Z">
+<meta property="article:modified_time" content="2021-06-20T15:52:05.082Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tls">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2019/05/31/ECC%E7%AE%97%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ECC算法 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2019/05/31/ECC%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ECC算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-05-31 19:04:38" itemprop="dateCreated datePublished" datetime="2019-05-31T19:04:38+08:00">2019-05-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-20 23:52:05" itemprop="dateModified" datetime="2021-06-20T23:52:05+08:00">2021-06-20</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>对TLS1.3中用到的ECC相关算法，比如ECDH, ECDSA, X25519等进行一下基础说明，起码知道group、curve之类的是什么意思。</p>
+<span id="more"></span>
+
+<h2 id="1-椭圆曲线-Elliptic-Curves"><a href="#1-椭圆曲线-Elliptic-Curves" class="headerlink" title="1. 椭圆曲线(Elliptic Curves)"></a>1. 椭圆曲线(Elliptic Curves)</h2><p>椭圆曲线的Weierstrass标准形式：<br>$$ y^2 &#x3D; x^3 + ax + b $$<br>$$ 4a^3 + 27b^2 !&#x3D; 0 $$</p>
+<p>定义0表示椭圆曲线上的无限远点，这样组成的椭圆曲线是这样的：<br>$$ \left{ (x, y) \in \mathbb{R}^2\ |\ y^2 &#x3D; x^3 + ax + b,\ 4 a^3 + 27 b^2 \ne 0 \right}\ \cup\ \left{ 0 \right} $$</p>
+<h2 id="2-群-Group"><a href="#2-群-Group" class="headerlink" title="2. 群(Group)"></a>2. 群(Group)</h2><p>$\mathbb{G}$是一个集合，在集合中定义一个对两个元素的操作，记为<code>&quot;加&quot;</code>,用<code>+</code>表示，集合中两个元素a和b,<code>&quot;加&quot;</code>操作表示为$a+b$，如果$a+b$这个操作满足一下4个特性，$\mathbb{G}$就是一个群(Group):</p>
+<ul>
+<li>闭合性closure: a, b是$\mathbb{G}$的元素，$a+b$也是；</li>
+<li>结合性associativity: $(a+b)+c&#x3D;a+(b+c)$</li>
+<li>存在单位元identity element 0, 有$a+0&#x3D;0+a&#x3D;a$</li>
+<li>每个元素都有一个相反数，对每个元素a都存在b使$a+b&#x3D;0$, b就是a的相反数，可以表示为$-a$</li>
+</ul>
+<p>如果再加一条特性：</p>
+<ul>
+<li>交换律：$a+b&#x3D;b+a$<br>这样的群就要阿贝尔群(Abelian Group)</li>
+</ul>
+<p>这个”加+”操作，也可以用”乘*”来表示，这个操作只是表示集合上两个元素的一个操作，此时</p>
+<ul>
+<li>$a \cdot b$ 也是 $\mathbb{G}$ 上的一个元素；</li>
+<li>$(a \cdot b) \cdot c&#x3D;a \cdot (b \cdot c)$</li>
+<li>单位元1， $a \cdot 1&#x3D;1 \cdot a&#x3D;a$</li>
+<li>$a \cdot b&#x3D;1$， b可以表示为$a^{-1}$</li>
+</ul>
+<p>在讨论ECC的时候，一些旧的文献通常用<code>+</code>，新的通常用<code>*</code>，另外，在密码学中讨论加密强度的时候，通常按照指数(幂)、读书来讨论，比如长听到取离散对数问题。本文都用<code>+</code>来表示。</p>
+<h2 id="3-椭圆曲线上的群"><a href="#3-椭圆曲线上的群" class="headerlink" title="3. 椭圆曲线上的群"></a>3. 椭圆曲线上的群</h2><p>可以定义一个在椭圆曲线上的群$\mathbb{G}$：</p>
+<ul>
+<li>一个椭圆曲线上的点是$\mathbb{G}$中的元素;</li>
+<li>单位元定义为无穷远处的点0</li>
+<li>一个点P的相反数是关于x轴对称的点</li>
+<li><code>加</code>定义为： $P, Q, R$是斜率相同的点(一条直线跟椭圆曲线相交的3个点)，有$P+Q+R&#x3D;0$</li>
+</ul>
+<p>这样就有$R&#x3D;-(P+Q)$，如果要用计算机去算，需要转换成代数的方法计算R的x,y坐标<br>记<br>$$P&#x3D;(x_P, y_P), Q&#x3D;(x_Q, y_Q), R&#x3D;(x_R, y_R)$$<br>则:<br>$$m &#x3D; \frac{y_P - y_Q}{x_R - x_Q}$$<br>$$x_R &#x3D; m^2 - x_P - x_Q$$<br>$$y_R &#x3D; y_P + m(x_R - x_P)$$<br>这样，就能根据$P, Q$算出$R$了。</p>
+<h2 id="4-标量乘法"><a href="#4-标量乘法" class="headerlink" title="4. 标量乘法"></a>4. 标量乘法</h2><p>$$nP &#x3D; \underbrace{P + P + \cdots + P}_{n\ \text{times}}$$<br>叫做<code>标量乘法</code>.<br>有个快速算法：<code>double and add</code>，<br>比如 $n &#x3D; 151$， 用2进制表示为$10010111b$，然后<br>$$\begin{array}{rcl}<br>    151 &amp; &#x3D; &amp; 1 \cdot 2^7 + 0 \cdot 2^6 + 0 \cdot 2^5 + 1 \cdot 2^4 + 0 \cdot 2^3 + 1 \cdot 2^2 + 1 \cdot 2^1 + 1 \cdot 2^0 \<br>    &amp; &#x3D; &amp; 2^7 + 2^4 + 2^2 + 2^1 + 2^0<br>\end{array}$$<br>就可以很方便的用计算机去算了。</p>
+<h2 id="5-对数"><a href="#5-对数" class="headerlink" title="5. 对数"></a>5. 对数</h2><p>对$Q&#x3D;nP$,如果知道$n$和$P$，可以很容易算出$Q$(double and add)， 但如果知道$Q$和$P$，却很难算出$n$——数学上没有很快的算法。<br>如果用<code>*</code>来表示，那就是$Q&#x3D;P^n$,知道$Q$和$P$，很难算出指数$n$，这就是取对数难题，也是密码学中的基石。</p>
+<h2 id="6-有限域-Finite-Field"><a href="#6-有限域-Finite-Field" class="headerlink" title="6. 有限域(Finite Field)"></a>6. 有限域(Finite Field)</h2><p>有限域，就是域中元素是有限个数的域，整个实数域是无限的，如果对实数取$ \text{ mod }  p$，就可以得到元素个数为p的有限域了，<br>域中多一个操作乘，符合结合律：$x \cdot (y+z)&#x3D;x \cdot y+x \cdot z$</p>
+<p>先了解mod运算<br>$$(18+9)  \text{ mod }  23&#x3D;4$$<br>$$-5  \text{ mod }  23 &#x3D; 18$$<br>$$9^{-1}  \text{ mod }  23 &#x3D; 18$$<br>因为在域23上，$9^{-1} &#x3D; 18$(因为 $9 \cdot 18  \text{ mod }  23 &#x3D; 1, 9 \cdot 9{^-1} mod 23 &#x3D; 1$, 域上1个元素有且只有1个倒数，所以$9^{-1} &#x3D; 18$，9的倒数是18)</p>
+<h2 id="7-mod-p-除法"><a href="#7-mod-p-除法" class="headerlink" title="7. mod p 除法"></a>7. mod p 除法</h2><p>要计算$\frac{x}{y}$，需要计算$x \cdot y^{^-1}$,也是就是我们要先找到y的倒数，然后再乘上x<br>取一个数的倒数用扩展欧几里得算法可以很简单算出来。</p>
+<h2 id="8-有限域-GF-p-中的椭圆曲线"><a href="#8-有限域-GF-p-中的椭圆曲线" class="headerlink" title="8. 有限域$GF(p)$中的椭圆曲线"></a>8. 有限域$GF(p)$中的椭圆曲线</h2><p>先前的椭圆曲线是实数域上的，现在挑选其中在有限域$GF(p)$上的点，就组成了椭圆曲线上的有限域——或者有限域上的椭圆曲线。</p>
+<h2 id="9-有限域上的椭圆曲线的加法"><a href="#9-有限域上的椭圆曲线的加法" class="headerlink" title="9. 有限域上的椭圆曲线的加法"></a>9. 有限域上的椭圆曲线的加法</h2><p>还是$P+Q+R&#x3D;0$，但$P，Q, R$在有限域上怎么斜率相同呢？——在一条直线上即可。但有限域上的直线跟是实数域上有些不同，只要有限域中的点$(x,y)$符合$ax+by+c ( \text{ mod }  p) &#x3D; 0 ( \text{ mod }  p)$，就说这些点在同一条直线上——这样的直线画出来可能有很多并行的条，都算同一条直线。</p>
+<p>这样，有限域上的加法用计算机计算，公式是这样的<br>$$x_R &#x3D; (m^2-x_P-x_Q)  \text{ mod }  p$$<br>$$y_R &#x3D; [y_P + m(x_R-x_P)]  \text{ mod }  p &#x3D; [y_Q + m(x_R-x_Q)]  \text{ mod }  p$$</p>
+<p>这样就可以用计算机计算$P + Q &#x3D; R$了</p>
+<h2 id="10-一个椭圆曲线群的阶order"><a href="#10-一个椭圆曲线群的阶order" class="headerlink" title="10. 一个椭圆曲线群的阶order"></a>10. 一个椭圆曲线群的阶<code>order</code></h2><p>首先，一个群上的点的元素个数，叫做这个群的阶。<br>定义在一个有限域上的一个椭圆曲线的元素个数是多少呢？有个快速的算法可以计算: <code>Schoof’s algorithm</code>。可以方便计算椭圆曲线在有限域上的元素个数。</p>
+<h2 id="11-标量乘法和曲线子群"><a href="#11-标量乘法和曲线子群" class="headerlink" title="11. 标量乘法和曲线子群"></a>11. 标量乘法和曲线子群</h2><p>标量乘法是这样的<br>$$n P &#x3D; \underbrace{P + P + \cdots + P}_{n\ \text{times}}$$<br>但在有限域上，我们可以想象出<br>$1P$<br>$2P$<br>$3P$<br>$…$<br>得出的结果最终会形成一个循环，而且循环中的所有结果都在有限域上，这样，我们根据$P$生成了一个曲线子群，$P$就叫做这个子群的生成因子后者基准点。曲线子群就是ECC和其他加密系统的基础。</p>
+<p>现在我们梳理一下：</p>
+<ul>
+<li>一开始我们有实数群$\mathbb{G}$,</li>
+<li>我们取椭圆曲线，得出椭圆曲线上的点，形成一个小一点的群</li>
+<li>接着定义有限域，然后将椭圆曲线限制到有限域上，这样框出来的椭圆曲线上的点，形成一个更小一点的群</li>
+<li>最后，我们取其中一个点作为基准点，取基准点的向量倍数，生成一个再小一点的子群，这个群，就是我们的ECC要用的群了。</li>
+</ul>
+<h2 id="12-子群的阶"><a href="#12-子群的阶" class="headerlink" title="12. 子群的阶"></a>12. 子群的阶</h2><p>我们想知道，由基准点$P$生成的子群的阶是多少。现在不能用<code>Schoof’s</code>算法，它是工作在整个椭圆曲线上，而不是其中的一个子群。<br>要算子群的阶，需要知道：</p>
+<ol>
+<li>子群的阶就是子群中的元素个数，等价于 $nP&#x3D;0$，其$n$是正整数，且$n$是其中最小的1个，这个$n$就是子群的阶。</li>
+<li>根据拉格朗日定理，子群$P$的阶，是父群阶的一个因子，比如一个椭圆曲线有$N$个元素，它的一个子群有$n$个元素，$n$能整除$N$</li>
+</ol>
+<p>接着我们开始算子群P的阶：</p>
+<ol>
+<li>用<code>Schoof&#39;s</code>算法计算椭圆曲线的阶$N$</li>
+<li>找出$N$的所有因子</li>
+<li>对$N$的每一个因子$n$，计算$nP$</li>
+<li>找出使$nP&#x3D;0$的最小的$n$，这个$n$就是子群的阶.</li>
+</ol>
+<p>比如对$GP(37)$有限域上的椭圆曲线 $y^2 &#x3D; x^3 - x + 3$,  它的阶$N&#x3D;42$，子群可能有的阶$n &#x3D; 1, 2, 3, 6, 7, 14, 21, 42$,  如果我们取基准点$P &#x3D; (2, 3)$，那么<br>$$P !&#x3D; 0, 2P !&#x3D;0, 3P !&#x3D; 0, 6P!&#x3D; 0, 7P&#x3D;0$$<br>那么就说，$P$的阶是$n &#x3D; 7$</p>
+<h2 id="13-找一个基准点"><a href="#13-找一个基准点" class="headerlink" title="13. 找一个基准点"></a>13. 找一个基准点</h2><p>对ECC算法来说，我们希望子群拥有更高的阶。<br>我们先计算椭圆曲线的阶$N$，找一个比较大的因子$n$，然后根据$n$找出一个合适的基准点。<br>也就是说，我们先找子群的阶，再根据子群的阶找其中的基准点。而不是先找基准点，再算子群的阶。</p>
+<p>再加一个信息：根据拉格朗日定理，$h &#x3D; N&#x2F;n$肯定是个整数（因为$n$是$N$的一个因子）。这个$h$叫做子群的协因子(cofactor).</p>
+<p>对一个椭圆曲线上的任意一点来说， $NP &#x3D; 0$,因为$N$总是任何一个$n$的倍数；<br>也就是 $n(hP) &#x3D; 0$<br>取$n$是素数，点$G &#x3D; hP$生成一个阶为$n$的子群。<br>这样，我们就根据选择的阶$n$，算出了一个基准点。</p>
+<h2 id="14-离散对数"><a href="#14-离散对数" class="headerlink" title="14. 离散对数"></a>14. 离散对数</h2><p>在连续的椭圆曲线上，我们如果知道$P$和$Q$很难算出$k$，使得$Q &#x3D; kP$，<br>那么，<br>在有限域上的椭圆曲线，这个也是很多难的，叫做椭圆曲线的离散对数问题。</p>
+<p>ECC有意思的一点是，这个离散对数问题“更难”，也就是要达到相同的加密强度，$k$的位数可以更少。这也是有RSA，还有开发ECC的原因。</p>
+<h2 id="15-定义一个ECC的域需要的参数"><a href="#15-定义一个ECC的域需要的参数" class="headerlink" title="15. 定义一个ECC的域需要的参数"></a>15. 定义一个ECC的域需要的参数</h2><ol>
+<li>有限域的大小是个素数$p$</li>
+<li>椭圆曲线中的系数$a,b$</li>
+<li>子群基准点$G$</li>
+<li>子群的阶$n$</li>
+<li>子群的协因子$h$</li>
+</ol>
+<p>所以，定义一个我们ECC需要的问题域需要6个因子$（p, a, b , G, n, h）$</p>
+<h2 id="16-随机曲线"><a href="#16-随机曲线" class="headerlink" title="16. 随机曲线"></a>16. 随机曲线</h2><p>并不是所有的椭圆曲线上的离散对数都那么难，比如$p &#x3D; hn$的椭圆曲线就可以用<code>Smart</code>方法攻击。而且我们也不知道还有没有哪些椭圆曲线的攻击方法我们没发现。<br>一个更具密码学强度的方法是，我们选一个随机因子$S$，对$S$取hash，然后衍生出$a、b$或者$G$，或者两者都用$S$生成，那么攻击者就不知道我们用的是什么参数，会更安全些。<br>但是，NIST规定了一些$S$，我们也不知道$S$是不是精心挑选的。。。。。。</p>
+<h2 id="17-ECC算法"><a href="#17-ECC算法" class="headerlink" title="17. ECC算法"></a>17. ECC算法</h2><ol>
+<li>私钥就是从$[1,n-1]$($n$是子群的阶)中随机挑选的一个整数$d$</li>
+<li>公钥就是点$H &#x3D; dG$($G$是子群的基准点)</li>
+</ol>
+<p>知道$d$和$G$，算出$H$很简单，但反过来就很难。<br>这是个非对称加密算法，基于此，衍生出两个算法ECDH（用于密钥交换），ECDSA（用于签名）</p>
+<h2 id="18-ECDH"><a href="#18-ECDH" class="headerlink" title="18. ECDH"></a>18. ECDH</h2><ol>
+<li>Alice和Bob各自生成自己的公私钥，Alice的私钥是$d_A$, 公钥是$H_A &#x3D; d_A \cdot G$，Bob的是$d_B$和$H_B&#x3D;d_B \cdot G$。注意Alice和Bob用的是同一个有限域上的同一个椭圆曲线的同一个基准点$G$</li>
+<li>Alice和bob在一个未加密的通道上交换公钥$H_A$和$H_B$,</li>
+<li>Alice计算$S &#x3D; d_A \cdot H_B$, Bob计算$S &#x3D; d_B \cdot H_A$, 两个计算出来的$S$是一样的</li>
+</ol>
+<p>这样Alice和Bob就得出了同一个$S$，就可用于对称加密了。</p>
+<p>一个例子</p>
+<ul>
+<li>$p$ &#x3D; 0xffffffff ffffffff ffffffff ffffffff ffffffff ffffffff fffffffe fffffc2f</li>
+<li>$a$ &#x3D; 0</li>
+<li>$b$ &#x3D; 7</li>
+<li>$x_G$ &#x3D; 0x79be667e f9dcbbac 55a06295 ce870b07 029bfcdb 2dce28d9 59f2815b 16f81798</li>
+<li>$y_G$ &#x3D; 0x483ada77 26a3c465 5da4fbfc 0e1108a8 fd17b448 a6855419 9c47d08f fb10d4b8</li>
+<li>$n$ &#x3D; 0xffffffff ffffffff ffffffff fffffffe baaedce6 af48a03b bfd25e8c d0364141</li>
+<li>$h$ &#x3D; 1<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Curve: secp256k1</span><br><span class="line">Alice&#x27;s private key: 0xe32868331fa8ef0138de0de85478346aec5e3912b6029ae71691c384237a3eeb</span><br><span class="line">Alice&#x27;s public key: (0x86b1aa5120f079594348c67647679e7ac4c365b2c01330db782b0ba611c1d677, 0x5f4376a23eed633657a90f385ba21068ed7e29859a7fab09e953cc5b3e89beba)</span><br><span class="line">Bob&#x27;s private key: 0xcef147652aa90162e1fff9cf07f2605ea05529ca215a04350a98ecc24aa34342</span><br><span class="line">Bob&#x27;s public key: (0x4034127647bb7fdab7f1526c7d10be8b28174e2bba35b06ffd8a26fc2c20134a, 0x9e773199edc1ea792b150270ea3317689286c9fe239dd5b9c5cfd9e81b4b632)</span><br><span class="line">Shared secret: (0x3e2ffbc3aa8a2836c1689e55cd169ba638b58a3a18803fcf7de153525b28c3cd, 0x43ca148c92af58ebdb525542488a4fe6397809200fe8c61b41a105449507083)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>PS：每次都生成新的公私钥，就叫ECDHE，E表示Ephermeral，瞬时的，短暂的</p>
+<h2 id="19-ECDSA"><a href="#19-ECDSA" class="headerlink" title="19. ECDSA"></a>19. ECDSA</h2><p>Alice使用私钥$d_A$签名消息，Bob使用Alice的公钥$H_A$验签。<br>ECDSA需要对消息的摘要进行签名，而不是对任意长度的消息签名。消息摘要需要截断到跟子群的阶$n$一样长度的位数，截断的摘要用作为一个整数$z$</p>
+<p>签名:</p>
+<ol>
+<li>从$[1,n-1]$($n$是子群的阶)中随机选择一个整数$k$</li>
+<li>计算$P&#x3D;kG$（$G$是子群的基准点）</li>
+<li>计算$r &#x3D; x_P  \text{ mod }  n$($x_P$是$P$的x坐标)</li>
+<li>如果$r&#x3D;0$，重新选择$k$</li>
+<li>计算$s &#x3D; k^{-1}(z + r \cdot d_A)  \text{ mod }  n$（$d_A$是Alice的私钥，$k^{-1}$是$k$的乘法倒数 mod n）</li>
+<li>如果$s&#x3D;0$，重新选择$k$</li>
+</ol>
+<p>$(r,s)$组成的对儿就是签名</p>
+<p>验签：</p>
+<ol>
+<li>计算$u_1 &#x3D; s^{-1} \cdot z  \text{ mod }  n$</li>
+<li>计算$u_2 &#x3D; s^{-1} \cdot r  \text{ mod }  n$</li>
+<li>计算点$P &#x3D; u_1G+u_2H_A$<br>如果$r &#x3D; x_P \text{ mod } n$， 就说明签名正确</li>
+</ol>
+<p>例子</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Curve: secp256k1</span><br><span class="line">Private key: 0x9f4c9eb899bd86e0e83ecca659602a15b2edb648e2ae4ee4a256b17bb29a1a1e</span><br><span class="line">Public key: (0xabd9791437093d377ca25ea974ddc099eafa3d97c7250d2ea32af6a1556f92a, 0x3fe60f6150b6d87ae8d64b78199b13f26977407c801f233288c97ddc4acca326)</span><br><span class="line"></span><br><span class="line">Message: b&#x27;Hello!&#x27;</span><br><span class="line">Signature: (0xddcb8b5abfe46902f2ac54ab9cd5cf205e359c03fdf66ead1130826f79d45478, 0x551a5b2cd8465db43254df998ba577cb28e1ee73c5530430395e4fba96610151)</span><br><span class="line">Verification: signature matches</span><br><span class="line"></span><br><span class="line">Message: b&#x27;Hi there!&#x27;</span><br><span class="line">Verification: invalid signature</span><br><span class="line"></span><br><span class="line">Message: b&#x27;Hello!&#x27;</span><br><span class="line">Public key: (0xc40572bb38dec72b82b3efb1efc8552588b8774149a32e546fb703021cf3b78a, 0x8c6e5c5a9c1ea4cad778072fe955ed1c6a2a92f516f02cab57e0ba7d0765f8bb)</span><br><span class="line">Verification: invalid signature</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/">https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/ </a>: 这个系列非常好，基本是翻译了这篇原文.</li>
+<li><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc8422">RFC8442-Elliptic Curve Cryptography (ECC) Cipher Suites for Transport Layer Security (TLS) Versions 1.2 and Earlier</a>: 定义了TLS1.2及以前的协议使用的ECC曲线都有哪些，比如X25591,secp256r1等.</li>
+<li><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc7748">RFC7748-Elliptic Curves for Security</a>: 具体定义了X25519,X448曲线算法.</li>
+<li><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc6090">RFC6090-Fundamental Elliptic Curve Cryptography Algorithms</a>: ECC基本定义.</li>
+<li><a target="_blank" rel="noopener" href="https://wiki.openssl.org/index.php/Elliptic_Curve_Cryptography">Elliptic Curve Cryptography</a>: openssl对ECC的解释，简单明了，值得一看</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2019/05/31/ECC%E7%AE%97%E6%B3%95/" title="ECC算法">https://suntus.github.io/2019/05/31/ECC算法/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tls/" rel="tag"># tls</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/05/09/HKDF%E7%AE%97%E6%B3%95/" rel="prev" title="HKDF算法">
+      <i class="fa fa-chevron-left"></i> HKDF算法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/06/17/RSA%E7%AE%97%E6%B3%95/" rel="next" title="RSA算法">
+      RSA算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF-Elliptic-Curves"><span class="nav-number">1.</span> <span class="nav-text">1. 椭圆曲线(Elliptic Curves)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%BE%A4-Group"><span class="nav-number">2.</span> <span class="nav-text">2. 群(Group)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E4%B8%8A%E7%9A%84%E7%BE%A4"><span class="nav-number">3.</span> <span class="nav-text">3. 椭圆曲线上的群</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%A0%87%E9%87%8F%E4%B9%98%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">4. 标量乘法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%AF%B9%E6%95%B0"><span class="nav-number">5.</span> <span class="nav-text">5. 对数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E6%9C%89%E9%99%90%E5%9F%9F-Finite-Field"><span class="nav-number">6.</span> <span class="nav-text">6. 有限域(Finite Field)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-mod-p-%E9%99%A4%E6%B3%95"><span class="nav-number">7.</span> <span class="nav-text">7. mod p 除法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E6%9C%89%E9%99%90%E5%9F%9F-GF-p-%E4%B8%AD%E7%9A%84%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF"><span class="nav-number">8.</span> <span class="nav-text">8. 有限域$GF(p)$中的椭圆曲线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-%E6%9C%89%E9%99%90%E5%9F%9F%E4%B8%8A%E7%9A%84%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E7%9A%84%E5%8A%A0%E6%B3%95"><span class="nav-number">9.</span> <span class="nav-text">9. 有限域上的椭圆曲线的加法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-%E4%B8%80%E4%B8%AA%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E7%BE%A4%E7%9A%84%E9%98%B6order"><span class="nav-number">10.</span> <span class="nav-text">10. 一个椭圆曲线群的阶order</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-%E6%A0%87%E9%87%8F%E4%B9%98%E6%B3%95%E5%92%8C%E6%9B%B2%E7%BA%BF%E5%AD%90%E7%BE%A4"><span class="nav-number">11.</span> <span class="nav-text">11. 标量乘法和曲线子群</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-%E5%AD%90%E7%BE%A4%E7%9A%84%E9%98%B6"><span class="nav-number">12.</span> <span class="nav-text">12. 子群的阶</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#13-%E6%89%BE%E4%B8%80%E4%B8%AA%E5%9F%BA%E5%87%86%E7%82%B9"><span class="nav-number">13.</span> <span class="nav-text">13. 找一个基准点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#14-%E7%A6%BB%E6%95%A3%E5%AF%B9%E6%95%B0"><span class="nav-number">14.</span> <span class="nav-text">14. 离散对数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#15-%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AAECC%E7%9A%84%E5%9F%9F%E9%9C%80%E8%A6%81%E7%9A%84%E5%8F%82%E6%95%B0"><span class="nav-number">15.</span> <span class="nav-text">15. 定义一个ECC的域需要的参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#16-%E9%9A%8F%E6%9C%BA%E6%9B%B2%E7%BA%BF"><span class="nav-number">16.</span> <span class="nav-text">16. 随机曲线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#17-ECC%E7%AE%97%E6%B3%95"><span class="nav-number">17.</span> <span class="nav-text">17. ECC算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#18-ECDH"><span class="nav-number">18.</span> <span class="nav-text">18. ECDH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#19-ECDSA"><span class="nav-number">19.</span> <span class="nav-text">19. ECDSA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="nav-number">20.</span> <span class="nav-text">参考：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

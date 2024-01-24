@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="第二章——socket和模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="zmq中文指南_2">
+<meta property="og:url" content="https://suntus.github.io/2014/10/14/zmq%E4%B8%AD%E6%96%87%E6%8C%87%E5%8D%97-2/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="第二章——socket和模式">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://suntus.github.io/img/zmq9.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq10.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq11.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq12.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq13.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq14.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq15.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq16.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq17.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq18.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq19.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq20.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq21.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq22.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq23.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq24.png">
+<meta property="og:image" content="https://suntus.github.io/img/zmq25.png">
+<meta property="article:published_time" content="2014-10-14T08:48:39.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.609Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tr">
+<meta property="article:tag" content="zmq">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://suntus.github.io/img/zmq9.png">
+
+<link rel="canonical" href="https://suntus.github.io/2014/10/14/zmq%E4%B8%AD%E6%96%87%E6%8C%87%E5%8D%97-2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>zmq中文指南_2 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2014/10/14/zmq%E4%B8%AD%E6%96%87%E6%8C%87%E5%8D%97-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          zmq中文指南_2
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-10-14 16:48:39" itemprop="dateCreated datePublished" datetime="2014-10-14T16:48:39+08:00">2014-10-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="第二章——socket和模式"><a href="#第二章——socket和模式" class="headerlink" title="第二章——socket和模式"></a>第二章——socket和模式</h2><span id="more"></span>
+
+
+<p>　　在第一章我们稍微接触了一下zmq，熟悉了zmq一些主要模式的例子：request-reply,pub-sub和pipeline.在这章我们开始学习怎么把这些工具用到实际编程中。<br>　　我们会讲到：</p>
+<ul>
+<li>怎么创建zmq socket，并用其工作。</li>
+<li>怎么在socket上发送和接收message。</li>
+<li>怎么用zmq的异步IO模型构建自己的app；</li>
+<li>怎么在一个线程中处理多个sockets</li>
+<li>怎么正确处理致命和非致命的错误。</li>
+<li>怎么处理像ctrl-c中断信号；</li>
+<li>怎么干净的退出一个zmq程序；</li>
+<li>怎么检查zmq程序内存泄漏；</li>
+<li>怎么发送和接收多帧信息；</li>
+<li>怎么在网络中中转信息；</li>
+<li>怎么构建一个简单的消息中间件；</li>
+<li>怎么用zmq写多线程应用；</li>
+<li>怎么在线程间用zmq；</li>
+<li>怎么在网络节点间使用zmq进行同步；</li>
+<li>怎么对pub-sub创建和使用信封；</li>
+<li>用HWM防止内存溢出。</li>
+</ul>
+<p><strong>socket的API</strong></p>
+<p>　　说实话，zmq做了某种替换，但我们并不对此感到愧疚。它对你来说是好的，对我们来说是不好的。Zmq奉上了一组熟悉的以socket为基础的api，这让我们花了大力气去隐藏很多消息处理细节。然而，我们努力的成果会慢慢改变你去设计和编写分布式软件的世界观。</p>
+<p>　　Socket是网络编程事实上的标准api，也很吸引人。Zmq对开发者有好的一个例子就是它用socket和message的概念而不是一些其他任意的概念。<font color="red">Kudos to Martin Sustrik for pulling this off. It turns “Message Oriented Middleware”, a phrase guaranteed to send the whole room off to Catatonia, into “Extra Spicy Sockets!”, which leaves us with a strange craving for pizza and a desire to know more.(这段不会翻译了:( )</font></p>
+<p>　　像美味的菜一样，zmq的sockets很容易消化。跟BSD sockets一样，zmq的sockets生命期有4部分：</p>
+<ul>
+<li>创建销毁socket，协同作用组成socket的这一生（<code>zmq_socket(), zmq_close()</code>）。</li>
+<li>操作socket，配置或者读取配置(<code>zmq_setscokopt(), zmq_getsockopt()</code>)。</li>
+<li>创建zmq的网络连接，把sockets嵌入到网络拓扑结构中(<code>zmq_bind(), zmq_connect()</code>)。</li>
+<li>使用socket接收发送message(<code>zmq_msg_send(), zmq_msg_recv()</code>)。</li>
+</ul>
+<p>　　注意sockets总是<code>void</code>指针，message（我们很快就会看到了）总是结构体。所以在C中你就按原样传入sockets，但你需要在所有操作message的函数(比如<code>zmg_msg_send(), zmq_msg_recv()</code>)中传入message的地址。要记住是很简单的，“在zmq中，所有的socket都是我们的”， 但message全都是你自己的。</p>
+<p>　　创建、销毁和配置sockets可以按照你对任何对象期望的那样工作，但记住zmq是异步、可扩展的框架。这对我们如何把socket接入到网络拓扑结构和之后我们怎么使用socket都有影响</p>
+<p><strong>把socket嵌入拓扑结构中</strong></p>
+<p>　　为了在两个节点之间创建连接，你需要在一个节点用<code>zmq_bind()</code>，在另一个节点用<code>zmq_connect()</code>。一般来说，用<code>zmq_bind()</code>的一端是“server”，有个公开的网络地址，用<code>zmq_connect()</code>的一端是“client”，有个未公开或者任意的网络地址。因此我们说我们“绑定socket到一个端点上”和“连接一个socket到一个端点上”，这个“端点”就是个公开的网络地址。</p>
+<p>　　zmq的连接情况有点儿不同于经典的TCP连接。主要不同在于：</p>
+<ul>
+<li>zmq可以使用任意的传输方式（inproc, ipc, tcp, pgm或者epgm）,查看<code>zmq_inproc(),zmq_ipc(),zmq_tcp(),zmq_pgm(),zmq_epgm()</code>。</li>
+<li>一个socket可以又很多连进和很多连出。</li>
+<li>没有<code>zmq_accept()</code>方法。当一个socket被绑定到一个端口上时，它就自动开始accept连接了。</li>
+<li>网络连接自动发生在后台，如果网络断开，zmq会自动重连（比如说对端掉线后又上线）。</li>
+<li>你自己的应用的代码没办法直接使用zmq的连接，他们都被封装到socket中了。</li>
+</ul>
+<p>　　许多架构都遵循client&#x2F;server模式：server是相对固定的；client则大部分是动态的，他们可能很多时候来来去去。这涉及到定位的问题：server对client来说是可见的，但反过来就不一定。所以哪个节点用<code>zmq_bind()</code>(server),哪个节点用<code>zmq_connect()</code>(client)就很明显了。当然这也依赖于你使用的socket种类和一些不常用的网络架构。我们稍后会看不同的socket类型。</p>
+<p>　　现在，假设我们先于server启动client。在传统的网络编程中，我们会得到个大红叉，但zmq会让我们随意启动关闭client。一旦client节点做了<code>zmq_connect()</code>的操作，连接就存在了，并且该节点可以开始往socket中写数据了。有些情况下（希望在消息队列累积到丢失数据或者client阻塞发生之前）server会活过来，进行<code>zmq_bind()</code>操作，然后zmq就开始递送数据了。</p>
+<p>　　一个server节点可以绑定到很多端点上（也就是说是一个协议和地址的组合）并且它可以用一个socket做到这些。这意味着它会接收不同的传输方式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">zmq_bind(socket, &quot;tcp://*:5555&quot;);</span><br><span class="line">zmq_bind(socket, &quot;tcp://*:9999&quot;);</span><br><span class="line">zmq_bind(socket, &quot;inproc://somename&quot;);</span><br></pre></td></tr></table></figure>
+<p>　　对大多数传输方式来说，你不能重复绑定同一个端点，不像UDP的例子。然而，ipc传输确实会让一个进程绑定到一个先前进程使用过的端点上。这意味着它允许进程在崩溃后恢复。<br>　　尽管zmq努力让哪端绑定(bind)哪端连接(connect)不那么明显，但它们确实不同。我们稍后会更详细的查看这些不同。你需要首先注意的是“servers”在你的拓扑结构中是相对固定的部分，“clients”则是那些经常变动、连接其它端点的部分，然后围绕这个模型去设计你的应用。</p>
+<p>　　socket有不同的类型。socket的类型定义了socket的语义，规定了向前向后中继数据或者组建队列的准则。你可以把特定类型的socket连接起来，比如连接一个publisher socket和一个subscriber socket。sockets共同工作在“消息模式”(messaging patterns)中。我们稍后会详细讲到。</p>
+<p>　　使用不同的方式连接socket给了zmq作为消息队列系统的基本能力。其上则有不同的层，比如说代理。但从本质上来说用zmq设计你的网络架构就像孩子搭积木一样。</p>
+<p><strong>发送和接收message</strong></p>
+<p>　　你需要用<code>zmq_msg_send()</code> 和 <code>zmq_msg_recv()</code>来发送和接收message。这些名字是常规的命名方式，但是zmq的I&#x2F;O模型跟传统的TCP模型有很大的不同，你需要时间来适应它。</p>
+<p><img src="/img/zmq9.png" alt="f9"></p>
+<p>　　在处理数据的时候TCP的socket和zmq的socket主要有以下的不同点：</p>
+<ul>
+<li>zmq像UDP那样传输数据，而不像TCP那样把数据当成字节流。一个zmq的message是特定长度的二进制数据。我们很快就会讨论到message；它们的设计考虑到了性能的优化并且使用了一些技巧。</li>
+<li>zmq的socket在后台线程操作I&#x2F;O。这意味着不管你的应用程序是否在忙，message都会到达本地的输入队列，也会发送到本地的输出队列。</li>
+<li>根据socket的类型，zmq的socekt有内建的1-N路由模型。</li>
+</ul>
+<p>　　<code>zmq_send()</code>操作并不会真正把message发送到连接着的socket中。它会把message加入到队列中好让I&#x2F;O线程异步的发送。除了一些特殊的情况，它不会阻塞。所以当<code>zmq_send()</code>返回时并不意味着message就发送出去了。</p>
+<p><strong>单播传输</strong></p>
+<p>　　zmq提供了一整套的单播传输(inproc, ipc, tcp)和多播传输(epgm, pgm)。多播是比较高级的技术，我们会在以后讨论到。在你清楚知道你的扇出率会使单播1-N模型失效之前不要尝试使用多播。</p>
+<p>　　大多数情况下使用tcp协议，该tcp是非连接的tcp传输。它简单可扩展并且对大多数情况来说都足够快。我们称它为非连接的是因为zmq的tcp传输在我们连接对端之前并不要求对端存在。client和server可以在任何时候绑定（bind）和连接（connect），可以随时退出加入，这些对应用程序来说都是透明的。</p>
+<p>　　进程间通信也是非连接的。但它有个局限：不能在Windows下工作。通常我们用“.ipc”的扩展名命名端点名，防止和其他文件名产生冲突。在UNIX系统中，如果你使用ipc通信你需要用适当的权限去创建ipc文件，否则有不同用户ID的进程不能共享该ipc通道。同时你也必须保证所有的进程都能找到ipc文件，比如让它们跑在同一个工作目录下。</p>
+<p>　　线程间通信inproc是个面向连接的信号传输通道。它比tcp和ipc都快。这种通信方式相比tcp和ipc来说有个特殊的限制：<strong>server必须在client connect之前bind</strong>。在将来版本中可能会修改这种设定，但目前来说这个规定了你怎样使用inproc socket：我们创建并绑定一个socket，然后启动一个连接其它socket的子线程。</p>
+<p><strong>zmq不是中立的传输者</strong></p>
+<p>　　新使用zmq的人普遍问的一个问题（我也这样问过我自己）是：“我怎么用zmq写个XYZ的服务器？”比如说，“我怎么用zmq写个HTTP的服务器？”这意味着如果我们可以用传统的socket来传输HTTP的请求和回复，我们就应该可以用zmq的socket做同样的事情，仅有的变化是用zmq更快更好。</p>
+<p>　　答案通常是“这并不是zmq干的事情”。zmq不是个中立的传输者：它会在它使用的协议上组建一个帧栈。这个帧栈跟原有的用它们自己的帧栈的协议并不兼容。例如，同样是基于TCP&#x2F;IP协议，HTTP的请求跟zmq的请求相比如下：</p>
+<p><img src="/img/zmq10.png" alt="f10"></p>
+<p>　　HTTP请求用CR-LF作为它最简单的帧分隔符，但zmq用长度标识帧。所以你可以用zmq的request-reply模式写一个像HTTP的协议，但它并不是HTTP协议。</p>
+<p><img src="/img/zmq11.png" alt="f11"></p>
+<p>　　但从v3.3版本开始，zmq添加了一个叫<code>ZMQ_ROUTER_RAW</code>的socket选项，该选项让你可以不用zmq的帧栈读写数据。你可以用这个选项读写合适的HTTP请求和回复。Hardeep Singh为了能用telnet连接他的zmq应用而写了这个更新。编写这个更新仍然需要经验，但它也显示了zmq怎样为了解决新的问题而发展的。可能下个更新就是你的。</p>
+<p><strong>I&#x2F;O线程</strong></p>
+<p>　　我们说过zmq是使用后台线程处理I&#x2F;O操作的。一个I&#x2F;O线程（对所有类型的socket来说）对几乎所有的程序都是很有效的，当然，除了那些特别极端的情况。当你创建一个新的上下文（context）时，它会开启一个I&#x2F;O线程。通常一个I&#x2F;O线程可以处理每秒1G的进出数据。如果需要增加I&#x2F;O线程数，你需要在创建socket之前使用<code>zmq_ctx_set()</code>:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int io_threads = 4;</span><br><span class="line">void *context = zmq_ctx_new();</span><br><span class="line">zmq_ctx_new(context, ZMQ_IO_THREADS, io_threads);</span><br><span class="line">assert(zmq_ctx_get(context, ZMQ_IO_THREADS) == io_threads);</span><br></pre></td></tr></table></figure>
+<p>　　我们已经知道了一个socket可以同时操作几十个甚至几千个连接。这取决于你怎么设计你的应用程序。传统的网络应用对每个远程连接来说有一个进程或线程去处理，这里的每个进程或线程操作一个socket。zmq可以让你把所有的这些架构都组装到一个单独的进程，然后根据需要把它组装到你的拓扑结构中。</p>
+<p>　　如果你只是用zmq进行线程间通信（比如说没外部socket I&#x2F;O操作的多线程程序），你可以把I&#x2F;O线程数设置为0，但这并不是一个显著的性能优化，更多的只是个小技巧而已。</p>
+<p><strong>消息模式</strong></p>
+<p>　　在zmq的socket地下隐藏的是消息模式的世界。如果你有大型消息系统的背景，或者你对UDP很了解，你就会对zmq的消息模式感到熟悉。但大多数zmq的新手会感到很新奇，因为我们大多很熟悉TCP那种一对一的消息模式。</p>
+<p>　　让我们简要的回忆下zmq都能为你做些什么事。它能快速有效的传输数据块（message）。你可以把节点映射为线程、进程或者（物理）节点。zmq会提供给你单一一个的socket API使用，而你不用去关心真正的传输协议（比如进程内通信、进程间通信、TCP或者多播）是什么。在对端上线或者掉线时它会自动重连。在需要的时候它会在发送者和接收者两端都缓存message进队列。它会限制这些队列的长度以保证进程不会撑爆内存。它会处理socket的错误。它在后台线程处理所有的I&#x2F;O操作。它在节点间的通信使用无锁技术，所以它从不会有锁、等待、信号量或者死锁的出现。</p>
+<p>　　但深入进去，我们会发现zmq使用一种叫<em>“模式”</em>的概念来路由和存储messag。正是这些模式才让zmq这么智能。它们基于我们在分发数据和任务的最佳方式的工作上艰辛获得的大量经验。zmq的模式是硬编码进去的，但将来可能会有用户自定义的模式</p>
+<p>　　zmq的模式是用两个相匹配的socket类型来实现的。换句话说，为了了解zmq的模式，你需要了解socket的类型和它们是如何在一起工作的。总之这些是需要学习的；因为这些并不是那么明显就能掌握的。</p>
+<p>　　内建的zmq模式有一下这些：</p>
+<ul>
+<li><strong>Request-reply</strong>，连接一组client到一组server，这是远程过程调用（rpc）和任务分发模型。</li>
+<li><strong>Pub-sub</strong>，连接一组publisher到一组subscriber。这是数据分发模型。</li>
+<li><strong>Pipeline</strong>，连接一组有多步骤和循环的扇入扇出模型的节点。这是平行任务分发和手机模型。</li>
+<li><strong>Exclusive pair</strong>，单独连接两个socket。这个模型是用来连接一个进程内两个线程的，不要跟“正常的”socket对混淆。</li>
+</ul>
+<p>　　我们在第一章中看了前三个模型，在本章后边我们会看到exclusive pair模型。<code>zmq_socket()</code>的手册对这些模型介绍得更清楚——很值得看上几遍。下面是有效的socket组合（任意一端都能bind）：</p>
+<ul>
+<li>PUB 和 SUB</li>
+<li>REQ 和 REP</li>
+<li>REQ 和 ROUTER</li>
+<li>DEALER 和 REP</li>
+<li>DEALER 和 ROUTER</li>
+<li>DEALER 和 DEALER</li>
+<li>ROUTER 和 ROUTER</li>
+<li>PUSH 和 PULL</li>
+<li>PAIR 和 PAIR</li>
+</ul>
+<p>　　你也会看到关于XPUB和XSUB socket的说明，我们会在稍后遇到（他们是PUB和SUB的原始版本）。任何其他的组合会产生未定义和不可靠的结果，在将来的zmq版本中如果你尝试使用它们可能会得到错误的返回值。你可以而且当然可以用代码桥接不同的socket类型，比如说从一个socket类型读取数据，然后写入到另外一种socket类型。</p>
+<p><strong>高级message模型</strong></p>
+<p>　　这四个核心模型是内建在zmq中的。他们是zmq API的组成部分，由核心c++库实现，并且保证在各个版本都会提供。</p>
+<p>　　在这之上，我们添加了高级的message模型。我们基于zmq构建了这些高级模型，并且在各种不同语言中都做了实现。他们并不是核心库的一部分，并不会包含在zmq包中，只是存在与zmq社区中属于他们自己的空间内。例如我们会在第四章中遇到的Majordome模型，存在于zmq组织的GitHub的Manjordome项目中。</p>
+<p>　　这本书的目的之一是给你提供一套那样的高级模型，有小型的（如何稳妥的处理messages）也有大型的（如果构架可靠的pub-sub架构）。</p>
+<p><strong>使用messages</strong></p>
+<p>　　libzmq核心库实际上有两个API来发送和接收message。我们已经见过并且用过了<code>zmq_send()</code> 和 <code>zmq_recv()</code>。 我们仍会经常使用他们，但<code>zmq_recv()</code>在处理任意大小的message时相当麻烦：它会把message截断到你提供缓冲区大小。所以有第二类API来操作<code>zmq_msg_t</code>结构，这个操作虽然更丰富但也更困难些：</p>
+<ul>
+<li>初始化一条message： <code>zmq_msg_init(), zmq_msg_init_size(), zmq_msg_init_data()</code>。</li>
+<li>发送和接收一条message： <code>zmq_msg_send(), zmq_msg_recv()</code>。</li>
+<li>释放一条message： <code>zmq_msg_close()</code>。</li>
+<li>获取message的内容： <code>zmq_msg_data(), zmq_msg_size(), zmq_msg_more()</code>。</li>
+<li>操作message的属性： <code>zmq_msg_get(), zmq_msg_set()</code>。</li>
+<li>message复制： <code>zmq_msg_copy(), zmq_msg_move()</code>。</li>
+</ul>
+<p>　　在传输过程中， zmq的message是任意大小（从0到内存可用的大小）的数据块。你需要用protocol buffers, msgpack, JSON或者任意其他你的程序通信需要的方式做序列化。选择一种简便的数据表现形式是明智的，但你也可以根据需要设计你自己的形式。</p>
+<p>　　在内存中，zmq的message是以<code>zmq_msg_t</code>结构体（或类，根据你选择的语言来定）的形式存在的。在c中使用zmq有以下一些基本原则：</p>
+<ul>
+<li>你创建传递的是<code>zmq_msg_t</code>对象， 不是数据块。</li>
+<li>读取一条message时，你需要先用<code>zmq_msg_init()</code>创建一个空的message， 然后把它传到<code>zmq_msg_recv()</code>中。</li>
+<li>用新的数据写一条message时，你要用<code>zmq_msg-init_size()</code>创建一条message，同时分配数据块大小的内存。然后用<code>memcpy</code>填充那个message，再然后把它传给<code>zmq_msg_send()</code>。</li>
+<li>释放（不是销毁）一条message，你需要调用<code>zmq_msg_close()</code>。这会删除一个引用，最终zmq会销毁这条message。</li>
+<li>在获取message内容的时候，你需要用<code>zmq_msg_data()</code>。如果要知道这条message里有多少数据，使用<code>zmq_msg_size()</code>。</li>
+<li>除非你认真读了手册页并且清楚的知道你需要的是什么，不要使用<code>zmq_msg_move(), zmq_msg_copy() 或者 zmq_msg_init_data()</code>。</li>
+<li>在你把一条message传入<code>zmq_msg_send()</code>之后，zmq会清空这条message。比如设置其大小为0. 你不能重复发送同一条message，并且也不能在发送一条message之后再获取它的内容。</li>
+<li>如果你使用<code>zmq_send(), zmq_recv()</code>发送字节数据而不是message结构体，以上这些原则并不使用。</li>
+</ul>
+<p>　　如果你想重复发送同一条message，并且它是相同大小的，就新建第二条messag， 用<code>zmq_msg_init()</code>初始化它，然后用<code>zmq_msg_copy()</code>创建第一条message的拷贝。这并不是复制数据，只是复制了一个引用。然后你就可以发送相同的message两次了（如果你做了更多的复制，就可以发送更多），message会在最后一个副本发被发送或者关闭的时候才真正销毁掉。</p>
+<p>　　zmq也支持多帧message，这让你能用单个数据包发送或接收一个帧的列表。真实的应用中广泛地使用这项技术，我们会在第三章讨论。</p>
+<p>　　帧（在zmq的手册页中也被称为“message部件（message parts）”）是zmq的message的基本数据包格式。一个帧是一个定长的数据块，长度从0开始。如果你写过一些TCP程序的话，你就会赞同帧是“现在我该从网络socket上读取多大的数据？”这样的问题的一个很好的答案了。</p>
+<p>　　<a target="_blank" rel="noopener" href="http://rfc.zeromq.org/spec:15">ZMTP</a>定义了zmq在一个TCP连接上如何读取和写入的。如果你有兴趣了解它怎么工作的话可以读读，相当短的。</p>
+<p>　　回过来看，一条zmq的message就是一个帧，像UDP那样。我们稍后会用多帧message来扩展这个概念，它相当简单，只是一系列用1标识一个“more”的标志位的帧后边跟一个用0标识接收的帧。zmq API会让你在写message的时候用“more”标志位，在读取的时候检查是否有“more”的标志位。</p>
+<p>　　然而在低级的zmq API和手册页里有时候会混淆message和frame（帧）。下边是些有用的解释：</p>
+<ul>
+<li>一条message可以是一个或多个部分。</li>
+<li>这些部分被称作“frames”。</li>
+<li>每个部分就是一个<code>zmq_msg_t</code>对象。</li>
+<li>在低级API中分别发送和接收单独的部分。</li>
+<li>高级的API们提供发送多部分messages的封装。</li>
+</ul>
+<p>　　关于message需要知道的别的东西：</p>
+<ul>
+<li>你可以发送长度为0的帧，比如从一个线程发送一个信号到另一个线程。</li>
+<li>zmq保证传递一条message的所有部分（一个或多个），或者一个都不传递。</li>
+<li>zmq不会立即发送message（单帧或多帧的），而是在不确定的稍后。因此一条多帧message必须能放进内存中。</li>
+<li>一条message（单帧或多帧的）必须能放进内存中。如果你想发送任意大小的文件，必须把它拆开成多个部分，把每个部分当成一条单帧的message来发送。使用多帧message不会减少内存使用。</li>
+<li>在那些作用域结束之后并不会自动销毁对象的语言中使用时，接收一条message之后你必须调用<code>zmq_msg_close()</code>。不必在发送一条message时使用这个方法。<br>　　再强调一下，先不要使用<code>zmq_msg_init_data()</code>。这是零拷贝方法，会给你造成很多问题的。zmq有更多更重要的东西等着你去学习的～<br>　　丰富的API也可能是负担。设计这些方法是为了优化性能，并不是为了使用简单。除非你认真读了手册页，否则你铁定会用错的。所以一个好的语言绑定的主要工作就是把这些API封装成更好使用的类。</li>
+</ul>
+<p><strong>操作多socket</strong></p>
+<p>　　到目前为止所有的例子中，主循环基本上都像这样：</p>
+<ol>
+<li>在socket上等待message</li>
+<li>处理message</li>
+<li>回复</li>
+</ol>
+<p>　　如果我们想同时从多个端点读取数据该怎么办？最简单的办法是用一个socket连接所有的端点，让zmq做扇入操作（注：像漏斗一样让信息流入一个socket）。如果远处端点用相同的模型的话，这样是可行的，但把一个PULL socket连到一个PUB端点就错了。<br>　　<br>　　实际上，我们用<code>zmq_poll()</code>同时从多个socket上读取数据。更好的办法是把<code>zmq_poll()</code>封装成一个良好的事件驱动框架，但很明显那些工作超出了我们要讲的范围。<br>　　<br>　　让我们开始干些累活吧，部分是为了尝试下做不对的乐趣，但主要是我想给你看看怎么做非阻塞的socket读取。下面是一个用非阻塞socket从两个socket读取的例子。这段比较复杂的程序同时干着天气月报的更新、订阅工作和一个并行任务的工作者的工作：
+　　</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">// msreader: Multiple socket reader in C</span><br><span class="line">// Reading from multiple sockets</span><br><span class="line">// This version uses a simple recv loop</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)&#123;</span><br><span class="line">	// Connect to task ventilator</span><br><span class="line">	void *context = zmq_ctx_new();</span><br><span class="line">	void *receiver = zmq_socket(context, ZMQ_PULL);</span><br><span class="line">	zmq_connect(receiver, &quot;tcp://localhost:5557&quot;);</span><br><span class="line"></span><br><span class="line">	// Connect to weather server</span><br><span class="line">	void *subscriber = zmq_socket(context, ZMQ_SUB);</span><br><span class="line">	zmq_connect(subscriber, &quot;tcp://localhost:5556&quot;);</span><br><span class="line">	zmq_setsockop(subscriber, ZMQ_SUBSCRIBE, &quot;10001 &quot;, 6);</span><br><span class="line"></span><br><span class="line">	// Process messages from both sockets</span><br><span class="line">	// We prioritize traffic from the task ventilator</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		char msg[256];</span><br><span class="line">		while(1)&#123;</span><br><span class="line">			int size = zmq_recv(receiver, msg, 255, ZMQ_DONTAWIT);</span><br><span class="line">			if(size != -1)&#123;</span><br><span class="line">				// Process task</span><br><span class="line">			&#125;</span><br><span class="line">			else</span><br><span class="line">				break;</span><br><span class="line">		&#125;</span><br><span class="line">		while(1)&#123;</span><br><span class="line">			int size = zmsg_recv(subscriber, msg, 255, ZMQ_DONTWAIT);</span><br><span class="line">			if(size != -1)&#123;</span><br><span class="line">				// Process sweather update</span><br><span class="line">			&#125;</span><br><span class="line">			else</span><br><span class="line">				break;</span><br><span class="line">		&#125;</span><br><span class="line">		// No activity, so sleep for 1 msec</span><br><span class="line">		s_sleep(1);</span><br><span class="line">	&#125;</span><br><span class="line">	zmq_close(receiver);</span><br><span class="line">	zmq_close(subscriber);</span><br><span class="line">	zmq_ctx_destroy(context);</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　这种实现的代价是在第一条message上有额外延迟（在进程中没有等待message时，循环结尾的<code>sleep()</code>）。在那些毫秒级延迟都有致命缺陷的应用中这是个大问题。另外，你需要详细查查<code>nanosleep()</code>的相关文档或者使用那些你确信不会造成忙循环的函数。</p>
+<p>　　你可以公平的使用两个socket：先读一个，再读另一个，而用设置优先级，就像我们在这个例子中做的那样。</p>
+<p>　　现在让我们看看下边这个没什么用处的小程序使用<code>zmq_poll()</code>怎么干的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">// mspoller: Multiple socket poller in C</span><br><span class="line">// Reading from multiple sockets</span><br><span class="line">// This version uses zmq_poll()</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)&#123;</span><br><span class="line">	// Connect to task ventilator</span><br><span class="line">	void *context = zmq_ctx_new();</span><br><span class="line">	void *receiver = zmq_socket(context, ZMQ_PULL);</span><br><span class="line">	zmq_connect(receiver, &quot;tcp://localhost:5557&quot;);</span><br><span class="line"></span><br><span class="line">	// Connect to weather server</span><br><span class="line">	void *subscriber = zmq_socket(context, ZMQ_SUB);</span><br><span class="line">	zmq_connect (subscriber, &quot;tcp://localhost:5556&quot;);</span><br><span class="line">	zmq_setscokopt(subscriber, ZMQ_SUBSCRIBE, &quot;10001 &quot;, 6);</span><br><span class="line"></span><br><span class="line">	// Porcess messages from both sockets</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		char msg[256];</span><br><span class="line">		zmq_pollitem_t items[] = &#123;</span><br><span class="line">			&#123;receiver, 0, ZMQ_POLLIN, 0&#125;,</span><br><span class="line">			&#123;subscriber, 0, ZMQ_POLLIN, 0&#125;</span><br><span class="line">		&#125;;</span><br><span class="line">		zmq_poll(items, 2, -1);</span><br><span class="line">		if(items[0].revents &amp; ZMQ_POLLIN)&#123;</span><br><span class="line">			int size = zmq_recv(receiver, msg, 256, 0);</span><br><span class="line">			if(size != -1)&#123;</span><br><span class="line">				// Process task</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		if(items[1].revents &amp; ZMQ_POLLIN)&#123;</span><br><span class="line">			int size = zmq_recv(subscriber, msg, 256, 0);</span><br><span class="line">			if(size != -1)&#123;</span><br><span class="line">				// Process weather update</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	zmq_close(subscriber);</span><br><span class="line">	zmq_ctx_destroy(context);</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　items结构体有以下四个成员：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">typedef struct&#123;</span><br><span class="line">	void *socket; 	// 0MQ socket to poll on</span><br><span class="line">	int fd;			// OR, native file handle to poll on</span><br><span class="line">	short events;	// Events to poll on</span><br><span class="line">	short revents;	// Events returned after poll</span><br><span class="line">&#125;zmq_pollitem_t;</span><br></pre></td></tr></table></figure>
+<p><strong>多帧message</strong></p>
+<p>　　zmq让我们能用几个帧组成一条message， 给我们一条“多部分的message”。实际中的应用对多帧message的使用很广泛，可以用来给信息封装地址信息或者简单的序列化。我们稍后会看到回复信封。<br>　　<br>　　现在我们需要了解的是如何在那些不需要知道message内部信息，只需要向前传递它的应用（比如代理proxy）中透明安全的读写message。</p>
+<p>　　当你使用多帧message时，每个帧是一个zmq_msg项，比如说，如果你要发送一条有5部分的message，你必须创建，发送，销毁5个zmq_msg项。你可以提前组织每个部分（把zmq_msg项存到数组或者其他结构中），或者发送的时候一个一个组织。</p>
+<p>　　下面是我们如何发送多帧message的（我们把接收的每个帧都存放到一个message对象中）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zmq_msg_send(&amp;message, socket, ZMQ_SNDMORE);</span><br><span class="line">...</span><br><span class="line">zmq_msg_send(&amp;message, socket, ZMQ_SNDMORE);</span><br><span class="line">..</span><br><span class="line">zmq_msg_send(&amp;message, socket, 0);</span><br></pre></td></tr></table></figure>
+<p>　　下面是我们怎么接收处理多帧所有部分的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">while(1)&#123;</span><br><span class="line">	zmq_msg_t message;</span><br><span class="line">	zmq_msg_init(&amp;message);</span><br><span class="line">	zmq_msg_recv(&amp;message, socket, 0);</span><br><span class="line">	// Process the message frame</span><br><span class="line">	...</span><br><span class="line">	zmq_msg_close(&amp;message);</span><br><span class="line">	if(!zmq_msg_more(&amp;message))</span><br><span class="line">		break;	// Last message frame</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　我们需要知道的关于多帧message的东西：</p>
+<ul>
+<li>当你发送一条多帧message的时候，第一帧（还有后边跟着的所有帧）只有在你发送完最后一部分才真正发送出去。</li>
+<li>如果你使用<code>zmq_poll()</code>，当你收到message的第一帧，其余所有帧也都已经到了。</li>
+<li>要不你就收到一条message的所有帧，要不就什么都收不到。</li>
+<li>一条message的每个部分都是单独的zmq_msg项。</li>
+<li>不管你是否检查“more”属性，你都会收到一条message的所有帧。</li>
+<li>在发送的时候，zmq先把message的帧存入内存队列中，直到收到最后一个帧再把他们全部发出去。</li>
+<li>除了关闭socket，你是没办法取消发送一条已经发出去一部分的message的。</li>
+</ul>
+<p><strong>中间件和代理</strong></p>
+<p>　　zmq致力于分布式智能，但那并不意味着你的网络中间就是空白的。在分布式网络中充满了消息传输基础设施，我们常用zmq去搭建这些架构。zmq设施能适应小到简单的通道大到面向服务的中间件设施。消息传输领域把这些中间设施称为中间件，意思是在中间解决两端信息沟通的东西。在zmq中，我们在不同上下文中称它们为代理，队列，传送者，设备或者掮客。</p>
+<p>　　这种模式在显示世界中相当常见，这也就是为什么我们的社会和商业充满了那些在复杂网络中为了减少复杂和浪费而存在的中间者。真实世界的中间件常被叫做批发商，分销商，经理等。</p>
+<p><strong>动态发现问题</strong></p>
+<p>　　当你设计大型分布式框架的时候你会遇到这样一个问题：各个部分怎样知道其他部分的？特别是当各个部分任意来去的时候，我们把这个问题叫做“动态发现问题”。</p>
+<p>　　有几个不同的办法去解决动态发现问题。最简单的是用硬编码（或者配置）整个网络架构，发现的问题手动解决。也就是说，当你要新加一部分的时候，你需要重新配置网络来让其他部分发现它。</p>
+<p><img src="/img/zmq12.png" alt="f12"></p>
+<p>　　在实践中，这能使架构的扩充变得脆弱难以维护。比如说你有一个发布者和一百个订阅者。你把每个订阅者通过配置绑定到发布者的端点。这还比较容易。订阅者是动态的；发布者是固定的。现在你需要添加更多的发布者。情况忽然就变得不那么简单了。如果你需要把每个订阅者都连到每个发布者上边，这样来避免动态发现问题的代价就太大了。</p>
+<p><img src="/img/zmq13.png" alt="f13"></p>
+<p>　　确实有一些解决动态发现问题的办法，但相当简单的一种做法就是添加中间件；也就是说，在网络中加入一个固定节点用于连接其它所有节点。在传统的消息传输机制中，这是message中间人的工作。zmq没有像那样的message中间人，但能让我们很简单的构建中间件。</p>
+<p>　　你可能会奇怪，如果所有的网络最够都增长到足够大而需要中间件，为什么我们不简单地为所有程序在一个固定的地方设置一个中间件呢？新手对这一般很疑惑。不考虑性能，仅仅使用星形结构，系统就能正常工作。然而message中间件是种贪婪的东西；要行使它们作为中间件的工作，他们必须变得相当复杂，相当稳定，这到最后就成了个问题。</p>
+<p>　　最好把中间件当做无状态的消息交换装置。一个好的例子就是HTTP代理；它存在，但没有任何特殊的角色。在我们的理智中加入一个pub-sub代理去解决动态发现问题。我们把这个代理放到网络结构的”中间“。该代理打开一个XSUB　socket和一个XPUB　socket，并把它们都绑定到已知的IP地址和端口上。然后，所有其他的进程都连接到这个代理上，而不是进程彼此相连。这样增加更多的订阅者和发布者就不会那么麻烦了。</p>
+<p><img src="/img/zmq14.png" alt="f14"></p>
+<p>　　我们需要XPUB和XSUB socket是因为zmq从发布者那里给订阅者做订阅工作。XSUB和XPUB就像SUB和PUB，除了他们会把订阅信息解释成特殊的message.该proxy必须从XSUB　socket读取message,解析后写入XPUB　socket传给订阅端。这是XSUB和XPUB的主要用途。</p>
+<p><strong>共享队列(DEALER和ROUTER socket)</strong><br>　　在Hello World　client&#x2F;server应用中，我们只有一个client跟一个server交互。然而，在真实的场景里我们通常需要允许多server和多client。这让我们需要有扩充server的能力（多线程或多进程或多节点。）。唯一的限制是server必须是无状态的，所有的状态都在请求中或者存储在一个共享的地方（比如数据库）。</p>
+<p><img src="/img/zmq15.png" alt="f15"></p>
+<p>　　有两种方法把多client连接到多server。暴力解法是把每个client直接连到每个server端。一个client　socket是可以连接到多个server的socket的，然后REQ　socket就会在这些server之间分发请求了。比如说你把一个client scoket连到了三个server端：A, B, C。　client发出了４个请求R1,R2,R3,R4，　R1和R4去到了A,R2去到了B，R3去到了C。</p>
+<p>　　该设计能让你很方便的增加更多的client。你也能增加更多的服务。每一个client都能把它的请求分发的这些服务器上。但每个client都必须知道server的拓扑结构。如果你有100个client，然后你要增加３个server，你就必须重新配置和重启100个client，好让这些client知道新来的３个server。</p>
+<p>　　在凌晨三点我们的超级计算机集群用完所有资源，然后我们绝望的发现需要增加几百个新的服务节点这种事显然不是我们希望得到的。太多的静态部分像水泥一样：你有越多的静态部分，要改变网络拓扑结构就越难。我们想要的是有个在client和server之间的东西，它知道所有的拓扑结构。最理想的是我们应该能随时添加移除server或client而不用去改变原有拓扑结构的其他部分。</p>
+<p>　　所以我们要写个简单的消息队列中介来提供这种灵活性。这个中介绑定两个端点，一个连接client的前端点和一个连接server的后端点。它会用<code>zmq_poll()</code>监控这来个那个socket是否活跃，然后当socket有数据到来，它就在这两个socket之间转发数据。它并不会真正管理任何队列——zmq会在每个socket上自动的做这些工作。</p>
+<p>　　当你用REQ去连接一个REP，你就会得到一个严格的同步请求——回复对话。client发送请求，server接收请求并发送回复。client再去读取回复。如果client或者server试着做些其他的事（比如说不等接收就发送两个请求），它们就会出错。</p>
+<p>　　但我们的中介必须是非阻塞的。显然，我们可以用<code>zmq_poll()</code>去监控两个socket，但我们用不成REP和REQ。</p>
+<p><img src="/img/zmq16.png" alt="f16"></p>
+<p>　　幸运的是，有两个叫DEALER和ROUTER的socket能让你实现非阻塞的请求——回复。你可以在第三章中看到DEALER和ROUTER socket是怎么让你构建起所有的异步请求——回复流模型的。但现在，我们只是先看看DEALER和ROUTER怎么让我们在中间件上扩展REQ-REP的，也就是我们的小型中介。</p>
+<p>　　在这个简单的请求——回复扩展模型中，REQ连接ROUTER, DEALER连接REP。在DEALER和ROUTER之间，我们必须有段代码（像我们的中介）从一个socket中拉取message送到另一个socket中。</p>
+<p>　　这个请求——回复中介会绑定两个端点，一个让client去连接（前端socket），另一个让worker去连接（后端socket）。为了检查这个中介，你希望修改你的worker好让他们能连接到后端socket。下面的client显示的就是我的意思：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">// rrclient: Request-reply client in C</span><br><span class="line">// Hello World client</span><br><span class="line">// Connects REQ socket to tcp://localhost:5559</span><br><span class="line">// Sends &quot;Hello&quot; to server, expects &quot;World&quot; back</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)&#123;</span><br><span class="line">	void *context = zmq_ctx_new();</span><br><span class="line"></span><br><span class="line">	// Socket to talk to server</span><br><span class="line">	void *requester = zmq_socket(context, ZMQ_REQ);</span><br><span class="line">	zmq_connect(requester, &quot;tcp://localhost:5559&quot;);</span><br><span class="line"></span><br><span class="line">	int request_nbr;</span><br><span class="line">	for(request_nbr = 0; request_nbr != 10; request_nbr++)&#123;</span><br><span class="line">		s_send(requester, &quot;Hello&quot;);</span><br><span class="line">		char *string = s_recv(requester);</span><br><span class="line">		printf(&quot;Received reply %d [%s]\n&quot;, request_nbr, string);</span><br><span class="line">		free(string);</span><br><span class="line">	&#125;</span><br><span class="line">	zmq_close(requester);</span><br><span class="line">	zmg_ctx_destroy(context);</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　worker在这里:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">// rrworker: Request-reply worker in C</span><br><span class="line">// Hello World worker</span><br><span class="line">// Connects REP socket to tcp://*:5560</span><br><span class="line">// Expects &quot;Hello&quot; from client, replies with &quot;World&quot;</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)&#123;</span><br><span class="line">	void *context = zmq_ctx_new();</span><br><span class="line"></span><br><span class="line">	// Socket to talk to clients</span><br><span class="line">	void *responder = zmq_socket(context, ZMQ_REP);</span><br><span class="line">	zmq_connect(responder, &quot;tcp://localhost:5560&quot;);</span><br><span class="line"></span><br><span class="line">	while(1)&#123;</span><br><span class="line">		// Wait for next request form client</span><br><span class="line">		char *string = s_recv(responder);</span><br><span class="line">		printf(&quot;Received request: [%s]\n&quot;, string);</span><br><span class="line">		free(string);</span><br><span class="line"></span><br><span class="line">		// Do some &quot;work&quot;</span><br><span class="line">		sleep(1);</span><br><span class="line"></span><br><span class="line">		// Send reply back to client</span><br><span class="line">		s_send(responder, &quot;World&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	// We never get here but clean up anyhow</span><br><span class="line">	zmq_close(responder);</span><br><span class="line">	zmq_ctx_destroy(context);</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　下边的是中介，它恰当的操作了多帧message：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">// rrbroker: Request-reply broket in C</span><br><span class="line">// Simple request-reply broker</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)&#123;</span><br><span class="line">	// Prepare our context and sockets</span><br><span class="line">	void *context = zmq_ctx_new();</span><br><span class="line">	void *frontend = zmq_socket(context, ZMQ_ROUTER);</span><br><span class="line">	void *backend = zmq_socket(context, ZMQ_DEALER);</span><br><span class="line">	zmq_bind(frontend, &quot;tcp://*:5559&quot;);</span><br><span class="line">	zmq_bind(backend, &quot;tcp://*:5560&quot;);</span><br><span class="line"></span><br><span class="line">	// Initialize poll set</span><br><span class="line">	zmq_pollitem_t items[] =&#123;</span><br><span class="line">		&#123;frontend, 0, ZMQ_POLLIN, 0&#125;,</span><br><span class="line">		&#123;backend, 0, ZMQ_POLLIN, 0&#125;</span><br><span class="line">	&#125;;</span><br><span class="line">	// Switch messages between sockets</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		zmq_msg_t message;</span><br><span class="line">		zmq_poll(items, 2, -1);</span><br><span class="line">		if(items[0].revents &amp; ZMQ_POLLIN)&#123;</span><br><span class="line">			while(1)&#123;</span><br><span class="line">				// Process all parts of the message</span><br><span class="line">				zmq_msg_init(&amp;message);</span><br><span class="line">				zmq_msg_recv(&amp;message, frontend, 0);</span><br><span class="line">				int more = zmq_msg_more(&amp;message);</span><br><span class="line">				zmq_msg_send(&amp;message, backend, more ? ZMQ_SNDMORE: 0);</span><br><span class="line">				zmq_msg_close(&amp;message);</span><br><span class="line">				if(!more)</span><br><span class="line">					break;	// Last message part</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		if(items[1].revents &amp;ZMQ_POLLIN)&#123;</span><br><span class="line">			while(1)&#123;</span><br><span class="line">				// Process all parts of the message</span><br><span class="line">				zmq_msg_init(&amp;message);</span><br><span class="line">				zmq_msg_recv(&amp;message, backend, 0);</span><br><span class="line">				int more = zmg_msg_more(&amp;message);</span><br><span class="line">				zmq_msg_send(&amp;message, frontend, more ? ZMQ_SNDMORE: 0);</span><br><span class="line">				zmq_msg_close(&amp;message);</span><br><span class="line">				if(!more)</span><br><span class="line">					break;	// Last message part</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	// We never get here, but clean up anyhow</span><br><span class="line">	zmq_close(frontend);</span><br><span class="line">	zmq_close(backend);</span><br><span class="line">	zmq_ctx_destroy(context);</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/img/zmq17.png" alt="f17"></p>
+<p>　　使用一个请求——回复的中间件可以让你的C&#x2F;S架构更容易扩展，因为client看不到worker,并且worker也看不到client。唯一的静态节点就是在中间的中介。</p>
+<p><strong>zmq的内建代理机制</strong></p>
+<p>　　上一个部分<em>rrbroker</em>的核心循环看起来非常有效，并且可用。它让我们能轻松设计pub-sub的转发和共享队列或者其他小型中间件。zmq把它单独封装成了<code>zmq_proxy()</code>:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zmq_proxy(frontend, backend, capture);</span><br></pre></td></tr></table></figure>
+<p>　　这两个（如果我们想抓取数据，就要三个）必须正确地连接、绑定和配置。当我们调用<code>zmq_proxy()</code>方法时，它就像开始了rrbroker的主循环。让我们用<code>zmq_proxy()</code>重写这个请求－回复的中介，并重新定义这个为“消息队列”（人们花费很多代码但做到的很少）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">// msgqueue: Message queue broker in C</span><br><span class="line">// Simple message queuing broker</span><br><span class="line">// Same as request-reply broker but using QUEUE device</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)&#123;</span><br><span class="line">	void *context = zmq_ctx_new();</span><br><span class="line"></span><br><span class="line">	// Socket facing clients</span><br><span class="line">	void *frontend = zmq_socket(context, ZMQ_ROUTER);</span><br><span class="line">	int rc = zmq_bind(frontend, &quot;tcp://*:5559&quot;);</span><br><span class="line">	assert(rc == 0);</span><br><span class="line"></span><br><span class="line">	// Socket facing services</span><br><span class="line">	void *backend = zmq_socket(context, ZMQ_DEALER);</span><br><span class="line">	rc = zmq_bind(backend, &quot;tcp://*:5560&quot;);</span><br><span class="line">	assert(rc == 0);</span><br><span class="line"></span><br><span class="line">	// Start the proxy</span><br><span class="line">	zmq_proxy(frontend, backend, NULL);</span><br><span class="line"></span><br><span class="line">	// We never get here...</span><br><span class="line">	zmq_close(frontend);</span><br><span class="line">	zmq_close(backend);</span><br><span class="line">	zmq_ctx_destroy(context);</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　如果你像大多数的zmq用户那样，在这个阶段你就回开始想：“如果我随意的在这个proxy中配置不同种类的socket，会发生什么？”简短的回答是：试试看会发生什么。在实际中，你应该总是遵守着ROUTER&#x2F;DEALER, XSUB&#x2F;XPUB, PULL&#x2F;PUSH这样的组合。</p>
+<p><strong>传输桥接</strong></p>
+<p>　　zmq用户经常有的一个请求是：“我怎么把我的zmq网络跟X技术连接起来？”这里X是其他一些网络或者消息传输技术。</p>
+<p><img src="/img/zmq18.png" alt="f18"></p>
+<p>　　一个简单的答案就是搭一座桥。一座桥就是一个小的应用，它在一个socket上跟一种协议通信，把信息转换成适合另一个socket上的通信协议。你也可以把它叫成协议解释器。zmq中的一个普遍的桥接问题是桥接两个端口或者网络。</p>
+<p>　　举个简单的例子，我们要写一个在一个发布者和一组订阅者之间的代理（proxy），桥接两个网络。前端socket(SUB)面对的是天气预报服务器所在的内网，后端(PUB)面对的是订阅者所在的外部网络。它从前端的socket订阅天气预报服务，然后发布给后端的socket。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">//wuproxy: Weather update proxy in C</span><br><span class="line">// Weather proxy device</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)&#123;</span><br><span class="line">	void *context = zmq_ctx_new();</span><br><span class="line"></span><br><span class="line">	// This is where the weather server sits</span><br><span class="line">	void *frontend = zmq_socket(context, ZMQ_XSUB);</span><br><span class="line">	zmq_connect(frontend, &quot;tcp://192.168.55.210:5556&quot;);</span><br><span class="line"></span><br><span class="line">	// This is our public endpoint for subscribers</span><br><span class="line">	void *backend = zmq_socket(context, ZMQ_XPUB);</span><br><span class="line">	zmq_bind(backend, &quot;tcp://10.1.1.0:8100&quot;);</span><br><span class="line"></span><br><span class="line">	// Run the proxy until the user interrupts us</span><br><span class="line">	zmq_proxy(frontend, backend, NULL);</span><br><span class="line"></span><br><span class="line">	zmq_close(frontend);</span><br><span class="line">	zmq_close(backend);</span><br><span class="line">	zmq_ctx_destroy(context);</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　看起来跟早先的代理的例子很像，但关键部分是前端和苟端socket分别连接两个不同的网络。我们可以用这种模型去连接一个多播网络(pgm传输协议)和一个tcp的发布者。</p>
+<p><strong>处理错误和ETERM</strong></p>
+<p>　　zmq的错误处理原则是快速失效和可靠性的结合。我们坚信，进程应该对内部错误尽可能的脆弱，对外部攻击或者错误尽可能健壮。比如说，一个活细胞如果检测到内部的一丁点错误就会自我死亡，但它会用尽办法对抗外部攻击。</p>
+<p>　　散布在zmq代码中的断言对代码的健壮至关重要，它们必须处在像细胞壁那样正确的位置上，那儿就应该有这样一堵墙。如果它不清楚这个错误是内部的还是外部的，那就是个需要修复的设计错误。在C&#x2F;C++中，断言会立即中断程序，并给出一个错误。在别的语言中，你可能会得到例外或者终止。</p>
+<p>　　当zmq监测到一个外部错误，它会返回一个错误。在一些特殊的情形中，如果没有明显的从错误中恢复的策略的话，它会静默的丢掉message。</p>
+<p>　　我们目前看到的大多数C的例子里都没有错误处理逻辑。<strong>真实的代码应该在每个zmq调用上进行错误处理。</strong>如果你用了一种不是C的绑定语言，这种绑定会为你做很多错误处理。在C中，你需要自己去做这些。这里有一些关于错误处理的简单的原则，从POSIX规范开始：</p>
+<ul>
+<li>创建对象的方法如果出错会返回NULL</li>
+<li>处理数据的方法会返回处理过的字节数，或者在失败时返回-1</li>
+<li>其他方法会在成功时返回０，在失败时返回-1</li>
+<li>错误代码在error中或者<code>zmq_errno()</code>中</li>
+<li>为日志输出设计的描述性文字由<code>zmq_strerror()</code>提供</li>
+</ul>
+<p>　　例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">void *context = zmq_ctx_new();</span><br><span class="line">assert(context);</span><br><span class="line">void *socket = zmq_socket(context, ZMQ_REP);</span><br><span class="line">assert(socket);</span><br><span class="line">int rc = zmq_bind(socket, &quot;tcp://*:5555&quot;);</span><br><span class="line">if(rc == -1)&#123;</span><br><span class="line">	printf(&quot;E: bind failed: %s\n&quot;, strerror(errno));</span><br><span class="line">	return -1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　你需要以非致命性错误处理的两种主要的例外情形是：</p>
+<ul>
+<li>当你用<code>ZMQ_DONTWAIT</code>选项接收一条message的时候，但那时并没有数据，zmq会返回-1并把errno设置为EAGIN</li>
+<li>当一个线程调用<code>zmq_ctx_destroy()</code>的时候，其他线程还在做阻塞性的工作，<code>zmq_ctx_destroy()</code>会通知上下文关闭并且让所有的阻塞调用都退出并返回－１，并把errno设置为ETERM</li>
+</ul>
+<p>　　在C&#x2F;C++中，断言在测试过的代码中可以全部移除，所以不要把完整的zmq调用放到<code>assert()</code>中。那看起来很整洁，但优化器会把断言和你想要调用的函数一并移除，你的程序就会以一种莫名其妙的方式崩溃掉。</p>
+<p><img src="/img/zmq19.png" alt="f19"></p>
+<p>　　让我们来看看怎么干净的终止一个进程。我们拿上一部分的并行管道做例子。如果我们已经在后台开启了所有的worker，现在想在作业结束的时候全部kill掉它们。让我们给worker都发送一个kill的信息吧。做这件事最好的地方是在sink，因为它知道什么时候作业会完成。</p>
+<p>　　我们怎么把sink接到worker呢？	PUSH&#x2F;PULL socket是唯一可用的方式了。我们可以转换成另一种socket类型，或者我们可以混合多种不同的socket流。我们稍后试试这样的：用一个pub-sub模型去发送kill信息给worker:</p>
+<ul>
+<li>sink在一个新端口上创建一个PUB　socket</li>
+<li>worker把他们的输入socket绑定到sink的那个新端口上</li>
+<li>当sink检测到作业已经结束了，它会往PUB socket上发送一个kill指令</li>
+<li>当一个worker检测到这个kill指令，它会自己退出。</li>
+</ul>
+<p>　　在sink中并不用花费很多代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">void *controller = zmq_socket(context, ZMQ_PUB);</span><br><span class="line">zmq_bind(controller, &quot;tcp://*:5559&quot;);</span><br><span class="line">...</span><br><span class="line">// Send kill signal to workers</span><br><span class="line">s_send(controller, &quot;KILL&quot;);</span><br><span class="line"></span><br><span class="line">　　下边是worker进程，它会操作两个socket（一个PULL socket用来获取任务，一个SUB socket用来获取控制指令），用到了我们前边看到的`zmq_poll()`:</span><br><span class="line"></span><br><span class="line">// taskwork2: Parrallel task worker with kill signalling in C</span><br><span class="line">// Task worker - design 2</span><br><span class="line">// Adds pub-sub flow to receive and respond to kill signal</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)&#123;</span><br><span class="line">	// Socket to receive messages on</span><br><span class="line">	void *context = zmq_ctx_new();</span><br><span class="line">	void *receiver = zmq_socket(context, ZMQ_PULL);</span><br><span class="line">	zmq_connect(receiver, &quot;tcp://localhost:5557&quot;);</span><br><span class="line"></span><br><span class="line">	// Socket to send messages to</span><br><span class="line">	void *sender = zmq_socket(context, ZMQ_PUSH);</span><br><span class="line">	zmq_connect(sender, &quot;tcp://localhost:5558&quot;);</span><br><span class="line"></span><br><span class="line">	// Socket for control input</span><br><span class="line">	void *controlller = zmq_socket(context, ZMQ_SUB);</span><br><span class="line">	zmq_connect(controlller, &quot;tcp://localhost:5559&quot;);</span><br><span class="line">	zmq_setscokopt(controlller, ZMQ_SUBSCRIBE, &quot;&quot;, 0);</span><br><span class="line"></span><br><span class="line">	// Process messages from either socket</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		zmq_pollitem_t items[] = &#123;</span><br><span class="line">			&#123;receiver, 0, ZMQ_POLLIN, 0&#125;,</span><br><span class="line">			&#123;controlller, 0, ZMQ_POLLIN, 0&#125;</span><br><span class="line">		&#125;;</span><br><span class="line">		zmq_poll(items, 2, -1);</span><br><span class="line">		if(items[0].revents &amp; ZMQ_POLLIN)&#123;</span><br><span class="line">			char *string = s_recv(receiver);</span><br><span class="line">			printf(&quot;%s.&quot;, string);	// Show progress</span><br><span class="line">			fflush(stdout);</span><br><span class="line">			s_sleep(atoi(string));	// Do the work</span><br><span class="line">			free(string);</span><br><span class="line">			s_send(sender, &quot;&quot;);		// Send results to sink</span><br><span class="line">		&#125;</span><br><span class="line">		// Any waiting controller command acts as &#x27;KILL&#x27;</span><br><span class="line">		if(items[1].revents &amp; ZMQ_POLLIN)</span><br><span class="line">			break;					// Exit loop</span><br><span class="line">	&#125;</span><br><span class="line">	zmq_close(receiver);</span><br><span class="line">	zmq_close(sender);</span><br><span class="line">	zmq_close(controller);</span><br><span class="line">	zmq_ctx_destroy(context);</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　下边是一个修改过的sink程序。如果它不再收集结果，就会给所有的worker都发送一条kill指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">// tasksink2: Parallel task sink with kill signaling in C</span><br><span class="line">// Task sink - design 2</span><br><span class="line">// Adds pub-sub flow to send kill signal to workers</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)&#123;</span><br><span class="line">	// Socket to receive messages on</span><br><span class="line">	void *context = zmq_ctx_new();</span><br><span class="line">	void *receiver = zmq_socket(context, ZMQ_PULL);</span><br><span class="line">	zmq_bind(receiver, &quot;tcp:// *5558&quot;);</span><br><span class="line"></span><br><span class="line">	// Socket for worker control</span><br><span class="line">	void *controller = zmq_socket(context, ZMQ_PUB);</span><br><span class="line">	zmq_bind(controller, &quot;tcp://*:5559&quot;);</span><br><span class="line"></span><br><span class="line">	// Wait for start of batch</span><br><span class="line">	char *string = s_recv(receiver);</span><br><span class="line">	free(string);</span><br><span class="line"></span><br><span class="line">	// Start our clock now</span><br><span class="line">	int64_t start_time = s_clock();</span><br><span class="line"></span><br><span class="line">	// Process 100 confirmations</span><br><span class="line">	int task_nbr;</span><br><span class="line">	for(task_nbr = 0; task_nbr &lt; 100; task_nbr++)&#123;</span><br><span class="line">		char *string = s_recv(receiver);</span><br><span class="line">		free(string);</span><br><span class="line">		if((task_nbr / 10) * 10 == task_nbr)</span><br><span class="line">			printf(&quot;:&quot;);</span><br><span class="line">		else</span><br><span class="line">			printf(&quot;.&quot;);</span><br><span class="line">		fflush(stdout);</span><br><span class="line">	&#125;</span><br><span class="line">	printf(&quot;Total elapsed time: %d msec\n&quot;, (int)(s_clock() - start_time));</span><br><span class="line"></span><br><span class="line">	// Send kill signal to workers</span><br><span class="line">	s_send(controller, &quot;KILL&quot;);</span><br><span class="line"></span><br><span class="line">	zmq_close(receiver);</span><br><span class="line">	zmq_close(controller);</span><br><span class="line">	zmq_ctx_destroy(context);</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>处理中断信号</strong></p>
+<p>　　真正的应用需要在使用Ctrl-C或者产生像SIGTERM这样的信号的时候干净的退出。这些信号默认是杀死进程，意味着message不会被冲刷过去，或者文件没有被干净的关闭等。</p>
+<p>　　下面是我们通常怎么处理信号的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//interrupt: Handling Ctrl-C cleanly in C</span><br><span class="line"></span><br><span class="line">while(true)&#123;</span><br><span class="line">	zstr_send(client, &quot;Hello&quot;);</span><br><span class="line">	char *reply = zstr_recv(client);</span><br><span class="line">	if(!reply)</span><br><span class="line">		break;	// Interrupted</span><br><span class="line">	printf(&quot;Client: %s\n&quot;, reply);</span><br><span class="line">	free(reply);</span><br><span class="line">	sleep(1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　程序提供<code>s_catch_signals()</code>，它会捕获Ctrl-C(SIGINT)和SIGTERM。如果任何一个信号到达，<code>s_catch_signals()</code>句柄会设置全局变量<code>s_interrupted</code>。多亏你的信号处理句柄，你的程序才不会自己挂掉。相反，你有机会做一些清理工作，然后优雅地退出。现在你就必须明确检查一个中断并且恰当的处理它。在你的主代码开始之前就调用<code>s_catch_signals()</code>(从interrupt.c复制过来的)。这会建立起信号处理机制。中断会对ｚｍｑ调用有以下影响：</p>
+<ul>
+<li>如果你的代码正被一个阻塞调用阻塞着（发送一条message，接受一条message，或者正在轮询），然后当一个信号到达时，该系统调用会返回EINTR。<br>-　像<code>s_recv()</code>那样封装好的调用，在它们被中断的时候返回NULL。</li>
+</ul>
+<p>　　所以检查一个EINTR的返回码，一个NULL的返回值，并且／或者<code>s_interupted</code>。</p>
+<p>　　下面是一个典型的代码片段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">s_catch_signals();</span><br><span class="line">client = zmq_socket(...);</span><br><span class="line">while(!s_interupted)&#123;</span><br><span class="line">	char *message = s_recv(client);</span><br><span class="line">	if(!message)</span><br><span class="line">		break;	// Ctrl-C　used</span><br><span class="line">&#125;</span><br><span class="line">zmq_close(client);</span><br></pre></td></tr></table></figure>
+<p>　　如果你调用了<code>s_catch_signals()</code>并且没检查中断，你的程序会对Ctrl-C和SIGTERM信号免疫，这有时候会有用，但大多数时候是没用的。</p>
+<p><strong>检查内存泄露</strong></p>
+<p>　　任何需要长时间运行的程序都需要正确管理内存，否则它会用掉所有可用内存，然后挂掉。如果你正使用一种能自动管理内存的语言，恭喜你。如果你用了C或者C++或者其他需要你自己对内存负责的语言，下面是一个使用valgrind的简短教程，它会报告你程序里边任何的泄露问题。</p>
+<ul>
+<li><p>在Ubuntu或者Debian里安装valgrind，使用下面的命令就行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install valgrind</span><br></pre></td></tr></table></figure></li>
+<li><p>默认的zmq本身会让valgrind报告很多错误　，要移除这些警告，需要创建一个叫<code>vg.supp</code>的文件，里边包含以下内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">   &lt;socketcall_sendto&gt;</span><br><span class="line">   Memcheck:Param</span><br><span class="line">   socketcall.sendto(msg)</span><br><span class="line">   fun:send</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">   &lt;socketcall_sendto&gt;</span><br><span class="line">   Memcheck:Param</span><br><span class="line">   socketcall.send(msg)</span><br><span class="line">   fun:send</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>修改你的程序，好让它在Ctrl-C的时候干净地退出。对任何会自己退出的程序来说，并不需要这样处理，但对那些长时间运行的应用来说，这是必须的，否则valgrind会警告所有当前已经申请的内存。</p>
+</li>
+<li><p>如果你默认的设置里没有使用-DDEBUG，你需要设置一下。那会保证valgrind能准备指出哪里的内存泄露了。</p>
+</li>
+<li><p>最后，像这样运行valgrind:</p>
+<pre><code>  valgrind --tool=memchech --leak-check=full --suppressiongs=vg.supp someprog
+</code></pre>
+</li>
+</ul>
+<p>　　在修复完它报告的所有错误之后，你会得到以下让人高兴的信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">==30536== ERROR SUMMARY: 0 errors from 0 contexts...</span><br></pre></td></tr></table></figure>
+
+<p><strong>zmq和多线程</strong></p>
+<p>　　zmq可能是写多线程(MT)应用最好的办法了。如果你熟悉传统的socket编程方式，那zmq的会需要你做些适应，zmq会把你所知道的写MT应用的东西都给扔到垃圾堆上，倒上汽油，一把火点了。只有很少的书渴望着被烧掉，但关于并发编程的书确实这样希望的。（译注:并发编程相当麻烦，因此最好没有并发编程这种模式，也就是说最好没有介绍并发编程的书。。。）</p>
+<p>　　为了写出极端完美的MT程序（我着重强调），<strong>我们不需要互斥锁，加锁或者任何其他形式的线程间通信，我们只需要zmq的socket发送的message就行了。</strong></p>
+<p>　　“极端完美的MT程序”指的是容易写容易理解的代码，那种对不同语言不同操作系统都有相同设计模式的，能在任意数量CPU上扩展的，完全没有等待状态和衰弱返回点的程序。</p>
+<p>　　如果你花了很长时间去学习那些能让你的MT代码正常工作的技巧，使用锁啊信号量啊关键区域啊，你会相当沮丧的发现这完全没用。如果说我们从三十多年的并发编程学到了什么经验的话，那就是：<em><strong>不要共享状态</strong></em>。那就像两个醉汉试着分享一瓶啤酒。不管他们是否是好朋友，迟早他们会干起架来的。你在酒桌上加越多的醉汉，他们越会为了一瓶啤酒干架。典型的MT应用就像醉汉们打架一样。</p>
+<p>　　<em><strong>The list of weird problems that you need to fight as you write classic shared-state MT code would be hilarious if it didn’t translate directly into stress and risk, as code that seems to work suddenly fails under pressure.</strong></em>(sorry。。。不会翻译了)。一个有着世界级影响力的大公司通过公开的大量代码列出了“11个在你的多线程代码中会出现的问题”，包括忘记同步，不恰当的粒度划分，读写冲突，无锁重排序，锁护送效应，two-step dance和优先级反转。</p>
+<p>　　好吧，我们只说了７个问题，不是11个。但那不是重点。重点是，你真的想让管理电力网或者股票市场的程序在一个忙碌的周四下午3点钟的时候遇到两步锁护送效应？谁会在乎这个术语到底是什么意思？这并不能让我们开始去编程，用更多复杂的技巧去跟更复杂的副作用做斗争。</p>
+<p>　　一些被广泛使用的模型——尽管是整个工业的基础——从根本上就是坏掉的，共享状态并行模型就是其中之一。那些想没有限制地扩展的代码应该像互联网做的那样，只是发送信息，而不共享任何状态——除了共享对那些坏掉的编程模型的轻视。</p>
+<p>　　使用zmq你需要遵守一些规则才能写出愉快的多线程代码：</p>
+<ul>
+<li>孤立数据应该在它自己的线程内私有，决不应该在多线程共享。这唯一的例外是zmq的context，它是线程安全的。</li>
+<li>跟传统的并发机制保持距离，像互斥锁啊，敏感区域啊，信号量啊等等。这些在zmq应用里是敌对部分。</li>
+<li>在你的进程开始部分创建一个zmq　context，把它传进每个你想用<code>inproc </code>socket连接的线程。</li>
+<li>在你的应用里创建<em>attached</em>线程，用<code>inproc</code>和<code>PAIR</code> socket连接这些线程和它们的父线程。该模型是：在父线程中绑定socket,然后创建子线程去连接。</li>
+<li>用<em>detached</em>线程去模拟独立任务，用它们自己的context。用tcp连接这些。然后你就能不用改什么代码就能把它们转移到独立的进程中。</li>
+<li>全部的线程间交互都可以用zmq的message实现，message你可以定义的多多少少正式些。</li>
+<li>不要在线程间共享zmq的socket.zmq的socket不是线程安全的。技术上来说是有可能从把一个socket从一个线程转移到另一个线程去，但这需要技巧。唯一一个在线程间共享socket相对安全的地方是那些会在socket上做垃圾收集的绑定语言中。</li>
+</ul>
+<p>　　如果你想在应用中启动不止一个代理，比如，你可能希望在每个线程中都跑自己的代理。这时候如果你在一个线程中创建了该代理的前端和后端socket，然后把它们传到位于另一个线程中的代理，就很容易出错。这在一开始可能会工作，但在实际使用中会随机挂掉。记住：<em><strong>只能在创建socket的线程中才能使用和关闭它们。</strong></em></p>
+<p>　　如果你遵守了这些规则，你能很容易的构建优雅的多线程程序，然后根据需要把这些多线程分割到多进程中。应用层逻辑能存在于线程、进程或者节点中：根据你的扩展的需要。</p>
+<p>　　zmq使用操作系统原始的线程，而不是虚拟化的”绿色”线程。好处是你不需要学习任何新的线程API，zmq的线程会跟你的操作系统干净的契合。你可以用标准化工具，比如Intel的ThreadChecker去看看你的应用到底在做什么。缺点是原始的线程API不总是可移植的，如果你有大量的线程数（几千个），一些操作系统就会相当有压力。</p>
+<p>　　让我们看看在实际中这是怎样工作的。我们会把我们旧的Hello World服务器转换成某种更厉害的东西。该服务器最初运行在一个单一线程中。如果每个请求的任务比较少，这是可以的：一个zmq线程能在单核CPU上全速运行，没有等待，做着很多糟糕的工作。但实际中的服务器必须在每个请求中做最重要的事。在1000个client同时访问服务器的时候，单一核心就可能不够用了。所以现实中的服务器都会运行多个工作线程，然后它会尽可能快的接收请求，再把这些请求分发给工作线程。这些工作线程阵列会处理完任务，最后返回结果。</p>
+<p>　　当然，你也能用一个代理中介和额外的工作进程干这些工作，但在一个进程中一次启动16个核心业务线程总比启动16个进程来的容易。还有，启动工作线程会取消网络跳跃，延迟和阻塞。</p>
+<p>　　MT版本的Hello World服务主要是把broker和worker整合到一个进程中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">//mtserver: Multithreaded service in C</span><br><span class="line">// Multithreaded Hello World server</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line">#include &lt;pthread.h&gt;</span><br><span class="line"></span><br><span class="line">static void *worker_routine(void *context)&#123;</span><br><span class="line">	// Socket to talk to dispatcher</span><br><span class="line">	void *receiver = zmq_socket(context, ZMQ_REP);</span><br><span class="line">	zmq_connect(receiver, &quot;inproc://workkers&quot;);</span><br><span class="line"></span><br><span class="line">	while(1)&#123;</span><br><span class="line">		char *string = s_recv(receiver);</span><br><span class="line">		printf(&quot;Received request: [%s]\n&quot;, string);</span><br><span class="line">		free(string);</span><br><span class="line">		// Do some &#x27;work&#x27;</span><br><span class="line">		sleep(1);</span><br><span class="line">		// Send reply back to client</span><br><span class="line">		s_send(receiver, &quot;World&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	zmq_close(receiver);</span><br><span class="line">	return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(void)&#123;</span><br><span class="line">	void *context = zmq_ctx_new();</span><br><span class="line"></span><br><span class="line">	// Socket to talk to clients</span><br><span class="line">	void *clients = zmq_socket(context, ZMQ_ROUTER);</span><br><span class="line">	zmq_bind(clients, &quot;tcp://*:5555&quot;);</span><br><span class="line"></span><br><span class="line">	// Socket to talk to workers</span><br><span class="line">	void *workers = zmq_socket(context, ZMQ_DEALER);</span><br><span class="line">	zmq_bind(workers, &quot;inproc://workers&quot;);</span><br><span class="line"></span><br><span class="line">	// Launch pool of worker threads</span><br><span class="line">	int thread_nbr;</span><br><span class="line">	for(thread_nbr = 0; thread_nbr &lt; 5; thread_nbr++)&#123;</span><br><span class="line">		pthread_t worker;</span><br><span class="line">		pthread_create(&amp;worker, NULL, worker_routine, context);</span><br><span class="line">	&#125;</span><br><span class="line">	// Connect work threads to client threads via a queue proxy</span><br><span class="line">	zmq_proxy(clients, workers, NULL);</span><br><span class="line"></span><br><span class="line">	// We never get here, but clean up anyhow</span><br><span class="line">	zmq_close(clients);</span><br><span class="line">	zmq_close(workers);</span><br><span class="line">	zmq_ctx_destroy(context);</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/img/zmq20.png" alt="f20"></p>
+<p>　　所有的代码现在对你来说都应该是熟悉的。它是这样工作的：</p>
+<ul>
+<li>服务器启动一组工作线程。每个工作线程创建一个REP　socket然后进程向这个socket发起请求。工作线程就像单线程的服务器，唯一的区别是传输协议（是<code>inproc</code>而不是<code>tcp</code>）和绑定-连接方向。</li>
+<li>服务器创建一个ROUTER　socket去跟client通信，然后绑定在它的外部接口上(通过<code>tcp</code>)。</li>
+<li>服务器创建一个DEALER socket去跟worker通信，把它绑定在内部接口上(通过<code>inproc</code>)。</li>
+<li>服务器启动一个代理连接这两个socket。代理从所有的client公平的接收请求，然后分发到worker，它也会把结果返回给相应的client。</li>
+</ul>
+<p>　　注意创建线程的语句在大多数编程语言中都不可移植。POSIX库的是pthreads，但在Windows上你必须用另一套不同的API。在我们的例子中，<code>pthread_create</code>能启动一个运行<code>worker_routine</code>函数的新线程。我们会在第三章看到如何把它封装成一个可移植的API。</p>
+<p><strong>线程间信号(PAIR socket)</strong></p>
+<p>　　当你开始用zmq编写多线程应用的时候，你会遇到怎么同步各个线程的问题。尽管你会尝试插入”sleep”语句，或者用那些像信号量或者互斥锁的多线程技术，<strong>但你唯一应该用的就是zmq的message机制。</strong>一定要记住醉汉和啤酒的故事。</p>
+<p>　　让我们启动三个线程，在它们准备好的时候就发送信号。在这个例子中，我们使用基于inproc协议的PAIR　socket。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">//mtrelay: Multithreaded relay in C</span><br><span class="line">//  Multithreaded relay]</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line">#include &lt;pthread.h&gt;</span><br><span class="line"></span><br><span class="line">static void *</span><br><span class="line">step1 (void *context) &#123;</span><br><span class="line">    //  Connect to step2 and tell it we&#x27;re ready</span><br><span class="line">    void *xmitter = zmq_socket (context, ZMQ_PAIR);</span><br><span class="line">    zmq_connect (xmitter, &quot;inproc://step2&quot;);</span><br><span class="line">    printf (&quot;Step 1 ready, signaling step 2\n&quot;);</span><br><span class="line">    s_send (xmitter, &quot;READY&quot;);</span><br><span class="line">    zmq_close (xmitter);</span><br><span class="line"></span><br><span class="line">    return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">static void *</span><br><span class="line">step2 (void *context) &#123;</span><br><span class="line">    //  Bind inproc socket before starting step1</span><br><span class="line">    void *receiver = zmq_socket (context, ZMQ_PAIR);</span><br><span class="line">    zmq_bind (receiver, &quot;inproc://step2&quot;);</span><br><span class="line">    pthread_t thread;</span><br><span class="line">    pthread_create (&amp;thread, NULL, step1, context);</span><br><span class="line"></span><br><span class="line">    //  Wait for signal and pass it on</span><br><span class="line">    char *string = s_recv (receiver);</span><br><span class="line">    free (string);</span><br><span class="line">    zmq_close (receiver);</span><br><span class="line"></span><br><span class="line">    //  Connect to step3 and tell it we&#x27;re ready</span><br><span class="line">    void *xmitter = zmq_socket (context, ZMQ_PAIR);</span><br><span class="line">    zmq_connect (xmitter, &quot;inproc://step3&quot;);</span><br><span class="line">    printf (&quot;Step 2 ready, signaling step 3\n&quot;);</span><br><span class="line">    s_send (xmitter, &quot;READY&quot;);</span><br><span class="line">    zmq_close (xmitter);</span><br><span class="line"></span><br><span class="line">    return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main (void)</span><br><span class="line">&#123;</span><br><span class="line">    void *context = zmq_ctx_new ();</span><br><span class="line"></span><br><span class="line">    //  Bind inproc socket before starting step2</span><br><span class="line">    void *receiver = zmq_socket (context, ZMQ_PAIR);</span><br><span class="line">    zmq_bind (receiver, &quot;inproc://step3&quot;);</span><br><span class="line">    pthread_t thread;</span><br><span class="line">    pthread_create (&amp;thread, NULL, step2, context);</span><br><span class="line"></span><br><span class="line">    //  Wait for signal</span><br><span class="line">    char *string = s_recv (receiver);</span><br><span class="line">    free (string);</span><br><span class="line">    zmq_close (receiver);</span><br><span class="line"></span><br><span class="line">    printf (&quot;Test successful!\n&quot;);</span><br><span class="line">    zmq_ctx_destroy (context);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/img/zmq21.png" alt="f21"></p>
+<p>　　这是用zmq写多线程程序的一个经典模型：</p>
+<ol>
+<li>两个线程通过<code>inproc</code>通信，使用共享的context。</li>
+<li>父线程创建一个socket，把它绑定到一个<code>inproc://</code>端点，这之后才启动子线程，把context传递过去。</li>
+<li>子线程创建第二个socket，连接到那个<code>inproc://</code>端点，这之后才去给父线程发送信号说自己准备好了。</li>
+</ol>
+<p>　　注意基于这种模型的多线程代码不能扩展成多个进程。如果你使用了<code>inproc</code>和socket对，你正在构建的是一个紧耦合的应用，例如你的线程结构上是相互依赖的。最好只在延迟是致命的时候才这样做。另一种设计模型是松耦合应用，在那种模型中线程有自己的context，通信是通过<code>ipc</code>或<code>tcp</code>。你可以很容易把松耦合的线程转移到单独的进程中。</p>
+<p>　　这是我们第一次用PAIR　socket做例子。为什么用PAIR呢？其他的socket组合看起来也能工作，但是它们用信号的时候都会有副作用：</p>
+<ul>
+<li>你可以用PUSH发送，PULL接收。这看起来很简单也能工作，但记住PUSH会把message发送给所有可能的接收者。如果你不小心启动了两个接收者（比如已经有一个接收者在跑着了，你又启动了一个），你可能会“丢失”一半的信号。PAIR的优势之一就是最多只能有一个连接，这个socket对是排他的。</li>
+<li>你可以用DEALER发送，用ROUTER接收。但是ROUTER会把你的message封装到一个”信封”中，这意味着零字节长度的信号会变成一个多帧message。如果你不关心数据，把所有接收到的东西都当成一个有效的信号，并且不会从这个socket上读取多次，那就没问题。但是，如果你想要发送真正的数据，你会忽然发现ROUTER给你的是“错误的”message。DEALER也会分发message，带来跟PUSH一样的风险。</li>
+<li>你可以用PUB发送，用SUB接收。这会正确递送你的message并且PUB不会像PUSH或DEALER那样分发数据。但是，你需要用一个空的订阅信息配置SUB，这会比较麻烦。</li>
+</ul>
+<p>　　综合以上理由，PAIR是线程对间同步的最佳选择。</p>
+<p><strong>节点同步</strong></p>
+<p>　　当你想在网络中同步一组节点的时候，PAIR socket就不会那么有帮助了额。这是少数几个线程和节点策略的不同之一。原则上讲，节点会随时接入和退出，但线程通常是静态的。PAIR scoket不会在远端节点退出和再次接入的时候自动重连。</p>
+<p><img src="/img/zmq22.png" alt="f22"></p>
+<p>　　线程和节点之间第二个明显的不同是你通常会有固定数目的线程，但节点的数目通常是可变的。我们拿先前的一个例子（天气预报server和client），用节点同步去保证订阅者不会在启动的时候丢失数据。</p>
+<p>　　下面是该应用如何工作的：</p>
+<ul>
+<li>发布者提前知道会有多少个订阅者，这是从某个地方得到的魔法数据（注：凭空知道的，可能提前配置好的静态数据，不是程序通过自动计算等方式得出的）。</li>
+<li>发布者启动并等待所有的订阅者接入。这是节点同步的部分。每个订阅者建立订阅然后通过另一个socket告诉发布者它已经准备好接收数据了。</li>
+<li>当发布者知道所有的订阅者都已经准备好了，它就开始发布数据。</li>
+</ul>
+<p>　　在这个例子中，我们会使用REQ-REP socket流去同步订阅者和发布者，下面是发布者：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">// syncpub: Synchronized publisher in C</span><br><span class="line"> 	// Synchronized publisher</span><br><span class="line"> 	#include &quot;zhelpers.h&quot;</span><br><span class="line"> 	#define SUBSCRIBERS_EXPECTED  10  ////  We wait for 10 subscribers //</span><br><span class="line"></span><br><span class="line"> 	int main (void)&#123;</span><br><span class="line">  	void *context = zmq_ctx_new ();</span><br><span class="line"></span><br><span class="line">    //  Socket to talk to clients</span><br><span class="line">    void *publisher = zmq_socket (context, ZMQ_PUB);</span><br><span class="line"></span><br><span class="line">    int sndhwm = 1100000;</span><br><span class="line">    zmq_setsockopt (publisher, ZMQ_SNDHWM, &amp;sndhwm, sizeof (int));</span><br><span class="line"></span><br><span class="line">    zmq_bind (publisher, &quot;tcp://*:5561&quot;);</span><br><span class="line"></span><br><span class="line">    //  Socket to receive signals</span><br><span class="line">    void *syncservice = zmq_socket (context, ZMQ_REP);</span><br><span class="line">    zmq_bind (syncservice, &quot;tcp://*:5562&quot;);</span><br><span class="line"></span><br><span class="line">    //  Get synchronization from subscribers</span><br><span class="line">    printf (&quot;Waiting for subscribers\n&quot;);</span><br><span class="line">    int subscribers = 0;</span><br><span class="line">    while (subscribers &lt; SUBSCRIBERS_EXPECTED) &#123;</span><br><span class="line">        //  - wait for synchronization request</span><br><span class="line">        char *string = s_recv (syncservice);</span><br><span class="line">        free (string);</span><br><span class="line">        //  - send synchronization reply</span><br><span class="line">        s_send (syncservice, &quot;&quot;);</span><br><span class="line">        subscribers++;</span><br><span class="line">    &#125;</span><br><span class="line">    //  Now broadcast exactly 1M updates followed by END</span><br><span class="line">    printf (&quot;Broadcasting messages\n&quot;);</span><br><span class="line">    int update_nbr;</span><br><span class="line">    for (update_nbr = 0; update_nbr &lt; 1000000; update_nbr++)</span><br><span class="line">        s_send (publisher, &quot;Rhubarb&quot;);</span><br><span class="line"></span><br><span class="line">    s_send (publisher, &quot;END&quot;);</span><br><span class="line"></span><br><span class="line">    zmq_close (publisher);</span><br><span class="line">    zmq_close (syncservice);</span><br><span class="line">    zmq_ctx_destroy (context);</span><br><span class="line">    return 0;</span><br><span class="line"> 	&#125;</span><br></pre></td></tr></table></figure>
+<p>　　下面是订阅者的代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">// syncsub: Synchronized subscriber in C</span><br><span class="line">// Synchronized subscriber</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line">int main(void)&#123;</span><br><span class="line">	void *context = zmq_ctx_new ();</span><br><span class="line"></span><br><span class="line">  //  First, connect our subscriber socket</span><br><span class="line">  void *subscriber = zmq_socket (context, ZMQ_SUB);</span><br><span class="line">  zmq_connect (subscriber, &quot;tcp://localhost:5561&quot;);</span><br><span class="line">  zmq_setsockopt (subscriber, ZMQ_SUBSCRIBE, &quot;&quot;, 0);</span><br><span class="line"></span><br><span class="line">  //  0MQ is so fast, we need to wait a while…</span><br><span class="line">  sleep (1);</span><br><span class="line"></span><br><span class="line">  //  Second, synchronize with publisher</span><br><span class="line">  void *syncclient = zmq_socket (context, ZMQ_REQ);</span><br><span class="line">  zmq_connect (syncclient, &quot;tcp://localhost:5562&quot;);</span><br><span class="line"></span><br><span class="line">  //  - send a synchronization request</span><br><span class="line">  s_send (syncclient, &quot;&quot;);</span><br><span class="line"></span><br><span class="line">  //  - wait for synchronization reply</span><br><span class="line">  char *string = s_recv (syncclient);</span><br><span class="line">  free (string);</span><br><span class="line"></span><br><span class="line">  //  Third, get our updates and report how many we got</span><br><span class="line">  int update_nbr = 0;</span><br><span class="line">  while (1) &#123;</span><br><span class="line">      char *string = s_recv (subscriber);</span><br><span class="line">      if (strcmp (string, &quot;END&quot;) == 0) &#123;</span><br><span class="line">          free (string);</span><br><span class="line">          break;</span><br><span class="line">      &#125;</span><br><span class="line">      free (string);</span><br><span class="line">      update_nbr++;</span><br><span class="line">  &#125;</span><br><span class="line">  printf (&quot;Received %d updates\n&quot;, update_nbr);</span><br><span class="line"></span><br><span class="line">  zmq_close (subscriber);</span><br><span class="line">  zmq_close (syncclient);</span><br><span class="line">  zmq_ctx_destroy (context);</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　下面这个Bash shell脚本会启动10个订阅者，然后启动发布者：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;Starting subscribers...&quot;</span><br><span class="line">for ((a=0; a&lt;10; a++)); do</span><br><span class="line">    syncsub &amp;</span><br><span class="line">done</span><br><span class="line">echo &quot;Starting publisher...&quot;</span><br><span class="line">syncpub</span><br></pre></td></tr></table></figure>
+<p>　　它会给我们以下让人高兴的输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Starting subscribers...</span><br><span class="line">Starting publisher...</span><br><span class="line">Received 1000000 updates</span><br><span class="line">Received 1000000 updates</span><br><span class="line">...</span><br><span class="line">Received 1000000 updates</span><br><span class="line">Received 1000000 updates</span><br></pre></td></tr></table></figure>
+<p>　　我们不能假定SUB连接会在REQ&#x2F;REP会话建立完成时建立好。如果你使用除<code>inproc</code>之外的任何协议，都不能保证外部连接以某种顺序完成。所以，例子中暴力的在订阅动作之前强制的睡眠了1秒，然后才去发送REQ&#x2F;REP同步信号。</p>
+<p>　　一个更健壮的模型应该是：</p>
+<ul>
+<li>发布者打开PUB socket，然后发送”Hello”message(不是数据)。</li>
+<li>订阅者连接SUB　socket，等它们接收到一个Hello　message的时候通过REQ&#x2F;REP　socket对告诉发布者它们准备好了。</li>
+<li>当发布者收到了所有需要的确认之后，它就开始发送真正的数据。</li>
+</ul>
+<p><strong>零拷贝</strong></p>
+<p>　　zmq的message API能让你不用拷贝数据就直接从应用缓冲区发送和接收message。我们称这为<em>零拷贝</em>，其能在一些应用中提高性能。</p>
+<p>　　你应该在高频率发送大数据块(成千bytes)这种典型情况的时候考虑使用零拷贝。对较小的数据块或者较低的发送频率来说，使用零拷贝会让你的代码一团糟，弊远大于利。像所有的优化手段那样，只在你知道它有帮助的时候才使用，并且优化前后做好<em>权衡</em>。</p>
+<p>　　要使用零拷贝，你需要用<code>zmq_msg_init_data()</code>去创建一条指向已经用<code>malloc()</code>或其他内存管理器申请过的数据块的message，然后把它传给<code>zmq_msg_send()</code>。当你创建message的时候，你也要传进去一个函数，zmq会在发送完调用这个函数去释放掉数据块的内存。下面是个最简单的例子，假设<code>buffer</code>是申请在堆上的1000字节的内存块：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">void my_free (void *data, void *hint) &#123;</span><br><span class="line">    free (data);</span><br><span class="line">&#125;</span><br><span class="line">//  Send message from buffer, which we allocate and 0MQ will free for us</span><br><span class="line">zmq_msg_t message;</span><br><span class="line">zmq_msg_init_data (&amp;message, buffer, 1000, my_free, NULL);</span><br><span class="line">zmq_msg_send (&amp;message, socket, 0);　</span><br></pre></td></tr></table></figure>
+<p>　　注意你不需要在发送完message之后调用<code>zmq_msg_close()</code>了——libzmq会在它发送完数据之后自动做这个工作。</p>
+<p>　　没办法在接收的时候使用零拷贝：zmq会给你个缓冲区，你想用多久就用多久，但它不会把数据直接写到应用缓冲区中。</p>
+<p>　　在写程序时候，zmq的多帧message跟零拷贝能完美的协同工作。在传统的消息队列中，你需要把几个不同的缓冲区收集起来放到一个你能发送的缓冲区中。这意味着需要复制数据，使用zmq，你就可以把不同来源的缓冲区当成单独的message帧一起发送出去。把每个缓冲区当成由长度分隔的帧。对应用层来说，它就像一系列的发送和接收调用。在zmq内部，这些不同的部分是用单独的系统调用去发送到网络中和从网络中读取的。所以它非常高效。</p>
+<p><strong>Pub-Sub message信封</strong></p>
+<p>　　在pub-sub模型中，我们把键分割成的单独的message帧称作<em>信封</em>。如果你想用pub-sub信封，需要自己去实现。这是可选的，在前一个pub-sub例子中我们并没有这么做。对简单的情况来说使用pub-sub信封有点儿麻烦，但在实际的情形中这就会比较清晰，因为那里键和数据是自然独立的东西。</p>
+<p><img src="/img/zmq23.png" alt="f23"></p>
+<p>　　回忆下订阅时候做的前缀匹配。这就是说，它们会查看”所有以XYZ开头的message”。这里一个明显的问题是：这么把键跟数据分割开来，不让前缀匹配匹配到真实数据。最好的答案是用一个信封，因为这种匹配不会超过一个帧的范围。下面这个简单的例子展示了pub-sub信封在代码中看起来是怎样的。这个发布者发送两种类型的message:A和Ｂ.</p>
+<p>　　信封持有message的类型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">// psenvpub: Pub-Sub envelope publisher in C</span><br><span class="line">// Pubsub envelope publisher</span><br><span class="line">// Note that the zhelpers.h file also provides s_sendmore</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)&#123;</span><br><span class="line">	//  Prepare our context and publisher</span><br><span class="line">    void *context = zmq_ctx_new ();</span><br><span class="line">    void *publisher = zmq_socket (context, ZMQ_PUB);</span><br><span class="line">    zmq_bind (publisher, &quot;tcp://*:5563&quot;);</span><br><span class="line"></span><br><span class="line">    while (1) &#123;</span><br><span class="line">        //  Write two messages, each with an envelope and content</span><br><span class="line">        s_sendmore (publisher, &quot;A&quot;);</span><br><span class="line">        s_send (publisher, &quot;We don&#x27;t want to see this&quot;);</span><br><span class="line">        s_sendmore (publisher, &quot;B&quot;);</span><br><span class="line">        s_send (publisher, &quot;We would like to see this&quot;);</span><br><span class="line">        sleep (1);</span><br><span class="line">    &#125;</span><br><span class="line">    //  We never get here, but clean up anyhow</span><br><span class="line">    zmq_close (publisher);</span><br><span class="line">    zmq_ctx_destroy (context);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　订阅者只想接收B类型的message:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">// psenvsub: Pub-Sub envelope subscriber in C</span><br><span class="line"></span><br><span class="line">// Pubsub envelope subscriber</span><br><span class="line"></span><br><span class="line">#include &quot;zhelpers.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)&#123;</span><br><span class="line">	//  Prepare our context and subscriber</span><br><span class="line">    void *context = zmq_ctx_new ();</span><br><span class="line">    void *subscriber = zmq_socket (context, ZMQ_SUB);</span><br><span class="line">    zmq_connect (subscriber, &quot;tcp://localhost:5563&quot;);</span><br><span class="line">    zmq_setsockopt (subscriber, ZMQ_SUBSCRIBE, &quot;B&quot;, 1);</span><br><span class="line"></span><br><span class="line">    while (1) &#123;</span><br><span class="line">        //  Read envelope with address</span><br><span class="line">        char *address = s_recv (subscriber);</span><br><span class="line">        //  Read message contents</span><br><span class="line">        char *contents = s_recv (subscriber);</span><br><span class="line">        printf (&quot;[%s] %s\n&quot;, address, contents);</span><br><span class="line">        free (address);</span><br><span class="line">        free (contents);</span><br><span class="line">    &#125;</span><br><span class="line">    //  We never get here, but clean up anyhow</span><br><span class="line">    zmq_close (subscriber);</span><br><span class="line">    zmq_ctx_destroy (context);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　当你运行这两个程序，订阅者会显示以下的东西：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[B] We would like to see this</span><br><span class="line">[B] We would like to see this</span><br><span class="line">[B] We would like to see this</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>　　这个例子显示了订阅者过滤器拒绝或者接受真个的多帧message(键值加上数据)。你永远不会值得到一个多帧message的某个部分。如果你订阅了多个发布者，你想知道它们的地址以便通过另一个socket给它们发送数据（这就是个典型的应用场景），你需要创建一个三帧的message。</p>
+<p><img src="/img/zmq24.png" alt="f24"></p>
+<p><strong>高水位标记</strong></p>
+<p>　　当你能在进程间快速发送message的时候，你很快就能发现内存是个稀缺的资源，会一点点被用完。进程某处的几秒延迟能让一个server由于积压数据而崩溃，除非你能理解问题出在哪儿并提前做出预防。</p>
+<p>　　这里的问题是：想象你用进程A给B高频率的发送message，B会处理接收的message。一瞬间B变得很忙很忙(垃圾收集，CPU过载，不管出于什么原因)，不能在很短的时间及时处理message。它可能是几秒钟的大垃圾收集工作，或者遇到更严重的问题时的更长时间的任务，这时A进程继续发送给B的message会发生什么事呢？一部分会存放在B的网络缓冲区汇总，一部分会在传输网络中，一些会在A的网络缓冲区中，剩下的会在A的内存中积累，在A发送快速的积累起来。如果你不做些预防工作，A很快会用光内存然后挂掉。</p>
+<p>　　这是消息中间件一个始终存在的、经典的问题。表面上看B出错会让事情变得更严重，B是一个典型的为用户写的应用，A是不能控制的。</p>
+<p>　　答案是什么呢？一个解决方法是把问题抛到上游。A正从别的不知名的地方获取message，然后上游逻辑告诉它，“停！”。这叫做<em>流控制</em>。这听起来是可行的，但如果你正在发送一条Twitter呢？你要告诉全世界在B完成它的任务的时候都等等吗？</p>
+<p>　　流控制在一些情形能工作，但在另一些情况下并不能。传输层不能告诉应用层去“停止”，就像地铁系统并不能告诉一大单生意：“让你的人员都再工作半小时，我太忙了”。另一个答案是设置缓冲区的大小限制，然后当我们达到这些限制的时候，就采取一些而别的措施。在一些情形中(不是在一个地铁系统中)，答案是放弃一些message。在别的情况下，最好的策略是等待一下。<br>　　<br>　　zmq用HWM(high-wather mark高水位)的概念去定义内部管道的容量。每个进入socket或者出去socket的连接都有它自己的管道和发送和&#x2F;或接收的HWM，根据socket类型的不同有不同的情况。一些socket（PUB,PUSH）只有发送高缓冲区，一些(SUB,PULL,REQ,REP)只有接收缓冲区，另一些(DEALER,ROUTER,PAIR)两种都有。</p>
+<p>　　在zmq v2.x版本中，HWM被默认为无限大小。这很容易，但对一些大数据量的发布者来说这是个致命的错误。在zmq v3.x版本中，默认被设置为1,000，　这就相当灵敏了。如果你还在用zmq v2.x版本，你最好总是设置好socket的HWM为1000来跟zmq v3.x版本相适应，或者通盘考虑message大小和期望的订阅者的性能以后确定的其他数值。</p>
+<p>　　当socket到达高水位后，它会根据socket的类型来决定是阻塞住还是丢掉数据。PUB和ROUTER socket在到达高水位后会丢掉数据，其他的socket类型会阻塞住。在<code>inproc</code>传输协议中，发送者和接收者共享同一个缓冲区，因此实际的高水位是两端设置高水位的和。</p>
+<p>　　最后，高水位并不准确；默认你能在缓冲区中保存最多1000条message，但实际上真正的缓冲区大小会小的多(差不多一半大小)，这是libzmq的队列实现方式的问题。</p>
+<p><strong>丢失message问题的解决办法</strong></p>
+<p>　　当你用zmq编写应用的时候，你会不止一次遇到这个问题：没有收到你希望收到的message。我们把一些常见的原因都归结到下面这个图标中了：</p>
+<p><img src="/img/zmq25.png" alt="f25"></p>
+<p>　　下面是关于图表的一些说明：</p>
+<ul>
+<li>在SUB socket上，用<code>zmq_setsocketopt()</code>和<code>ZMQ_SUBSCRIBE</code>设置订阅，否则你不会收到message。因为你是根据前缀订阅message的，如果你订阅了””（一个空的订阅设置），你会得到所有类型的message。</li>
+<li>如果你在PUB socket已经启动并发送数据之后才启动SUB　socket(比如说建立一个跟PUB socket的连接)，你会丢掉在连接建立之前的所有数据。如果这是个问题的话，你需要设计你的架构，让SUB　socket先启动，然后才让PUB　socket再开始发布数据。</li>
+<li>及时你对SUB和PUB socket做了同步机制，也有可能丢失数据。这是因为内部的队列在连接真正建立起来并没有被创建。如果你能换一下绑定&#x2F;连接的方向，让SUB　socket绑定，让PUB连接，你会发现这更符合你期望的。</li>
+<li>如果用了REP和REQ socket，并且没严格遵守发送&#x2F;接收&#x2F;发送&#x2F;接收的同步顺序，zmq会报告错误，你可以忽略该错误。然后，那看起来就像是你丢失了message。如果你要使用REQ或者REP，需要严格遵守了发送／接收的顺序，并且在实际代码中总是检测zmq调用的错误。</li>
+<li>如果你在使用PUSH socket，你会发现第一个连接上的PULL　socket会抓取一个没有公平分配的message份额。message精确的分配只在所有PULL　socket成功建立连接后才会发生，这需要几毫秒的时间。作为一种PUSH&#x2F;PULL的替代，对低数据量的情况，考虑使用ROUTER&#x2F;DEALER和负载均衡模式</li>
+<li>如果你在线程间共享了socket，必要这么做。这样会造成随机的奇怪问题和宕机。</li>
+<li>如果你在用<code>inproc</code>，确保两端的socket都在同一个上下文context中。否则连接会不成功。并且，需要先绑定，后连接。<code>inproc</code>不像<code>tcp</code>那样是非连接协议。</li>
+<li>如果你在用ROUTER socket，发送不正确的认证id帧(或者忘记发送一个认证id帧)会很容易造成收不到message。通常在ROUTER socket上设置<code>ZMQ_ROUTER_MANDATORY</code>选项是个好主意，但也需要每次检查调用函数的返回码。</li>
+<li>最后，如果你真的找不到　哪里出错了，做一个<em>最小的</em>测试例子重现问题，然后去zmq社区找找帮助。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2014/10/14/zmq%E4%B8%AD%E6%96%87%E6%8C%87%E5%8D%97-2/" title="zmq中文指南_2">https://suntus.github.io/2014/10/14/zmq中文指南-2/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tr/" rel="tag"># tr</a>
+              <a href="/tags/zmq/" rel="tag"># zmq</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2014/10/13/zmq%E4%B8%AD%E6%96%87%E6%8C%87%E5%8D%97-1/" rel="prev" title="zmq中文指南_1">
+      <i class="fa fa-chevron-left"></i> zmq中文指南_1
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2014/11/06/%E6%A3%80%E6%9F%A5%E7%9C%8B%E9%97%A8%E7%8B%97%E6%98%AF%E7%A1%AC%E4%BB%B6%E8%BF%98%E6%98%AF%E8%BD%AF%E4%BB%B6%E6%94%AF%E6%8C%81/" rel="next" title="检查看门狗是硬件还是软件支持">
+      检查看门狗是硬件还是软件支持 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%E2%80%94%E2%80%94socket%E5%92%8C%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">第二章——socket和模式</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

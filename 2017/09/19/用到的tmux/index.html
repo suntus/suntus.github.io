@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="终端复用软件，跟screen一样，但是要强大的多。 1. 典型应用场景自己电脑是客户端，平常ssh到linux服务器上编译运行调试软件，网络断开或者自己电脑挂掉之后，不想服务器上运行的程序也挂掉，这时候就可以用tmux了。还有就是tmux能方便的多开好几个窗口。tmux的作用是代理终端，以前你直接通过ssh通道来操作服务器的终端，现在通过ssh通道启动了1个tmux程序，由tmux程序代替你控制多">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用到的tmux">
+<meta property="og:url" content="https://suntus.github.io/2017/09/19/%E7%94%A8%E5%88%B0%E7%9A%84tmux/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="终端复用软件，跟screen一样，但是要强大的多。 1. 典型应用场景自己电脑是客户端，平常ssh到linux服务器上编译运行调试软件，网络断开或者自己电脑挂掉之后，不想服务器上运行的程序也挂掉，这时候就可以用tmux了。还有就是tmux能方便的多开好几个窗口。tmux的作用是代理终端，以前你直接通过ssh通道来操作服务器的终端，现在通过ssh通道启动了1个tmux程序，由tmux程序代替你控制多">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://suntus.github.io/img/tmux-1.png">
+<meta property="article:published_time" content="2017-09-19T09:15:10.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.615Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tools">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://suntus.github.io/img/tmux-1.png">
+
+<link rel="canonical" href="https://suntus.github.io/2017/09/19/%E7%94%A8%E5%88%B0%E7%9A%84tmux/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>用到的tmux | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2017/09/19/%E7%94%A8%E5%88%B0%E7%9A%84tmux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用到的tmux
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-19 17:15:10" itemprop="dateCreated datePublished" datetime="2017-09-19T17:15:10+08:00">2017-09-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>终端复用软件，跟screen一样，但是要强大的多。</p>
+<h2 id="1-典型应用场景"><a href="#1-典型应用场景" class="headerlink" title="1. 典型应用场景"></a>1. 典型应用场景</h2><p>自己电脑是客户端，平常ssh到linux服务器上编译运行调试软件，网络断开或者自己电脑挂掉之后，不想服务器上运行的程序也挂掉，这时候就可以用tmux了。还有就是tmux能方便的多开好几个窗口。tmux的作用是代理终端，以前你直接通过ssh通道来操作服务器的终端，现在通过ssh通道启动了1个tmux程序，由tmux程序代替你控制多个终端，这样你就拥有了一组终端，所以是个服务器开发神器。这个神器差不多长这样：<br><img src="/img/tmux-1.png" alt="image.png"></p>
+<span id="more"></span>
+<h2 id="2-配置"><a href="#2-配置" class="headerlink" title="2. 配置"></a>2. 配置</h2><p>跟vim差不多，也是要在服务器本用户主目录下边放一个配置文件<code>.tmux.conf</code>，直接用这个吧，有些东西自己想调整可以看着改：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br></pre></td><td class="code"><pre><span class="line"># (‑●‑●)&gt; released under the WTFPL v2 license, by Gregory Pakosz (@gpakosz)</span><br><span class="line">unbind C-b</span><br><span class="line">set -g prefix C-a</span><br><span class="line"></span><br><span class="line">#up</span><br><span class="line">bind-key k select-pane -U</span><br><span class="line">#down</span><br><span class="line">bind-key j select-pane -D</span><br><span class="line">#left</span><br><span class="line">bind-key h select-pane -L</span><br><span class="line">#right</span><br><span class="line">bind-key l select-pane -R</span><br><span class="line"></span><br><span class="line">#在当前路径打开新窗口</span><br><span class="line">bind-key c new-window -c &quot;#&#123;pane_current_path&#125;&quot;</span><br><span class="line">bind-key &#x27;&quot;&#x27; split-window -c &quot;#&#123;pane_current_path&#125;&quot;</span><br><span class="line">bind-key % split-window -h -c &quot;#&#123;pane_current_path&#125;&quot;</span><br><span class="line"></span><br><span class="line">#select last window</span><br><span class="line">bind-key C-l select-window -l</span><br><span class="line"></span><br><span class="line">#copy-mode 将快捷键设置为vi 模式</span><br><span class="line">setw -g mode-keys vi</span><br><span class="line"># use the powerline patched font variant of the theme, possible values are:</span><br><span class="line"># - default</span><br><span class="line"># - powerline</span><br><span class="line">tmux_conf_theme=default</span><br><span class="line">#tmux_conf_theme=powerline</span><br><span class="line"></span><br><span class="line"># display an indicator in the status line when the prefix key has been pressed,</span><br><span class="line"># possible values are:</span><br><span class="line"># - enabled</span><br><span class="line"># - disabled</span><br><span class="line">tmux_conf_theme_prefix=disabled</span><br><span class="line">#tmux_conf_theme_prefix=enabled</span><br><span class="line"></span><br><span class="line"># display the battery information in the status line, possible values are:</span><br><span class="line"># - enabled</span><br><span class="line"># - disabled</span><br><span class="line">tmux_conf_theme_battery=enabled</span><br><span class="line">#tmux_conf_theme_battery=disabled</span><br><span class="line"></span><br><span class="line"># style to use for the battery status, possible values are:</span><br><span class="line"># - bar</span><br><span class="line"># - percentage</span><br><span class="line">tmux_conf_battery_style=bar</span><br><span class="line">#tmux_conf_battery_style=percentage</span><br><span class="line"></span><br><span class="line"># symbols to use for battery status, possible values are:</span><br><span class="line"># - block</span><br><span class="line"># - heart</span><br><span class="line">tmux_conf_battery_symbol=block</span><br><span class="line">#tmux_conf_battery_symbol=heart</span><br><span class="line"></span><br><span class="line"># number of symbols to use for battery status</span><br><span class="line">tmux_conf_battery_symbol_count=auto</span><br><span class="line">#tmux_conf_battery_symbol_count=5</span><br><span class="line"></span><br><span class="line"># palette used for the battery status, possible values are:</span><br><span class="line"># - &#x27;colour_full_fg,colour_empty_fg,colour_bg&#x27;</span><br><span class="line"># - heat</span><br><span class="line"># - gradient</span><br><span class="line">tmux_conf_battery_palette=&#x27;#d70000,#e4e4e4,#000000&#x27;</span><br><span class="line">#tmux_conf_battery_palette=colour160,colour254,colour16</span><br><span class="line">#tmux_conf_battery_palette=heat</span><br><span class="line">#tmux_conf_battery_palette=gradient</span><br><span class="line"></span><br><span class="line"># display the battery status: charging (U+26A1) / discharging (U+1F50B)</span><br><span class="line">tmux_conf_battery_status=enabled</span><br><span class="line">#tmux_conf_battery_status=disabled</span><br><span class="line"></span><br><span class="line"># or alternatively use an external tool, e.g. [https://github.com/Goles/Battery](https://github.com/Goles/Battery)</span><br><span class="line">#tmux_conf_battery=&#x27;#(battery -t) &#x27;</span><br><span class="line"></span><br><span class="line"># display the time in the status line, possible values are:</span><br><span class="line"># - enabled</span><br><span class="line"># - disabled</span><br><span class="line">tmux_conf_theme_time=enabled</span><br><span class="line">#tmux_conf_theme_time=disabled</span><br><span class="line"></span><br><span class="line"># display the date in the status line, possible values are:</span><br><span class="line"># - enabled</span><br><span class="line"># - disabled</span><br><span class="line">tmux_conf_theme_date=enabled</span><br><span class="line">#tmux_conf_theme_date=disabled</span><br><span class="line"></span><br><span class="line"># display the username in the status line, possible values are:</span><br><span class="line"># - enabled</span><br><span class="line"># - disabled</span><br><span class="line"># - ssh</span><br><span class="line">tmux_conf_theme_username=enabled</span><br><span class="line">#tmux_conf_theme_username=disabled</span><br><span class="line">#tmux_conf_theme_username=ssh</span><br><span class="line"></span><br><span class="line"># display the hostname in the status line, possible values are:</span><br><span class="line"># - enabled</span><br><span class="line"># - disabled</span><br><span class="line"># - ssh</span><br><span class="line">tmux_conf_theme_hostname=enabled</span><br><span class="line">#tmux_conf_theme_hostname=disabled</span><br><span class="line">#tmux_conf_theme_hostname=ssh</span><br><span class="line"></span><br><span class="line"># highlight focuse pane, possible values are:</span><br><span class="line"># - enabled</span><br><span class="line"># - disabled</span><br><span class="line">tmux_conf_theme_highlight_focused_pane=disabled</span><br><span class="line">#tmux_conf_theme_highlight_focused_pane=enabled</span><br><span class="line"></span><br><span class="line"># should new windows retain current path, possible values are:</span><br><span class="line"># - true</span><br><span class="line"># - false</span><br><span class="line">tmux_conf_new_windows_retain_current_path=false</span><br><span class="line">#tmux_conf_new_windows_retain_current_path=true</span><br><span class="line"></span><br><span class="line"># should new panes reatin current path, possible values are:</span><br><span class="line"># - true</span><br><span class="line"># - false</span><br><span class="line">tmux_conf_new_panes_retain_current_path=true</span><br><span class="line">#tmux_conf_new_panes_retain_current_path=false</span><br><span class="line"></span><br><span class="line"># prompt for session name when creating a new session, possible values are:</span><br><span class="line"># - true</span><br><span class="line"># - false</span><br><span class="line">tmux_conf_new_session_prompt=false</span><br><span class="line">#tmux_conf_new_session_prompt=true</span><br><span class="line"></span><br><span class="line"># if you&#x27;re running tmux within iTerm2</span><br><span class="line"># - and tmux is 1.9 or 1.9a</span><br><span class="line"># - and iTerm2 is configured to let option key act as +Esc</span><br><span class="line"># - and iTerm2 is configured to send [1;9A -&gt; [1;9D for option + arrow keys</span><br><span class="line"># then uncomment the following line to make Meta + arrow keys mapping work</span><br><span class="line">#set -g terminal-overrides &quot;*:kUP3=\e[1;9A,*:kDN3=\e[1;9B,*:kRIT3=\e[1;9C,*:kLFT3=\e[1;9D&quot;</span><br><span class="line"></span><br><span class="line"># ------------------------------------------------------------------------------</span><br><span class="line"># this is the place to further customize tmux&#x27;s configuration</span><br><span class="line"></span><br><span class="line">#set -g history-limit 10000</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-几个概念"><a href="#3-几个概念" class="headerlink" title="3. 几个概念"></a>3. 几个概念</h2><ol>
+<li>session，会话</li>
+<li>window，窗口</li>
+<li>panel，面板</li>
+</ol>
+<p>关系是“1个会话会包含几个窗口，1个窗口会包含几个面板”<br>当然，1个ssh通道可以启动好几个会话，每个会话都可以detach和attach，从而一下子恢复一组工作空间。网络断开之后也会恢复哦，不过服务器重启就没办法了，毕竟tmux是跑在服务器上的软件。</p>
+<h2 id="4-常用命令"><a href="#4-常用命令" class="headerlink" title="4. 常用命令"></a>4. 常用命令</h2><p><strong>4.1 在tmux之外的命令</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 新建1个名叫hello的session</span><br><span class="line">tmux new -s hello</span><br><span class="line"></span><br><span class="line"># 列出当前有几个session</span><br><span class="line">tmux ls</span><br><span class="line"></span><br><span class="line"># 挂接到名叫hello的session，恢复先前的工作空间</span><br><span class="line">tmux at -t hello</span><br></pre></td></tr></table></figure>
+
+<p><strong>4.2 进入tmux后的命令</strong>。一般来说在tmux内部的常用命令都是组合键，先按下前缀键，再按下后边跟着的那个键。默认的前缀键是ctrl+b，上边的配置修改成了ctrl+a，因为a距离更近啊：）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"># 退出当前panel；如果当前panel是该window的最后一个，就退出该window；如果该window是该session的最后1个，就退出该session。这个不带前缀键。</span><br><span class="line">ctrl+d</span><br><span class="line"></span><br><span class="line"># 安全退出当前session(detach)，这样你以后还能重新挂接(attach)上来恢复工作空间。</span><br><span class="line">ctrl+a, d</span><br><span class="line"></span><br><span class="line"># 浏览并切换session</span><br><span class="line">ctrl+a, s</span><br><span class="line"></span><br><span class="line"># 浏览当前配置使用的快捷键列表，按q退出</span><br><span class="line">ctrl+a, ?</span><br><span class="line"></span><br><span class="line"># 新建一个window</span><br><span class="line">ctrl+a, c</span><br><span class="line"></span><br><span class="line"># 在前后两个window之间跳转</span><br><span class="line">ctrl+a, ctrl+l</span><br><span class="line"></span><br><span class="line"># 跳转到相应编号的window</span><br><span class="line">ctrl+a, 1/2/3...</span><br><span class="line"></span><br><span class="line"># 修改当前window的名称，默认都是个&#x27;bash&#x27;。是个逗号哈。</span><br><span class="line">ctrl+a, ,</span><br><span class="line"></span><br><span class="line"># 新建垂直切分的panel</span><br><span class="line">ctrl+a, %</span><br><span class="line"></span><br><span class="line"># 新建水平切分的panel</span><br><span class="line">ctrl+a, &quot;</span><br><span class="line"></span><br><span class="line"># 在panel之间切换啊，跟vim的方向一样，不过都需要加个前缀</span><br><span class="line"># 向左</span><br><span class="line">ctrl+a, h</span><br><span class="line"># 向右</span><br><span class="line">ctrl+a, l</span><br><span class="line"># 向下</span><br><span class="line">ctrl+a, j</span><br><span class="line"># 向上</span><br><span class="line">ctrl+a, k</span><br><span class="line"></span><br><span class="line"># 暂时将当前panel占据整个window，再按一次就切换回去，在复制的时候很有用。</span><br><span class="line">ctrl+a, z</span><br><span class="line"></span><br><span class="line"># 浏览历史，进入后就可以按vim的进行操作了，常用的是j,k, ctrl+b(向上翻页)，ctrl+f(向下翻页)</span><br><span class="line">ctrl+a, [</span><br><span class="line"></span><br><span class="line"># 强制关闭当前panel</span><br><span class="line">ctrl+a, x</span><br><span class="line"></span><br><span class="line"># 强制关闭当前window</span><br><span class="line">ctrl+a, &amp;</span><br><span class="line"></span><br><span class="line"># 切换panel布局，比如横向分屏变竖向</span><br><span class="line">ctrl+a, space</span><br><span class="line"></span><br><span class="line"># 旋转panel布局，比如左1右2，变为左2右1</span><br><span class="line">ctrl+a, ctlr+o</span><br><span class="line"></span><br><span class="line"># 微调panel大小，这个试一下就知道了</span><br><span class="line">ctrl+a, ctrl+方向键</span><br></pre></td></tr></table></figure>
+
+<p>好了，常用的就是这些了。</p>
+<hr>
+<p>参考：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/gpakosz/.tmux">https://github.com/gpakosz/.tmux</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2017/09/19/%E7%94%A8%E5%88%B0%E7%9A%84tmux/" title="用到的tmux">https://suntus.github.io/2017/09/19/用到的tmux/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tools/" rel="tag"># tools</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/09/13/%E7%94%A8%E5%88%B0%E7%9A%84calibre/" rel="prev" title="用到的calibre">
+      <i class="fa fa-chevron-left"></i> 用到的calibre
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/09/20/%E5%91%BD%E4%BB%A4_date/" rel="next" title="命令_date">
+      命令_date <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">1. 典型应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">2. 配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%87%A0%E4%B8%AA%E6%A6%82%E5%BF%B5"><span class="nav-number">3.</span> <span class="nav-text">3. 几个概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">4.</span> <span class="nav-text">4. 常用命令</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

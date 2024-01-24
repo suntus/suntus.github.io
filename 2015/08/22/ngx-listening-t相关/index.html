@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="关于ngx_listening_t的一些记录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ngx_listening_t相关">
+<meta property="og:url" content="https://suntus.github.io/2015/08/22/ngx-listening-t%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="关于ngx_listening_t的一些记录">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-08-22T09:04:22.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.606Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="nginx">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2015/08/22/ngx-listening-t%E7%9B%B8%E5%85%B3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ngx_listening_t相关 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2015/08/22/ngx-listening-t%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ngx_listening_t相关
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-08-22 17:04:22" itemprop="dateCreated datePublished" datetime="2015-08-22T17:04:22+08:00">2015-08-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>关于<code>ngx_listening_t</code>的一些记录</p>
+<span id="more"></span>
+
+<p>顺序随机</p>
+<h2 id="1-ngx-init-cycle"><a href="#1-ngx-init-cycle" class="headerlink" title="1. ngx_init_cycle() :"></a>1. ngx_init_cycle() :</h2><h3 id="处理继承，申请ls存储数组的空间，"><a href="#处理继承，申请ls存储数组的空间，" class="headerlink" title="处理继承，申请ls存储数组的空间，"></a>处理继承，申请ls存储数组的空间，</h3><p>1.从旧nginx继承过来ls个数，设置新的nginx监听端口的最大个数，默认为最多10<br>2.申请ls的存储空间，并设置ls数组的一些性质:nelts, size, nalloc, pool<br>3.判断ls的一些属性是从旧nginx继承还是重新设置</p>
+<p><em>如果继承，受影响的属性有：</em></p>
+<ul>
+<li>remain &#x3D; 0：设置不保留旧的ls，等继承过来后如果原fd关掉后就全部销毁</li>
+<li>ignore: 根据旧的nginx_ls判断是否继承ls_fd，就是不再重新打开新的，直接拿过来用。</li>
+<li>如果新旧相应ls的sockaddr一致，就继承这些属性：fd，nls.previous，nls.listen&#x3D;1(该fd已监听)，deferred_accep</li>
+</ul>
+<p><em>如果重新设置：</em></p>
+<ul>
+<li>open &#x3D; 1, accept_filter(?), deferred_accept(?)</li>
+</ul>
+<p>4.打开listening_socket, <code>ngx_open_listening_sockets()</code><br>5.配置listening_socket, <code>ngx_configure_listening_sockets()</code><br>6.关闭不用的ls_fd</p>
+<p>使用remain和ls.fd判断是否需要关闭</p>
+<h2 id="2-ngx-open-listening-sockets-ngx-cycle-t-cycle"><a href="#2-ngx-open-listening-sockets-ngx-cycle-t-cycle" class="headerlink" title="2.ngx_open_listening_sockets(ngx_cycle_t *cycle):"></a>2.ngx_open_listening_sockets(ngx_cycle_t *cycle):</h2><h3 id="打开监听文件描述符，设置重用和非阻塞等基础属性"><a href="#打开监听文件描述符，设置重用和非阻塞等基础属性" class="headerlink" title="打开监听文件描述符，设置重用和非阻塞等基础属性"></a>打开监听文件描述符，设置重用和非阻塞等基础属性</h3><ol>
+<li>如果ignore&#x3D;&#x3D;1或者fd !&#x3D; -1或者inherited&#x3D;&#x3D;1就跳过，说明不需要再打开该fd（可能是需要关闭或者已经打开了的）。</li>
+<li>调用<code>ngx_socket()</code>打开ls_fd</li>
+<li>设置端口重用: <code>setsocketopt(s, SOL_SOCKET, SO_REUSEADDR, (const void *)&amp;reuseaddr, sizeof(int))</code></li>
+<li>不适用AIO_EVENT时设置fd为非阻塞:<code>ngx_nonblocking(s)</code></li>
+<li><code>bind(s, ls[i].sockaddr, ls[i].socklen)</code></li>
+<li><code>listen(s, ls[i].backlog)</code>， 后来还会重新调整backlog</li>
+<li>设置<code>ls[i].listen = 1;</code></li>
+<li>会重试5次，每次间隔500ms</li>
+</ol>
+<h2 id="3-ngx-configure-listening-sockets-ngx-cycle-t-cycle"><a href="#3-ngx-configure-listening-sockets-ngx-cycle-t-cycle" class="headerlink" title="3.ngx_configure_listening_sockets(ngx_cycle_t *cycle)"></a>3.ngx_configure_listening_sockets(ngx_cycle_t *cycle)</h2><h3 id="配置监听文件描述符的一些附加属性"><a href="#配置监听文件描述符的一些附加属性" class="headerlink" title="配置监听文件描述符的一些附加属性"></a>配置监听文件描述符的一些附加属性</h3><ol>
+<li>配置日志文件： <code>ls[i].log = *ls[i].logp;</code></li>
+<li>set <code>rcvbuf</code></li>
+<li>set <code>sndbuf</code></li>
+<li>set <code>keepalive</code></li>
+<li>调整backlog,</li>
+<li>调整deferred_accept，根据SO_ACCEPTFILTER和TCP_DEFER_ACCEPT来判断不同系统的处理方式</li>
+</ol>
+<h2 id="4-ngx-close-listening-sockets-ngx-cycle-t-cycle"><a href="#4-ngx-close-listening-sockets-ngx-cycle-t-cycle" class="headerlink" title="4.ngx_close_listening_sockets(ngx_cycle_t *cycle)"></a>4.ngx_close_listening_sockets(ngx_cycle_t *cycle)</h2><h3 id="关闭ls-fd连接上的事件，关闭文件描述符"><a href="#关闭ls-fd连接上的事件，关闭文件描述符" class="headerlink" title="关闭ls.fd连接上的事件，关闭文件描述符"></a>关闭ls.fd连接上的事件，关闭文件描述符</h3><ol>
+<li>set <code>ngx_accept_mutex_held = 0; ngx_use_accept_mutex = 0;</code></li>
+<li>如果ls上的connection上的读事件还活跃，就先删除事件，再删除该连接，并置c-&gt;fd &#x3D; -1</li>
+<li><code>ngx_close_socket(ls[i].fd)</code></li>
+<li>ls[i].fd &#x3D; -1;</li>
+<li>最后，set <code>cycle-&gt;listening.nelts = 0</code></li>
+</ol>
+<h2 id="5-ngx-http-optimize-servers"><a href="#5-ngx-http-optimize-servers" class="headerlink" title="5.ngx_http_optimize_servers()"></a>5.ngx_http_optimize_servers()</h2><h3 id="组织监听端口信息，初始化监听"><a href="#组织监听端口信息，初始化监听" class="headerlink" title="组织监听端口信息，初始化监听"></a>组织监听端口信息，初始化监听</h3><ol>
+<li>调用<code>ngx_http_init_listening()</code></li>
+</ol>
+<h2 id="6-ngx-http-init-listening"><a href="#6-ngx-http-init-listening" class="headerlink" title="6.ngx_http_init_listening()"></a>6.ngx_http_init_listening()</h2><h3 id="初始化listening"><a href="#初始化listening" class="headerlink" title="初始化listening"></a>初始化listening</h3><ol>
+<li>循环添加ls，<code>ngx_http_add_listening()</code></li>
+<li>申请hport存储空间</li>
+</ol>
+<h2 id="7-ngx-http-add-listening"><a href="#7-ngx-http-add-listening" class="headerlink" title="7.ngx_http_add_listening()"></a>7.ngx_http_add_listening()</h2><h3 id="设置ls的初始操作句柄"><a href="#设置ls的初始操作句柄" class="headerlink" title="设置ls的初始操作句柄"></a>设置ls的初始操作句柄</h3><ol>
+<li>创建一个ls, <code>ngx_create_listening()</code></li>
+<li>set <code>ls-&gt;addr_ntop = 1;</code></li>
+<li>***set <code>ls-&gt;handler = ngx_http_init_connection</code>, 非常重要 ***</li>
+<li>设置poll_size, post_accept_timeout, logp, log.data, log.handler, backlog, rcvbuf, sndbuf, keepalive, accept_filter,deferred_accept,</li>
+</ol>
+<h2 id="8-ngx-create-listening-ngx-conf-t-cf-void-sockaddr-socklen-t-socklen"><a href="#8-ngx-create-listening-ngx-conf-t-cf-void-sockaddr-socklen-t-socklen" class="headerlink" title="8.ngx_create_listening(ngx_conf_t *cf, void *sockaddr, socklen_t socklen)"></a>8.ngx_create_listening(ngx_conf_t *cf, void *sockaddr, socklen_t socklen)</h2><h3 id="创建ls的存储空间"><a href="#创建ls的存储空间" class="headerlink" title="创建ls的存储空间"></a>创建ls的存储空间</h3><ol>
+<li>向cf-&gt;cycle-&gt;listening数组中添加一个ls</li>
+<li>申请ls的存储空间</li>
+<li>配置该ls的地址的相关信息:</li>
+</ol>
+<p>sockaddr, socklen, addr_text.len, addr_text.data, fd&#x3D;-1, type &#x3D; SOCK_STREAM, backlog</p>
+<h2 id="9-ngx-http-init-connection"><a href="#9-ngx-http-init-connection" class="headerlink" title="9.ngx_http_init_connection()"></a>9.ngx_http_init_connection()</h2><h3 id="http处理框架的第一个事件返回句柄，初始化http连接"><a href="#http处理框架的第一个事件返回句柄，初始化http连接" class="headerlink" title="http处理框架的第一个事件返回句柄，初始化http连接"></a>http处理框架的第一个事件返回句柄，初始化http连接</h3><ol>
+<li>申请ngx_http_connection_t的存储空间(hc，代表一个address:port组合)</li>
+<li>set <code>c-&gt;data = hc</code>， 该c是建立tcp连接后的ngx_connection_t</li>
+<li>根据address:port的个数不同做不同的处理</li>
+<li>配置hc的相应属性：addr_conf</li>
+<li>set hc-&gt;conf_ctx默认配置</li>
+<li>set ngx_http_log_ctx_t的相关属性，http的日志记录属性：<code>connection = c;request=NULL; current_request = NULL; </code></li>
+<li>set c-&gt;log的相关性质：<code>connection = c-&gt;number; handler = ngx_http_log_error; data = ctx; action = &quot;waiting for request&quot;;</code></li>
+<li>set <code>log_error = NGX_ERROR_INFO;</code></li>
+<li>配置读事件为<code>ngx_http_wait_request_handler</code></li>
+<li>配置写事件为<code>ngx_http_empty_handler</code></li>
+<li>检查是否支持SPDY或HTTP_SSL协议，需要设置对应的读事件</li>
+<li>检查事件是否已经准备好了，为什么在这里就可以检查？因为是event_accept调用的http_init_connection，这时候如果是deferred accept()或者，rtsig, aio, iocp事件模型，就会暂缓调用rev-&gt;handler，也就是ngx_http_wait_request_handler，等待真正发送过来数据之后才会调用该handler，而不是发现syn过来就开始创建。</li>
+<li>该事件还没准备好的时候，就把它添加到定时器的红黑树中，</li>
+<li>设置该连接可重用，也就是可以再次被使用？？？</li>
+<li>将该读事件添加到epoll框架中</li>
+</ol>
+<h2 id="10-ngx-event-process-init-ngx-cycle-t-cycle"><a href="#10-ngx-event-process-init-ngx-cycle-t-cycle" class="headerlink" title="10.ngx_event_process_init(ngx_cycle_t *cycle)"></a>10.ngx_event_process_init(ngx_cycle_t *cycle)</h2><h3 id="初始化事件驱动框架，在这里会把ls的read-handler都设置为ngx-event-accept，并添加到epoll框架中等待事情发生，发生后就会调用ls-handler，也就是在http框架初始化阶段设置的ngx-http-init-connection-函数。cycle中的一些connection被拿来用做ls的专属连接来用，而不是分配给每个worker进程全部用作http连接（？？？？）"><a href="#初始化事件驱动框架，在这里会把ls的read-handler都设置为ngx-event-accept，并添加到epoll框架中等待事情发生，发生后就会调用ls-handler，也就是在http框架初始化阶段设置的ngx-http-init-connection-函数。cycle中的一些connection被拿来用做ls的专属连接来用，而不是分配给每个worker进程全部用作http连接（？？？？）" class="headerlink" title="初始化事件驱动框架，在这里会把ls的read-&gt;handler都设置为ngx_event_accept，并添加到epoll框架中等待事情发生，发生后就会调用ls-&gt;handler，也就是在http框架初始化阶段设置的ngx_http_init_connection()函数。cycle中的一些connection被拿来用做ls的专属连接来用，而不是分配给每个worker进程全部用作http连接（？？？？）"></a>初始化事件驱动框架，在这里会把ls的read-&gt;handler都设置为ngx_event_accept，并添加到epoll框架中等待事情发生，发生后就会调用ls-&gt;handler，也就是在http框架初始化阶段设置的ngx_http_init_connection()函数。cycle中的一些connection被拿来用做ls的专属连接来用，而不是分配给每个worker进程全部用作http连接（？？？？）</h3><ol>
+<li>使用ls.fd新建connection，利用此connection的一些位置存储信息（在ngx_event_accept中会使用到）</li>
+<li>set <code>c-&gt;log = &amp;ls[i].log;</code></li>
+<li>set <code>c-&gt;listening = &amp;ls[i];</code></li>
+<li>set <code>ls[i].connection = c;</code></li>
+<li>set <code>c-&gt;read-&gt;rev-&gt;log = c-&gt;log;</code></li>
+<li>set <code>c-&gt;read-&gt;rev-&gt;accept = 1;</code>表示该连接用于accept</li>
+<li>set  c-&gt;read-&gt;rev-&gt;deferred_accept为ls[i]的deferred_accept</li>
+<li><em><strong>set <code>c-&gt;read-&gt;rev-&gt;handler = ngx_event_accept;</code> 非常重要</strong></em></li>
+<li>将c-&gt;read-&gt;rev事件添加到epoll中去处理</li>
+</ol>
+<h2 id="11-ngx-event-accept-ngx-event-t-ev"><a href="#11-ngx-event-accept-ngx-event-t-ev" class="headerlink" title="11.ngx_event_accept(ngx_event_t *ev)"></a>11.ngx_event_accept(ngx_event_t *ev)</h2><ol>
+<li>判断该事件是否超时，如果超时，就重新启用该事件<code>ngx_enable_accept_events()</code>，并设置ev-&gt;timeout &#x3D; 0</li>
+<li>获取配置信息</li>
+<li>根据使用的事件处理框架来判断ev-&gt;available，可以用来连续建立连接而不返回，以此加快建立连接的数量，尽可能多的让客户端连上来。</li>
+<li>获取附在ls上的连接c的信息(在ngx_event_process_init中设置的)：listening结构体和ls_fd</li>
+<li>set <code>ev-&gt;ready = 0;</code></li>
+<li>s &#x3D; accept()</li>
+<li>处理accept()各种错误</li>
+<li>set <code>ngx_accept_disabled</code>，用于负载均衡</li>
+<li>用s去get新连接c</li>
+<li>设置该新连接c的各种属性:申请c-&gt;pool存储空间,  c-&gt;sockaddr, 申请c-&gt;log存储空间</li>
+<li>设置该s为非阻塞</li>
+<li>设置c-&gt;log为&amp;ls-&gt;log</li>
+<li>set 该连接的读写方法<code>c-&gt;recv = ngx_recv;....</code></li>
+<li>set <code>c-&gt;pool-&gt;log = &amp;ls-&gt;log</code></li>
+<li>set <code>c-&gt;socklen = socklen; c-&gt;listening = ls; c-&gt;local_sockaddr = ls-&gt;sockaddr; c-&gt;unexpected_eof = 1;</code>最后表示不希望没有数据，这是刚开始建立连接，当然需要读取数据</li>
+<li>set <code>c-&gt;write-&gt;ready = 1</code></li>
+<li>如果该连接事件是延迟连接的，就把rev-&gt;ready设为1，以通知http_init_connection，该连接准备好了。因为如果设置了延迟连接，则在accept的时候就已经有数据发过来了，那样http_init_connection就可以直接进行处理了</li>
+<li>set <code>c-&gt;read-&gt;log = log; c-&gt;write-&gt;log = log;</code></li>
+<li>ngx_connection_counter+1</li>
+<li>处理该连接的文本地址信息</li>
+<li>如果没用epoll，可以调用ngx_add_conn把读写事件都添加到事件处理机制中</li>
+<li>调用 <code>ls-&gt;handler(c);</code>也就是http_init_connection来处理</li>
+</ol>
+<h2 id="12-ngx-enable-accept-events-ngx-cycle-t-cycle"><a href="#12-ngx-enable-accept-events-ngx-cycle-t-cycle" class="headerlink" title="12.ngx_enable_accept_events(ngx_cycle_t *cycle)"></a>12.ngx_enable_accept_events(ngx_cycle_t *cycle)</h2><h3 id="重新激活该连接事件"><a href="#重新激活该连接事件" class="headerlink" title="重新激活该连接事件"></a>重新激活该连接事件</h3><ol>
+<li>循环判断该连接事件的读事件是否活跃,if(c-&gt;read-&gt;active)</li>
+<li>不活跃的就把c-&gt;read再添加到epoll中</li>
+</ol>
+<h2 id="13-ngx-master-process-cycle-ngx-cycle-t-cycle"><a href="#13-ngx-master-process-cycle-ngx-cycle-t-cycle" class="headerlink" title="13.ngx_master_process_cycle(ngx_cycle_t *cycle)"></a>13.ngx_master_process_cycle(ngx_cycle_t *cycle)</h2><h2 id="14-ngx-add-inkherited-sockets-ngx-cycle-t-cycle"><a href="#14-ngx-add-inkherited-sockets-ngx-cycle-t-cycle" class="headerlink" title="14.ngx_add_inkherited_sockets(ngx_cycle_t *cycle)"></a>14.ngx_add_inkherited_sockets(ngx_cycle_t *cycle)</h2><h3 id="从环境变量中恢复旧nginx程序的监听端口，获取后会调用ngx-set-inherited-sockets-进行相应配置，比如说"><a href="#从环境变量中恢复旧nginx程序的监听端口，获取后会调用ngx-set-inherited-sockets-进行相应配置，比如说" class="headerlink" title="从环境变量中恢复旧nginx程序的监听端口，获取后会调用ngx_set_inherited_sockets()进行相应配置，比如说"></a>从环境变量中恢复旧nginx程序的监听端口，获取后会调用<code>ngx_set_inherited_sockets()</code>进行相应配置，比如说</h3><p>从fd获取缓冲区大小等，配置ls相应的值</p>
+<h2 id="15-ngx-set-inherited-sockets-ngx-cycle-t-cycle"><a href="#15-ngx-set-inherited-sockets-ngx-cycle-t-cycle" class="headerlink" title="15.ngx_set_inherited_sockets(ngx_cycle_t *cycle)"></a>15.ngx_set_inherited_sockets(ngx_cycle_t *cycle)</h2><p>见14</p>
+<h2 id="关于listening从建立监听到处理http请求的调用链"><a href="#关于listening从建立监听到处理http请求的调用链" class="headerlink" title="关于listening从建立监听到处理http请求的调用链"></a>关于listening从建立监听到处理http请求的调用链</h2><p>main():nginx.c–&gt;<br>ngx_init_cycle(ngx_cycle_t *old_cycle):ngx_cycle.c–&gt;<br>ngx_conf_parse(ngx_conf_t *cf, ngx_str_t *filename):ngx_conf_file.c–&gt;<br>ngx_conf_handler(ngx_conf_t *cf, ngx_int_t last):ngx_conf_file.c–&gt;<br>cmd-&gt;set():ngx_conf_file.c___ngx_http_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf):ngx_http.c–&gt;<br>ngx_http_optimize_servers(ngx_conf_t *cf, ngx_http_core_main_conf_t *cmcf, ngx_array_t *ports):ngx_http.c–&gt;<br>ngx_http_init_listening(ngx_conf_t *cf, ngx_http_conf_port_t *port):ngx_http.c–&gt;<br>ngx_http_add_listening(ngx_conf_t *cf, ngx_http_conf_addr_t *addr):ngx_http.c–&gt;<br>ngx_create_listening(ngx_conf_t *cf, void *sockaddr, socklen_t socklen):ngx_connection.c–&gt;<br>main():nginx.c–&gt;<br>ngx_master_process_cycle(ngx_cycle_t *cycle):ngx_process_cycle.c–&gt;<br>ngx_start_worker_processes(ngx_cycle_t *cycle, ngx_int_t n, ngx_int_t type):ngx_process_cycle.c–&gt;<br>ngx_spawn_process(ngx_cycle_t *cycle, ngx_spawn_proc_pt proc, void *data, char *name, ngx_int_t respawn):ngx_process.c–&gt;<br>ngx_worker_process_cycle(ngx_cycle_t *cycle, void *data):ngx_process_cycle.c–&gt;<br>ngx_worker_process_init(ngx_cycle_t *cycle, ngx_int_t worker):ngx_process_cycle.c–&gt;<br>ngx_modules[i]-&gt;init_process(cycle):ngx_process_cycle.c___ngx_event_process_init(ngx_cycle_t *cycle):ngx_event.c–&gt;<br>ls-&gt;c-&gt;read-&gt;handler&#x3D;&#x3D;event_accept()___ngx_event_accept(ngx_connection_t *c, ngx_cycle_t *cycle):ngx_event_accept.c–&gt;<br>ls-&gt;handler(c)&#x3D;&#x3D;ngx_http_init_connection(ngx_connection_t *c):ngx_http_request.c–&gt;<br>ngx_http_wait_request_handler(ngx_event_t *rev):ngx_http_request.c</p>
+<h3 id="在nginx中，所有的事件处理入口都是ev，ev带有不同的连接信息，可以针对不同的对象进行处理"><a href="#在nginx中，所有的事件处理入口都是ev，ev带有不同的连接信息，可以针对不同的对象进行处理" class="headerlink" title="在nginx中，所有的事件处理入口都是ev，ev带有不同的连接信息，可以针对不同的对象进行处理"></a>在nginx中，所有的事件处理入口都是ev，ev带有不同的连接信息，可以针对不同的对象进行处理</h3>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2015/08/22/ngx-listening-t%E7%9B%B8%E5%85%B3/" title="ngx_listening_t相关">https://suntus.github.io/2015/08/22/ngx-listening-t相关/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nginx/" rel="tag"># nginx</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/04/06/%E6%80%BB%E4%B8%AA%E7%BB%932015-04-06/" rel="prev" title="总个结2015-04-06">
+      <i class="fa fa-chevron-left"></i> 总个结2015-04-06
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2015/08/23/%E7%94%A8%E5%88%B0%E7%9A%84sublime-text3/" rel="next" title="用到的sublime text3">
+      用到的sublime text3 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-ngx-init-cycle"><span class="nav-number">1.</span> <span class="nav-text">1. ngx_init_cycle() :</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E7%BB%A7%E6%89%BF%EF%BC%8C%E7%94%B3%E8%AF%B7ls%E5%AD%98%E5%82%A8%E6%95%B0%E7%BB%84%E7%9A%84%E7%A9%BA%E9%97%B4%EF%BC%8C"><span class="nav-number">1.1.</span> <span class="nav-text">处理继承，申请ls存储数组的空间，</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-ngx-open-listening-sockets-ngx-cycle-t-cycle"><span class="nav-number">2.</span> <span class="nav-text">2.ngx_open_listening_sockets(ngx_cycle_t *cycle):</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%93%E5%BC%80%E7%9B%91%E5%90%AC%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6%EF%BC%8C%E8%AE%BE%E7%BD%AE%E9%87%8D%E7%94%A8%E5%92%8C%E9%9D%9E%E9%98%BB%E5%A1%9E%E7%AD%89%E5%9F%BA%E7%A1%80%E5%B1%9E%E6%80%A7"><span class="nav-number">2.1.</span> <span class="nav-text">打开监听文件描述符，设置重用和非阻塞等基础属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-ngx-configure-listening-sockets-ngx-cycle-t-cycle"><span class="nav-number">3.</span> <span class="nav-text">3.ngx_configure_listening_sockets(ngx_cycle_t *cycle)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%9B%91%E5%90%AC%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6%E7%9A%84%E4%B8%80%E4%BA%9B%E9%99%84%E5%8A%A0%E5%B1%9E%E6%80%A7"><span class="nav-number">3.1.</span> <span class="nav-text">配置监听文件描述符的一些附加属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-ngx-close-listening-sockets-ngx-cycle-t-cycle"><span class="nav-number">4.</span> <span class="nav-text">4.ngx_close_listening_sockets(ngx_cycle_t *cycle)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%97%ADls-fd%E8%BF%9E%E6%8E%A5%E4%B8%8A%E7%9A%84%E4%BA%8B%E4%BB%B6%EF%BC%8C%E5%85%B3%E9%97%AD%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="nav-number">4.1.</span> <span class="nav-text">关闭ls.fd连接上的事件，关闭文件描述符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-ngx-http-optimize-servers"><span class="nav-number">5.</span> <span class="nav-text">5.ngx_http_optimize_servers()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%84%E7%BB%87%E7%9B%91%E5%90%AC%E7%AB%AF%E5%8F%A3%E4%BF%A1%E6%81%AF%EF%BC%8C%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9B%91%E5%90%AC"><span class="nav-number">5.1.</span> <span class="nav-text">组织监听端口信息，初始化监听</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-ngx-http-init-listening"><span class="nav-number">6.</span> <span class="nav-text">6.ngx_http_init_listening()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96listening"><span class="nav-number">6.1.</span> <span class="nav-text">初始化listening</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-ngx-http-add-listening"><span class="nav-number">7.</span> <span class="nav-text">7.ngx_http_add_listening()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AEls%E7%9A%84%E5%88%9D%E5%A7%8B%E6%93%8D%E4%BD%9C%E5%8F%A5%E6%9F%84"><span class="nav-number">7.1.</span> <span class="nav-text">设置ls的初始操作句柄</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-ngx-create-listening-ngx-conf-t-cf-void-sockaddr-socklen-t-socklen"><span class="nav-number">8.</span> <span class="nav-text">8.ngx_create_listening(ngx_conf_t *cf, void *sockaddr, socklen_t socklen)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAls%E7%9A%84%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4"><span class="nav-number">8.1.</span> <span class="nav-text">创建ls的存储空间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-ngx-http-init-connection"><span class="nav-number">9.</span> <span class="nav-text">9.ngx_http_init_connection()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#http%E5%A4%84%E7%90%86%E6%A1%86%E6%9E%B6%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%BA%8B%E4%BB%B6%E8%BF%94%E5%9B%9E%E5%8F%A5%E6%9F%84%EF%BC%8C%E5%88%9D%E5%A7%8B%E5%8C%96http%E8%BF%9E%E6%8E%A5"><span class="nav-number">9.1.</span> <span class="nav-text">http处理框架的第一个事件返回句柄，初始化http连接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-ngx-event-process-init-ngx-cycle-t-cycle"><span class="nav-number">10.</span> <span class="nav-text">10.ngx_event_process_init(ngx_cycle_t *cycle)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8%E6%A1%86%E6%9E%B6%EF%BC%8C%E5%9C%A8%E8%BF%99%E9%87%8C%E4%BC%9A%E6%8A%8Als%E7%9A%84read-handler%E9%83%BD%E8%AE%BE%E7%BD%AE%E4%B8%BAngx-event-accept%EF%BC%8C%E5%B9%B6%E6%B7%BB%E5%8A%A0%E5%88%B0epoll%E6%A1%86%E6%9E%B6%E4%B8%AD%E7%AD%89%E5%BE%85%E4%BA%8B%E6%83%85%E5%8F%91%E7%94%9F%EF%BC%8C%E5%8F%91%E7%94%9F%E5%90%8E%E5%B0%B1%E4%BC%9A%E8%B0%83%E7%94%A8ls-handler%EF%BC%8C%E4%B9%9F%E5%B0%B1%E6%98%AF%E5%9C%A8http%E6%A1%86%E6%9E%B6%E5%88%9D%E5%A7%8B%E5%8C%96%E9%98%B6%E6%AE%B5%E8%AE%BE%E7%BD%AE%E7%9A%84ngx-http-init-connection-%E5%87%BD%E6%95%B0%E3%80%82cycle%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9Bconnection%E8%A2%AB%E6%8B%BF%E6%9D%A5%E7%94%A8%E5%81%9Als%E7%9A%84%E4%B8%93%E5%B1%9E%E8%BF%9E%E6%8E%A5%E6%9D%A5%E7%94%A8%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E5%88%86%E9%85%8D%E7%BB%99%E6%AF%8F%E4%B8%AAworker%E8%BF%9B%E7%A8%8B%E5%85%A8%E9%83%A8%E7%94%A8%E4%BD%9Chttp%E8%BF%9E%E6%8E%A5%EF%BC%88%EF%BC%9F%EF%BC%9F%EF%BC%9F%EF%BC%9F%EF%BC%89"><span class="nav-number">10.1.</span> <span class="nav-text">初始化事件驱动框架，在这里会把ls的read-&gt;handler都设置为ngx_event_accept，并添加到epoll框架中等待事情发生，发生后就会调用ls-&gt;handler，也就是在http框架初始化阶段设置的ngx_http_init_connection()函数。cycle中的一些connection被拿来用做ls的专属连接来用，而不是分配给每个worker进程全部用作http连接（？？？？）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-ngx-event-accept-ngx-event-t-ev"><span class="nav-number">11.</span> <span class="nav-text">11.ngx_event_accept(ngx_event_t *ev)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-ngx-enable-accept-events-ngx-cycle-t-cycle"><span class="nav-number">12.</span> <span class="nav-text">12.ngx_enable_accept_events(ngx_cycle_t *cycle)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E6%BF%80%E6%B4%BB%E8%AF%A5%E8%BF%9E%E6%8E%A5%E4%BA%8B%E4%BB%B6"><span class="nav-number">12.1.</span> <span class="nav-text">重新激活该连接事件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#13-ngx-master-process-cycle-ngx-cycle-t-cycle"><span class="nav-number">13.</span> <span class="nav-text">13.ngx_master_process_cycle(ngx_cycle_t *cycle)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#14-ngx-add-inkherited-sockets-ngx-cycle-t-cycle"><span class="nav-number">14.</span> <span class="nav-text">14.ngx_add_inkherited_sockets(ngx_cycle_t *cycle)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E4%B8%AD%E6%81%A2%E5%A4%8D%E6%97%A7nginx%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%9B%91%E5%90%AC%E7%AB%AF%E5%8F%A3%EF%BC%8C%E8%8E%B7%E5%8F%96%E5%90%8E%E4%BC%9A%E8%B0%83%E7%94%A8ngx-set-inherited-sockets-%E8%BF%9B%E8%A1%8C%E7%9B%B8%E5%BA%94%E9%85%8D%E7%BD%AE%EF%BC%8C%E6%AF%94%E5%A6%82%E8%AF%B4"><span class="nav-number">14.1.</span> <span class="nav-text">从环境变量中恢复旧nginx程序的监听端口，获取后会调用ngx_set_inherited_sockets()进行相应配置，比如说</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#15-ngx-set-inherited-sockets-ngx-cycle-t-cycle"><span class="nav-number">15.</span> <span class="nav-text">15.ngx_set_inherited_sockets(ngx_cycle_t *cycle)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Elistening%E4%BB%8E%E5%BB%BA%E7%AB%8B%E7%9B%91%E5%90%AC%E5%88%B0%E5%A4%84%E7%90%86http%E8%AF%B7%E6%B1%82%E7%9A%84%E8%B0%83%E7%94%A8%E9%93%BE"><span class="nav-number">16.</span> <span class="nav-text">关于listening从建立监听到处理http请求的调用链</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8nginx%E4%B8%AD%EF%BC%8C%E6%89%80%E6%9C%89%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E5%85%A5%E5%8F%A3%E9%83%BD%E6%98%AFev%EF%BC%8Cev%E5%B8%A6%E6%9C%89%E4%B8%8D%E5%90%8C%E7%9A%84%E8%BF%9E%E6%8E%A5%E4%BF%A1%E6%81%AF%EF%BC%8C%E5%8F%AF%E4%BB%A5%E9%92%88%E5%AF%B9%E4%B8%8D%E5%90%8C%E7%9A%84%E5%AF%B9%E8%B1%A1%E8%BF%9B%E8%A1%8C%E5%A4%84%E7%90%86"><span class="nav-number">16.1.</span> <span class="nav-text">在nginx中，所有的事件处理入口都是ev，ev带有不同的连接信息，可以针对不同的对象进行处理</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

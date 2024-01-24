@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="通过介绍不同语言对同一问题的不同处理方法，让人加深对该问题的理解，同时 欣赏 到语言层面的巧妙设计。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《代码之髓》">
+<meta property="og:url" content="https://suntus.github.io/2017/06/06/%E3%80%8A%E4%BB%A3%E7%A0%81%E4%B9%8B%E9%AB%93%E3%80%8B/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="通过介绍不同语言对同一问题的不同处理方法，让人加深对该问题的理解，同时 欣赏 到语言层面的巧妙设计。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-06-06T08:15:19.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.611Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="读过的书">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2017/06/06/%E3%80%8A%E4%BB%A3%E7%A0%81%E4%B9%8B%E9%AB%93%E3%80%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>《代码之髓》 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2017/06/06/%E3%80%8A%E4%BB%A3%E7%A0%81%E4%B9%8B%E9%AB%93%E3%80%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《代码之髓》
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-06-06 16:15:19" itemprop="dateCreated datePublished" datetime="2017-06-06T16:15:19+08:00">2017-06-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>通过介绍不同语言对同一问题的不同处理方法，让人加深对该问题的理解，同时 <strong>欣赏</strong> 到语言层面的巧妙设计。<span id="more"></span></p>
+<h3 id="1-成对操作放在一起比较好理解"><a href="#1-成对操作放在一起比较好理解" class="headerlink" title="1. 成对操作放在一起比较好理解"></a>1. 成对操作放在一起比较好理解</h3><p>C++用析构函数，java用finally，python用with，D语言有scope语句，在作用域结束时自动调用提前设定好的程序。</p>
+<h3 id="2-错误优先思想"><a href="#2-错误优先思想" class="headerlink" title="2. 错误优先思想"></a>2. 错误优先思想</h3><p>发生错误应该停止操作，立即报告。python就是这样设计的。</p>
+<h3 id="3-为什么要起变量名"><a href="#3-为什么要起变量名" class="headerlink" title="3. 为什么要起变量名"></a>3. 为什么要起变量名</h3><p>没有变量名之前，使用地址编号来表示这个位置上的内容，比如2345位置上的数字1，使用变量名更方便。这跟IP地址不好记，用域名取代一样。</p>
+<h3 id="4-进程线程"><a href="#4-进程线程" class="headerlink" title="4. 进程线程"></a>4. 进程线程</h3><p>加快处理速度——&gt;用交替执行的并发——&gt;两种交替方式：1. 协调式多任务，2. 抢占式多任务（大家都表示这个很好用）——&gt;抢占式会出现竞态，原因：a.两个处理任务共享变量，b.至少一个处理任务会修改变量，c.一个处理任务未完成前另一个可能会介入进来——&gt;解决a: 没有共享，就使用进程(没有共享也有些问题无法解决(内存等)，出现了线程)，actor模型(使用消息，异步)。解决b:不修改，const,val,Immutable。解决c: 方法1：不介入，协调线程，corutine, green thread, 比如python的generator, yield。方法二：表示不介入的标志，锁，mutex,semaphore，锁有无法解决的问题：死锁、无法组合，出现了事务内存</p>
+<h3 id="5-归集变量与函数而建立模型的方法"><a href="#5-归集变量与函数而建立模型的方法" class="headerlink" title="5. 归集变量与函数而建立模型的方法"></a>5. 归集变量与函数而建立模型的方法</h3><p>a.模块(module)，Perl：package,hash。b.把函数和变量放入hash,JavaScript。c。闭包(closure)，使用函数执行时的命名空间来归集变量，主要在函数式语言中使用</p>
+<h3 id="6-最重要的是理解了闭包，为了解决代码复用，只使用简单的作用域来管理free-variable。"><a href="#6-最重要的是理解了闭包，为了解决代码复用，只使用简单的作用域来管理free-variable。" class="headerlink" title="6. 最重要的是理解了闭包，为了解决代码复用，只使用简单的作用域来管理free variable。"></a>6. 最重要的是理解了闭包，为了解决代码复用，只使用简单的作用域来管理free variable。</h3><h3 id="7-总的来说，相当流畅的一本书，读起来又知道了些新知识，喜欢这样的。"><a href="#7-总的来说，相当流畅的一本书，读起来又知道了些新知识，喜欢这样的。" class="headerlink" title="7. 总的来说，相当流畅的一本书，读起来又知道了些新知识，喜欢这样的。"></a>7. 总的来说，相当流畅的一本书，读起来又知道了些新知识，喜欢这样的。</h3><hr>
+<p>西尾泰和</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2017/06/06/%E3%80%8A%E4%BB%A3%E7%A0%81%E4%B9%8B%E9%AB%93%E3%80%8B/" title="《代码之髓》">https://suntus.github.io/2017/06/06/《代码之髓》/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AF%BB%E8%BF%87%E7%9A%84%E4%B9%A6/" rel="tag"># 读过的书</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/05/18/wings/" rel="prev" title="wings">
+      <i class="fa fa-chevron-left"></i> wings
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/06/06/hexo%E6%B7%BB%E5%8A%A0google-code-prettify%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE/" rel="next" title="hexo添加google code prettify代码高亮">
+      hexo添加google code prettify代码高亮 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%88%90%E5%AF%B9%E6%93%8D%E4%BD%9C%E6%94%BE%E5%9C%A8%E4%B8%80%E8%B5%B7%E6%AF%94%E8%BE%83%E5%A5%BD%E7%90%86%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">1. 成对操作放在一起比较好理解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%94%99%E8%AF%AF%E4%BC%98%E5%85%88%E6%80%9D%E6%83%B3"><span class="nav-number">2.</span> <span class="nav-text">2. 错误优先思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%B5%B7%E5%8F%98%E9%87%8F%E5%90%8D"><span class="nav-number">3.</span> <span class="nav-text">3. 为什么要起变量名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">4. 进程线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%BD%92%E9%9B%86%E5%8F%98%E9%87%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E8%80%8C%E5%BB%BA%E7%AB%8B%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">5. 归集变量与函数而建立模型的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%9C%80%E9%87%8D%E8%A6%81%E7%9A%84%E6%98%AF%E7%90%86%E8%A7%A3%E4%BA%86%E9%97%AD%E5%8C%85%EF%BC%8C%E4%B8%BA%E4%BA%86%E8%A7%A3%E5%86%B3%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%94%A8%EF%BC%8C%E5%8F%AA%E4%BD%BF%E7%94%A8%E7%AE%80%E5%8D%95%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F%E6%9D%A5%E7%AE%A1%E7%90%86free-variable%E3%80%82"><span class="nav-number">6.</span> <span class="nav-text">6. 最重要的是理解了闭包，为了解决代码复用，只使用简单的作用域来管理free variable。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E6%80%BB%E7%9A%84%E6%9D%A5%E8%AF%B4%EF%BC%8C%E7%9B%B8%E5%BD%93%E6%B5%81%E7%95%85%E7%9A%84%E4%B8%80%E6%9C%AC%E4%B9%A6%EF%BC%8C%E8%AF%BB%E8%B5%B7%E6%9D%A5%E5%8F%88%E7%9F%A5%E9%81%93%E4%BA%86%E4%BA%9B%E6%96%B0%E7%9F%A5%E8%AF%86%EF%BC%8C%E5%96%9C%E6%AC%A2%E8%BF%99%E6%A0%B7%E7%9A%84%E3%80%82"><span class="nav-number">7.</span> <span class="nav-text">7. 总的来说，相当流畅的一本书，读起来又知道了些新知识，喜欢这样的。</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

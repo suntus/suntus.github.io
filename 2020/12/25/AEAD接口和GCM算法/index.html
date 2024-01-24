@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="AEAD接口用于同时加密和消息完整性认证。GCM是实现这个接口的一个具体实现模式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AEAD接口和GCM算法">
+<meta property="og:url" content="https://suntus.github.io/2020/12/25/AEAD%E6%8E%A5%E5%8F%A3%E5%92%8CGCM%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="AEAD接口用于同时加密和消息完整性认证。GCM是实现这个接口的一个具体实现模式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://suntus.github.io/img/aead/gcm-enc.png">
+<meta property="og:image" content="https://suntus.github.io/img/aead/gcm-dec.png">
+<meta property="og:image" content="https://suntus.github.io/img/aead/aead-enc.png">
+<meta property="og:image" content="https://suntus.github.io/img/aead/aead-dec.png">
+<meta property="article:published_time" content="2020-12-24T23:10:46.000Z">
+<meta property="article:modified_time" content="2021-06-20T15:52:05.076Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tls">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://suntus.github.io/img/aead/gcm-enc.png">
+
+<link rel="canonical" href="https://suntus.github.io/2020/12/25/AEAD%E6%8E%A5%E5%8F%A3%E5%92%8CGCM%E7%AE%97%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>AEAD接口和GCM算法 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2020/12/25/AEAD%E6%8E%A5%E5%8F%A3%E5%92%8CGCM%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AEAD接口和GCM算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-25 07:10:46" itemprop="dateCreated datePublished" datetime="2020-12-25T07:10:46+08:00">2020-12-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-20 23:52:05" itemprop="dateModified" datetime="2021-06-20T23:52:05+08:00">2021-06-20</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>AEAD接口用于同时加密和消息完整性认证。GCM是实现这个接口的一个具体实现模式。</p>
+<span id="more"></span>
+
+<h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h1><p>TLS协议中使用的模式最开始有ECB、CBC等，为了对消息完整性进行确认，保证消息没有被篡改，还需要一个HMAC算法，其实就是对消息进行hash，得出来的值缀在被确认消息的后边。这就有个问题，是先对明文进行HMAC，再加密；还是先加密，再对密文进行HMAC。最开始是先对明文取HMAC，再加密(RFC5246,TLS1.2)；后来认为这种不安全，就先加密，再对密文取HMAC(RFC7366, encrypt-then-mac)；再后来认为这样也不安全，就出现了加密和验证在同一个操作中进行，也就是AEAD(RFC5116, Authenticated Encryption with Associated Data)，带附加数据的认证加密算法。</p>
+<p>GCM是一种加密模式，跟ECB、CBC类似，但相比后者的优势是多了附加数据认证，并且可以并行计算，速度很快。AEAD相当于定义了各个协议使用GCM模式的一个统一接口，AEAD可以用GCM去具体实现，也可以用CCM去实现。</p>
+<h1 id="2-GCM模式"><a href="#2-GCM模式" class="headerlink" title="2. GCM模式"></a>2. GCM模式</h1><p>还有个叫GMAC的算法，是GCM不输入附加数据，只对明文数据取最后的认证标签，算是GCM的一个变体。</p>
+<p>计算的前提是已经选好了底层的块加密算法(AES,SM4等)和对应密钥key。</p>
+<h2 id="2-1-带认证的加密模式"><a href="#2-1-带认证的加密模式" class="headerlink" title="2.1. 带认证的加密模式"></a>2.1. 带认证的加密模式</h2><p><strong>输入数据</strong></p>
+<ul>
+<li>明文P, len(P)&lt;&#x3D;2^39-256 位</li>
+<li>附加数据A，包含不需要加密的但需要保证不能被改变的数据，比如IP、PORT等, len(A)&lt;&#x3D;2^64-1位</li>
+<li>初始向量IV, 1&lt;&#x3D;len(IV)&lt;&#x3D;2^64-1 位，为了兼顾安全、效率，建议96位，12字节</li>
+</ul>
+<p><strong>输出数据</strong></p>
+<ul>
+<li>密文C，长度跟输入明文一样</li>
+<li>鉴别标签，记为T，长度可以是128,120,112,104,96位这5个的一个</li>
+</ul>
+<p><strong>图例</strong><br><img src="/img/aead/gcm-enc.png" alt="HMAC"></p>
+<h2 id="2-2-带认证的解密模式"><a href="#2-2-带认证的解密模式" class="headerlink" title="2.2. 带认证的解密模式"></a>2.2. 带认证的解密模式</h2><p><strong>输入数据</strong></p>
+<ul>
+<li>初始向量IV, 1&lt;&#x3D;len(IV)&lt;&#x3D;2^64-1，为了兼顾安全、效率，建议96位，12字节</li>
+<li>附件数据A</li>
+<li>密文C</li>
+<li>鉴别标签T</li>
+</ul>
+<p><strong>输出数据</strong><br>输出一下之一：</p>
+<ul>
+<li>明文P</li>
+</ul>
+<p>或者</p>
+<ul>
+<li>特殊的错误代码</li>
+</ul>
+<p><strong>图例</strong><br><img src="/img/aead/gcm-dec.png" alt="HMAC"></p>
+<h1 id="3-AEAD接口"><a href="#3-AEAD接口" class="headerlink" title="3. AEAD接口"></a>3. AEAD接口</h1><p>AEAD包含两个操作：带认证的加密和带认证的解密。<a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc5116">RFC5116-An Interface and Algorithms for Authenticated Encryption</a>规定了该接口的输入输出。AEAD其实就是封装了一下GCM模式算法。</p>
+<h2 id="3-1-带认证的加密模式"><a href="#3-1-带认证的加密模式" class="headerlink" title="3.1. 带认证的加密模式"></a>3.1. 带认证的加密模式</h2><p><strong>输入数据</strong></p>
+<ul>
+<li>密钥K,长度为[1,255]字节，但对每个具体的AEAD算法，该长度是固定的</li>
+<li>初始化向量IV，也叫nonce,建议是12字节</li>
+<li>明文P，长度可以是0</li>
+<li>附加认证数据A，长度可以是0</li>
+</ul>
+<p><strong>输出数据</strong></p>
+<ul>
+<li>成功：密文C,长度可以是0，最少是明文P的长度，实际中还要加上GCM的鉴别标签</li>
+<li>失败：错误值，此时不能输出部分加密过的数据</li>
+</ul>
+<p><strong>图例</strong><br><img src="/img/aead/aead-enc.png" alt="HMAC"></p>
+<h2 id="3-2-带认证的解密模式"><a href="#3-2-带认证的解密模式" class="headerlink" title="3.2. 带认证的解密模式"></a>3.2. 带认证的解密模式</h2><p><strong>输入数据</strong></p>
+<ul>
+<li>密钥K,</li>
+<li>初始化向量N</li>
+<li>附加认证数据A，长度可以是0</li>
+<li>密文C</li>
+</ul>
+<p><strong>输出数据</strong></p>
+<ul>
+<li>成功：明文P</li>
+<li>失败：错误值，此时不能输出部分解密过的数据</li>
+</ul>
+<p><strong>图例</strong><br><img src="/img/aead/aead-dec.png" alt="HMAC"></p>
+<h1 id="4-TLS1-2中使用的AEAD"><a href="#4-TLS1-2中使用的AEAD" class="headerlink" title="4. TLS1.2中使用的AEAD"></a>4. TLS1.2中使用的AEAD</h1><p><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc5288">RFC5288-AES Galois Counter Mode (GCM) Cipher Suites for TLS</a>定义了如何在TLS1.2中跟RSA,DSA和DH密钥交换算法配合使用AEAD接口。该RFC定义了如下加密套件:</p>
+<ul>
+<li>CipherSuite TLS_RSA_WITH_AES_128_GCM_SHA256 &#x3D; {0x00,0x9C}</li>
+<li>CipherSuite TLS_RSA_WITH_AES_256_GCM_SHA384 &#x3D; {0x00,0x9D}</li>
+<li>CipherSuite TLS_DHE_RSA_WITH_AES_128_GCM_SHA256 &#x3D; {0x00,0x9E}</li>
+<li>CipherSuite TLS_DHE_RSA_WITH_AES_256_GCM_SHA384 &#x3D; {0x00,0x9F}</li>
+<li>CipherSuite TLS_DH_RSA_WITH_AES_128_GCM_SHA256 &#x3D; {0x00,0xA0}</li>
+<li>CipherSuite TLS_DH_RSA_WITH_AES_256_GCM_SHA384 &#x3D; {0x00,0xA1}</li>
+<li>CipherSuite TLS_DHE_DSS_WITH_AES_128_GCM_SHA256 &#x3D; {0x00,0xA2}</li>
+<li>CipherSuite TLS_DHE_DSS_WITH_AES_256_GCM_SHA384 &#x3D; {0x00,0xA3}</li>
+<li>CipherSuite TLS_DH_DSS_WITH_AES_128_GCM_SHA256 &#x3D; {0x00,0xA4}</li>
+<li>CipherSuite TLS_DH_DSS_WITH_AES_256_GCM_SHA384 &#x3D; {0x00,0xA5}</li>
+<li>CipherSuite TLS_DH_anon_WITH_AES_128_GCM_SHA256 &#x3D; {0x00,0xA6}</li>
+<li>CipherSuite TLS_DH_anon_WITH_AES_256_GCM_SHA384 &#x3D; {0x00,0xA7}</li>
+</ul>
+<p>其中:</p>
+<ul>
+<li>输出的鉴别标签长度都是16字节，128位</li>
+<li>nonce长度为12字节，96位，分为两部分 <code>salt[4] || nonce_explicit[8]</code>。其中<code>salt</code>是隐含部分，从握手中生成:<code>client_write_IV 或 server_write_IV</code>;<code>nonce_explicit</code>是发送端选取的，并放在TLS记录层的<code>GenericAEADCipher.nonce_explicit</code>字段随包发送，在同一个GCM加密上下文中使用的nonce必须是唯一的，否则会严重降低安全性，<code>nonce_explicit</code>可以是递增的64位序列号，不会回绕。</li>
+<li>密钥K是<code>client_write_key或server_write_key</code></li>
+<li>附加认证数据为 <code>seq_num || TLSCompressed.type || TLSCompressed.version || TLSCompressed.length</code></li>
+</ul>
+<h1 id="5-TLCP中使用的AEAD"><a href="#5-TLCP中使用的AEAD" class="headerlink" title="5. TLCP中使用的AEAD"></a>5. TLCP中使用的AEAD</h1><p>跟TLS1.2是一样一样的</p>
+<h1 id="6-TLS1-3中使用的AEAD"><a href="#6-TLS1-3中使用的AEAD" class="headerlink" title="6. TLS1.3中使用的AEAD"></a>6. TLS1.3中使用的AEAD</h1><ul>
+<li>输出的鉴别标签长度都是16字节，128位</li>
+<li>nonce长度为12字节，构成方法为<code>0(paddings to iv length) seq(64bits) XOR client_write_iv/server_write_iv</code>， seq是64位从0开始递增的序列号</li>
+<li>附加认证数据为 <code>TLSCiphertext.opaque_type || TLSCiphertext.legacy_record_version || TLSCiphertext.length</code></li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc5246">RFC5246–TLS1.2</a></li>
+<li><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc5116">RFC5116–An Interface and Algorithms for Authenticated Encryption</a></li>
+<li><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc5288">RFC5288–AES Galois Counter Mode (GCM) Cipher Suites for TLS</a></li>
+<li><a target="_blank" rel="noopener" href="http://std.samr.gov.cn/gb/search/gbDetailed?id=A47A713B764314ABE05397BE0A0ABB25">国内SSL标准–GBT 38636-2020信息安全技术传输层密码协议TLCP</a></li>
+<li><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc8446">RFC8446–TLS1.3</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2020/12/25/AEAD%E6%8E%A5%E5%8F%A3%E5%92%8CGCM%E7%AE%97%E6%B3%95/" title="AEAD接口和GCM算法">https://suntus.github.io/2020/12/25/AEAD接口和GCM算法/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tls/" rel="tag"># tls</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/11/tls_dtls_connection_id_08/" rel="prev" title="tls_dtls_connection_id_08">
+      <i class="fa fa-chevron-left"></i> tls_dtls_connection_id_08
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/04/tr-tls1-3/" rel="next" title="[tr]tls1.3">
+      [tr]tls1.3 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">1. 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-GCM%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">2. GCM模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E5%B8%A6%E8%AE%A4%E8%AF%81%E7%9A%84%E5%8A%A0%E5%AF%86%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">2.1. 带认证的加密模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E5%B8%A6%E8%AE%A4%E8%AF%81%E7%9A%84%E8%A7%A3%E5%AF%86%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.2.</span> <span class="nav-text">2.2. 带认证的解密模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-AEAD%E6%8E%A5%E5%8F%A3"><span class="nav-number">3.</span> <span class="nav-text">3. AEAD接口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E5%B8%A6%E8%AE%A4%E8%AF%81%E7%9A%84%E5%8A%A0%E5%AF%86%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">3.1. 带认证的加密模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E5%B8%A6%E8%AE%A4%E8%AF%81%E7%9A%84%E8%A7%A3%E5%AF%86%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.2.</span> <span class="nav-text">3.2. 带认证的解密模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-TLS1-2%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%9A%84AEAD"><span class="nav-number">4.</span> <span class="nav-text">4. TLS1.2中使用的AEAD</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-TLCP%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%9A%84AEAD"><span class="nav-number">5.</span> <span class="nav-text">5. TLCP中使用的AEAD</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-TLS1-3%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%9A%84AEAD"><span class="nav-number">6.</span> <span class="nav-text">6. TLS1.3中使用的AEAD</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

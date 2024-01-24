@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="The “Clockwise&#x2F;Spiral Rule”By David Anderson 每个C程序员在脑袋里解析任何C声明的时候都会用到一种技术——顺时针&#x2F;螺旋规则!">
+<meta property="og:type" content="article">
+<meta property="og:title" content="顺时针规则--C语言声明">
+<meta property="og:url" content="https://suntus.github.io/2017/12/19/%E9%A1%BA%E6%97%B6%E9%92%88%E8%A7%84%E5%88%99--C%E8%AF%AD%E8%A8%80%E5%A3%B0%E6%98%8E/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="The “Clockwise&#x2F;Spiral Rule”By David Anderson 每个C程序员在脑袋里解析任何C声明的时候都会用到一种技术——顺时针&#x2F;螺旋规则!">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-12-19T05:44:49.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.616Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="c">
+<meta property="article:tag" content="tr">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2017/12/19/%E9%A1%BA%E6%97%B6%E9%92%88%E8%A7%84%E5%88%99--C%E8%AF%AD%E8%A8%80%E5%A3%B0%E6%98%8E/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>顺时针规则--C语言声明 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2017/12/19/%E9%A1%BA%E6%97%B6%E9%92%88%E8%A7%84%E5%88%99--C%E8%AF%AD%E8%A8%80%E5%A3%B0%E6%98%8E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          顺时针规则--C语言声明
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-19 13:44:49" itemprop="dateCreated datePublished" datetime="2017-12-19T13:44:49+08:00">2017-12-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>The “Clockwise&#x2F;Spiral Rule”<br>By David Anderson</p>
+<p>每个C程序员在脑袋里解析任何C声明的时候都会用到一种技术——顺时针&#x2F;螺旋规则!</p>
+<span id="more"></span>
+<p>该规则只有简单的3步：</p>
+<ol>
+<li><p>从未知元素开始，沿顺时针&#x2F;螺旋方向移动；当遇到如下元素的时候，用相应的自然语言陈述出来：</p>
+<ul>
+<li>[X] 或者 [] &#x3D;&gt; 大小为…的数组X 或 未知大小数组的…(Array X size of… or Array undefined size of…)</li>
+<li>(type1, type2) &#x3D;&gt; 传入type1和type2参数、返回…的函数(function passing type1 and type2 returning…)</li>
+<li>* &#x3D;&gt; 指向…的指针(pointer(s) to…)</li>
+</ul>
+</li>
+<li><p>一直沿着顺时针往下进行，直到覆盖了所有的元素。</p>
+</li>
+<li><p>括号内的永远优先!</p>
+</li>
+</ol>
+<p>其实对英文来说就是不断在后边加定语，但对汉语来说，就需要不断在前边加定语。</p>
+<h2 id="1-简单声明"><a href="#1-简单声明" class="headerlink" title="1.简单声明"></a>1.简单声明</h2><pre><code>                 +-------+
+                 | +-+   |
+                 | ^ |   |
+            char *str[10];
+             ^   ^   |   |
+             |   +---+   |
+             +-----------+
+</code></pre>
+<p>首先需要问的是：<code>str</code>是什么？</p>
+<blockquote>
+<p>str 是个…(str is an…)</p>
+</blockquote>
+<ul>
+<li>我们从<code>str</code>开始顺时针移动，碰到的第一个元素是<code>[</code>，这意味着我们碰到了个数组，于是就有…<blockquote>
+<p>str是个大小是10、…的数组(str is an array 10 of…)</p>
+</blockquote>
+</li>
+<li>继续顺时针，下一个遇到的是<code>*</code>,这意味着我们碰到了个指针，就有…<blockquote>
+<p>str是个大小是10、指向…指针的数组(str is an array 10 of pointers to…)</p>
+</blockquote>
+</li>
+<li>继续，下一个是该行结尾<code>;</code>；继续，接下来是<code>char</code>，因此…<blockquote>
+<p>str是个大小是10、指向字符的指针的数组(str is an array 10 of pointers to char)</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="2-指向函数的指针的声明"><a href="#2-指向函数的指针的声明" class="headerlink" title="2.指向函数的指针的声明"></a>2.指向函数的指针的声明</h2><pre><code>                 +--------------------+
+                 | +---+              |
+                 | |+-+|              |
+                 | |^ ||              |
+            char *(*fp)( int, float *);
+             ^   ^ ^  ||              |
+             |   | +--+|              |
+             |   +-----+              |
+             +------------------------+
+</code></pre>
+<p>还是一样，首先要问：<code>fp</code>是什么？</p>
+<blockquote>
+<p>fp 是个…(fp is a…)</p>
+</blockquote>
+<ul>
+<li>顺时针移动，首先看到了<code>)</code>，因此<code>fp</code>就在括号中了，我们在括号中顺时针移动，下一个看到的是<code>*</code>，因此…<blockquote>
+<p>fp 是个指向…的指针(fp is a pointer to…)</p>
+</blockquote>
+</li>
+<li>跳出括号，继续顺时针转动，看到了<code>(</code>，这表明遇到了一个函数，就有…<blockquote>
+<p>fp 是个指向传入参数是int和指向float的指针、返回值是…的函数的指针(fp is a pointer to a function passing an int and a pointer to float returning…)</p>
+</blockquote>
+</li>
+<li>继续顺时针，看到了<code>*</code>，说明…<blockquote>
+<p>fp 是个指向传入参数是int和指向float的指针、返回值是指向…的指针的函数的指针(fp is a pointer to a funciton passing an int and a pointer to float returning a pointer to…)</p>
+</blockquote>
+</li>
+<li>继续，遇到<code>;</code>；再继续，遇到了<code>char</code>，因此…<blockquote>
+<p>fp 是个指向传入参数是int和指向float的指针、返回值是指向char的指针的函数的指针(fp is a pointer to a function passing an int and a pointer to float returning a pointer to a char)</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="3-终极形态"><a href="#3-终极形态" class="headerlink" title="3.终极形态"></a>3.终极形态</h2><pre><code>                  +-----------------------------+
+                  |                  +---+      |
+                  |  +---+           |+-+|      |
+                  |  ^   |           |^ ||      |
+            void (*signal(int, void (*fp)(int)))(int);
+             ^    ^      |      ^    ^  ||      |
+             |    +------+      |    +--+|      |
+             |                  +--------+      |
+             +----------------------------------+
+</code></pre>
+<p>依然是:<code>signal</code>是什么?<br>注意<code>signal</code>在括号中，需要先解决它</p>
+<ul>
+<li>顺时针移动，首先遇到<code>(</code>，因此…<blockquote>
+<p>signal是个传入参数为int和…,返回…的函数(signal is a function passing an int and a…)</p>
+</blockquote>
+</li>
+<li>接着，我们可以对<code>fp</code>用相同的规则，<code>fp</code>是什么？<code>fp</code>在括号中，首先遇到的是<code>*</code>，于是…<blockquote>
+<p>fp是个指向…的指针(fp is a pointer to…)</p>
+</blockquote>
+</li>
+<li>继续会遇到<code>(</code>，就有…<blockquote>
+<p>fp是个指向传入参数是int、返回…的函数的指针(fp is a pointer to a function passing int returning…)</p>
+</blockquote>
+</li>
+<li>接着，看到了<code>void</code>…<blockquote>
+<p>fp 是个指向传入参数是int、返回值为空(void)的函数的指针(fp is a pointer to a function passing int returning nothing (void))</p>
+</blockquote>
+</li>
+<li>现在结束了对<code>fp</code>的解析，接着看<code>signal</code>…<blockquote>
+<p>signal是个传入参数为int和指向传入参数为int、返回值为空的函数的指针，返回值为…的函数(signal is a function passing an int and a pointer to a function passing an int returning nothing(void) returning…)</p>
+</blockquote>
+</li>
+<li>现在还在括号内，接着的元素是<code>*</code>…<blockquote>
+<p>signal是个传入参数为int和指向传入参数为int、返回值为空的函数的指针，返回值为指向…的指针的函数(signal is a function passing an int and a pointer to a funciton passing an int returning nothing(void) returning a pointer to…)</p>
+</blockquote>
+</li>
+<li>再继续，碰到了<code>(</code>…<blockquote>
+<p>signal是个传入参数为int何指向传入参数为int、返回值为空的函数的指针，返回值为指向一个传入参数为int、返回值为…的函数的指针的指针的函数(signal is a function passing an int and a pointer to a function passing an int returning nothing(void) returning a pointer to a function passing an int and returning…)</p>
+</blockquote>
+</li>
+<li>终于到最后了，我们只剩下<code>void</code>这一个元素了，最终<code>signale</code>的定义为…<blockquote>
+<p>signal是个传入参数为int何指向传入参数为int、返回值为空的函数的指针，返回值为指向一个传入参数为int、返回值为空的函数的指针的指针的函数(signal is a function passing an int and a pointer to a function passing an int returning nothing(void) returning a pointer to a function passing an int and returning nothing(void))</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="const和volatile的例子"><a href="#const和volatile的例子" class="headerlink" title="const和volatile的例子"></a><code>const</code>和<code>volatile</code>的例子</h2><p>规则一样的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const char *chptr:</span><br></pre></td></tr></table></figure>
+<p><code>chptr</code>是个指向一个char常量(constant)的指针(chptr is a pointer to a char constant)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">char * const chptr;</span><br></pre></td></tr></table></figure>
+<p><code>chptr</code>是个指向char的常量指针(chptr is a constant pointer to char)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">volatile char * const chptr;</span><br></pre></td></tr></table></figure>
+<p><code>chptr</code>是个指向一个char原子(volatile)的常量指针(chptr is a constant pointer to a char volatile)</p>
+<hr>
+<p>C的复杂声明其实就不断加定语，但是这个定语在修饰的是哪个主语，需要按照顺时针&#x2F;螺旋规则来解释。熟悉了就好。</p>
+<hr>
+<p>原文: <a target="_blank" rel="noopener" href="http://c-faq.com/decl/spiral.anderson.html">The &#96;&#96;Clockwise&#x2F;Spiral Rule’’</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2017/12/19/%E9%A1%BA%E6%97%B6%E9%92%88%E8%A7%84%E5%88%99--C%E8%AF%AD%E8%A8%80%E5%A3%B0%E6%98%8E/" title="顺时针规则--C语言声明">https://suntus.github.io/2017/12/19/顺时针规则--C语言声明/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/c/" rel="tag"># c</a>
+              <a href="/tags/tr/" rel="tag"># tr</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/08/%E8%BD%AF%E4%BB%B6%E7%9A%8412%E4%B8%AA%E8%A6%81%E7%B4%A0/" rel="prev" title="软件的12个要素">
+      <i class="fa fa-chevron-left"></i> 软件的12个要素
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/05/09/HKDF%E7%AE%97%E6%B3%95/" rel="next" title="HKDF算法">
+      HKDF算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%AE%80%E5%8D%95%E5%A3%B0%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">1.简单声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%8C%87%E5%90%91%E5%87%BD%E6%95%B0%E7%9A%84%E6%8C%87%E9%92%88%E7%9A%84%E5%A3%B0%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">2.指向函数的指针的声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%BB%88%E6%9E%81%E5%BD%A2%E6%80%81"><span class="nav-number">3.</span> <span class="nav-text">3.终极形态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const%E5%92%8Cvolatile%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="nav-number">4.</span> <span class="nav-text">const和volatile的例子</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="。。。  首先，我们有1块物理内存，比如4G的DDR3，如果CPU想要找这个内存里边的一块区域存储的东西(0、1)，需要知道这块区域在哪里，最简单的就是把物理内存的一个个存储单元都编号，比如位置在最开头的就编号为0x00，接下来一个单元就编号0x01，…，这里每个单元都是1位，也就是只能存1个0或1个1，就像这样： 但是这样每一位都进行编号，整个地址编号就太多了，如果我们约定每8位编一个号，那整个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逻辑地址，线性地址，物理地址">
+<meta property="og:url" content="https://suntus.github.io/2017/08/14/%E9%80%BB%E8%BE%91%E5%9C%B0%E5%9D%80%EF%BC%8C%E7%BA%BF%E6%80%A7%E5%9C%B0%E5%9D%80%EF%BC%8C%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="。。。  首先，我们有1块物理内存，比如4G的DDR3，如果CPU想要找这个内存里边的一块区域存储的东西(0、1)，需要知道这块区域在哪里，最简单的就是把物理内存的一个个存储单元都编号，比如位置在最开头的就编号为0x00，接下来一个单元就编号0x01，…，这里每个单元都是1位，也就是只能存1个0或1个1，就像这样： 但是这样每一位都进行编号，整个地址编号就太多了，如果我们约定每8位编一个号，那整个">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/280482-8bea53f7396c69e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/280482-fb27017f9d421d73.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/280482-99c05ac3dceedabb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/280482-63214309b60c45e3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/280482-7e0a876d7d50009e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/280482-ad183344059e0d58.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/280482-e88812256a74ff18.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/280482-947492f9b5636b64.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2017-08-14T01:46:51.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.616Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="os">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/280482-8bea53f7396c69e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+<link rel="canonical" href="https://suntus.github.io/2017/08/14/%E9%80%BB%E8%BE%91%E5%9C%B0%E5%9D%80%EF%BC%8C%E7%BA%BF%E6%80%A7%E5%9C%B0%E5%9D%80%EF%BC%8C%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>逻辑地址，线性地址，物理地址 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2017/08/14/%E9%80%BB%E8%BE%91%E5%9C%B0%E5%9D%80%EF%BC%8C%E7%BA%BF%E6%80%A7%E5%9C%B0%E5%9D%80%EF%BC%8C%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          逻辑地址，线性地址，物理地址
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-14 09:46:51" itemprop="dateCreated datePublished" datetime="2017-08-14T09:46:51+08:00">2017-08-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>。。。</p>
+<!--more  -->
+<p>首先，我们有1块物理内存，比如4G的DDR3，如果CPU想要找这个内存里边的一块区域存储的东西(0、1)，需要知道这块区域在哪里，最简单的就是把物理内存的一个个存储单元都编号，比如位置在最开头的就编号为0x00，接下来一个单元就编号0x01，…，这里每个单元都是1位，也就是只能存1个0或1个1，就像这样：<br><img src="http://upload-images.jianshu.io/upload_images/280482-8bea53f7396c69e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>但是这样每一位都进行编号，整个地址编号就太多了，如果我们约定每8位编一个号，那整个地址就是原先的1&#x2F;8，就像这样：<br><img src="http://upload-images.jianshu.io/upload_images/280482-fb27017f9d421d73.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>为了方便，我们把每8位的一个单元叫做1个字节，0x00指向的就是物理内存中的第1个存储单元，也就是第1个字节，字节是物理内存的最小存储单元。如果想拿到第1个字节第3位中的数字1（标红的位置），那就需要把整个字节都先拿到，再去找里边的数字。</p>
+<p>这里给物理内存编的1个号码就是1个物理地址，所有给物理内存编的号码就叫物理地址的地址空间。</p>
+<p>CPU如果想拿到某个物理内存中的数字，需要发送一组电信号给物理内存芯片，芯片根据这组电信号查找相应地址，然后返回给CPU，这组电信号编码成数字就是物理地址了，就像这样：<br><img src="http://upload-images.jianshu.io/upload_images/280482-99c05ac3dceedabb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>其中CPU到内存控制芯片的这几根线叫地址线，比如常说的某个架构有20根地址线或者32根、36根地址线，就表明CPU可以寻址到的地址空间，比如32根地址线就可以最高寻址到2^32，也就是4G。我们这里画了4根，就可以寻址到2^4，也即是16个字节。</p>
+<p>我们需要编写程序控制CPU进行逻辑处理、计算、存储等动作，当需要读写内存中的数据的时候，最简单的当然是用物理地址去指示CPU问内存控制芯片要哪个地址的数据了，比如：<br><img src="http://upload-images.jianshu.io/upload_images/280482-63214309b60c45e3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>我们想要把0x00中的数据放到寄存器ax中，就把0x00这个地址给CPU，这就可以了，多简单。当然如果真的这么简单，大家都轻松了🙃。事实上，CPU为了能处理多任务，同时在一个任务中区分代码、数据、栈，就需要对内存进行划分，分别存放不同的内容，这样一是为了区分，二是为了保护（比如代码段不允许修改，某些数据只读）。先来想象一下可能的解决办法，我们的目的是想把一段处理逻辑控制在内存0x00~0x07这个段之间，让CPU在运行的时候不能超出这个内存范围去获取代码或数据，超过就要报错。一个简单的方法是设置一个标志位，该标志位表明指令中的地址都需要在0x00~0x07之间，不能超过。在指示0x08<del>0x15之间的内存的时候，再设置另一个标志位，起到同样的作用。这样就可以将整个内存分为2个段：0x00\</del>0x07，0x08~0x15。每个段的长度是8个字节。每个段都设置一个标志位的方法有点儿笨，我们用每个段的首地址来表示这个段：0x00表示第1个段，0x08表示第2个段，再用跟段的首地址的偏移量来确认段内某个字节的地址。现在我们确定第1个段中第2个字节的地址就是0x00:1(第1个字节的地址是0)。如下图：<br><img src="http://upload-images.jianshu.io/upload_images/280482-7e0a876d7d50009e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>现在我们指令中用到的0x00:1就是逻辑地址，因为它在逻辑上将内存划分为了多个不同的段。我们要做的只是输入0x00:1这个地址，CPU会帮我们把逻辑地址翻译成0x01的物理地址🙂。</p>
+<p>除了使用分段的方式划分内存外，还可以将物理内存直接划分为多个不同的页，称为页帧，一个物理页一般是4K大小，这样控制一页内的内存属性相同，多个不同的页可以使用不同的属性，就跟分段类似了，如下图：<br><img src="http://upload-images.jianshu.io/upload_images/280482-ad183344059e0d58.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>这时候会出现个新问题：CPU已经使用逻辑地址来划分段了，如何去实现分页呢？其实肯定也想到了，在逻辑地址和物理地址之间加一个抽象层接口，也就是我们要说的最后一个地址：线性地址，也叫虚拟地址。线性地址的位置在逻辑地址和物理地址之间，比如在讲linux内核的书里边常见有这样的图：<br><img src="http://upload-images.jianshu.io/upload_images/280482-e88812256a74ff18.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>CPU将逻辑地址按照分段逻辑转换成线性地址，再按分页逻辑转换成物理地址。这里的转换都是依靠CPU电路完成的，但是怎样分段，怎样分页是需要内核程序先规定好才行。CPU怎样进行分段和分页的就不细说了，<a target="_blank" rel="noopener" href="http://ilinuxkernel.com/?p=1276">这里</a>讲的真好，可以去看看。<br>我们来对比一下分段和分页：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>分段</th>
+<th>分页</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>目的</td>
+<td>将内存按照不同的属性分隔，实现隔离和保护</td>
+<td>将内存按照不同的属性分隔，实现隔离和保护</td>
+</tr>
+<tr>
+<td>对象</td>
+<td>对线性地址进行分隔</td>
+<td>对物理页帧进行分隔</td>
+</tr>
+<tr>
+<td>方法</td>
+<td>使用逻辑地址（段基址:偏移）分隔不同的段</td>
+<td>将线性地址分隔成不同的部分，一步步去寻找页对应的物理页帧，进而找到对应的物理地址</td>
+</tr>
+<tr>
+<td>程序需要事先做好的准备</td>
+<td>准备好GDT,LDT,IDT，也就是个个不同的段</td>
+<td>准备好页目录，页表，也就是各个不同的页</td>
+</tr>
+<tr>
+<td>大小</td>
+<td>段大小可变，程序控制</td>
+<td>页大小固定的几个值，4K,4M,2M，CPU规定好的</td>
+</tr>
+<tr>
+<td>好了，现在我们的CPU中地址关系如下：</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><img src="http://upload-images.jianshu.io/upload_images/280482-947492f9b5636b64.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>看上去很复杂吧，其实理解了就没那么多东西，我画画的水平有限😅。</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>有个问题很多人都想知道，我一开始看内存这部分的时候也很着急：linux用户程序里边用的是什么地址？我先说答案：是逻辑地址。但很多书里边讲linux虚拟内存的分布，跟程序里用到的地址是一模一样的啊？其实linux用户程序中的地址是逻辑地址中的偏移，只不过linux把所有段的基址都设为0，这样段内偏移就跟线性地址一样了（因为段基址都是0啊，段偏移加上0还是段偏移）。为什么linux要把所有段基址都设为0呢？其实分段和分页都是对内存的分隔和保护，从用途上来说是重复的，分页更简单些，所有linux就只用了分页来实现内存保护。</p>
+<p>还有另一个问题：linux中用户进程看到的内存都是一样的，0~4G，这是如何实现的？答案是基于分页，linux给每个进程都维护一个分页映射规则，每个分页规则对应一种线性地址到物理地址的映射，这样每个进程看到的都是同样的线性地址，但是后边对应的物理地址各不相同。</p>
+<p>内存管理是linux内核中最复杂的系统之一，除了逻辑地址到线性地址再到物理地址的映射外，还有很多其他的特性辅助操作系统对物理内存实现管理，比如分段逻辑实现时用到的GDT、LDT、IDT、TSS、6个段寄存器，分页逻辑实现时用到的页目录、页表、页帧、CR3、PAE，CPU和物理内存之间的高速缓存等。骨架已经理清楚了，其他的理解就慢慢往里加吧。</p>
+<hr>
+<p>参考：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://ilinuxkernel.com/?p=1276%EF%BC%8C%E8%AE%B2linux%E5%86%85%E6%A0%B8%E7%9A%84%E5%A4%A7%E7%89%9B%EF%BC%8C%E6%80%9D%E8%B7%AF%E6%B8%85%E6%99%B0%EF%BC%8C%E6%96%87%E7%AC%94%E4%BC%98%E7%BE%8E%E3%80%82">http://ilinuxkernel.com/?p=1276，讲linux内核的大牛，思路清晰，文笔优美。</a></li>
+<li>《Linux内核设计与实现》Robert Love，极好的内核入门书。</li>
+<li>《深入Linux内核架构》(德)Wolfgang.Mauerer，深入细节1。</li>
+<li>《Understanding the Linux Kernel 》3rd_Edition，Daniel P. Bovet and Marco Cesati，深入细节2。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2017/08/14/%E9%80%BB%E8%BE%91%E5%9C%B0%E5%9D%80%EF%BC%8C%E7%BA%BF%E6%80%A7%E5%9C%B0%E5%9D%80%EF%BC%8C%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80/" title="逻辑地址，线性地址，物理地址">https://suntus.github.io/2017/08/14/逻辑地址，线性地址，物理地址/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/os/" rel="tag"># os</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/08/12/%E3%80%8A%E9%A2%98%E9%BE%99%E9%98%B3%E5%8E%BF%E9%9D%92%E8%8D%89%E6%B9%96%E3%80%8B%E2%80%94%E2%80%94%E5%94%90%E6%B8%A9%E5%A6%82/" rel="prev" title="《题龙阳县青草湖》  ——唐温如">
+      <i class="fa fa-chevron-left"></i> 《题龙阳县青草湖》  ——唐温如
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/09/13/%E7%94%A8%E5%88%B0%E7%9A%84calibre/" rel="next" title="用到的calibre">
+      用到的calibre <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

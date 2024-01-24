@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="SM9属于标识密码算法的一种。传统的非对称算法，比如RSA的公钥分发时，因为公钥只是一串无意义的随机数，需要使用PKI系统来给公钥添加额外的身份认证。这样在传输密钥的时候，就需要带上一整套证书的东西，比较重。标识密码算法中，直接使用身份标识来作为用户公钥，比较轻量。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SM9">
+<meta property="og:url" content="https://suntus.github.io/2021/01/14/SM9/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="SM9属于标识密码算法的一种。传统的非对称算法，比如RSA的公钥分发时，因为公钥只是一串无意义的随机数，需要使用PKI系统来给公钥添加额外的身份认证。这样在传输密钥的时候，就需要带上一整套证书的东西，比较重。标识密码算法中，直接使用身份标识来作为用户公钥，比较轻量。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-14T11:12:08.000Z">
+<meta property="article:modified_time" content="2021-06-20T15:52:05.083Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tls">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2021/01/14/SM9/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SM9 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2021/01/14/SM9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SM9
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-14 19:12:08" itemprop="dateCreated datePublished" datetime="2021-01-14T19:12:08+08:00">2021-01-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-20 23:52:05" itemprop="dateModified" datetime="2021-06-20T23:52:05+08:00">2021-06-20</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>SM9属于标识密码算法的一种。传统的非对称算法，比如RSA的公钥分发时，因为公钥只是一串无意义的随机数，需要使用PKI系统来给公钥添加额外的身份认证。这样在传输密钥的时候，就需要带上一整套证书的东西，比较重。标识密码算法中，直接使用身份标识来作为用户公钥，比较轻量。</p>
+<span id="more"></span>
+
+<p>SM9包含4个部分算法：1. 数字签名算法，2. 密钥交换协议，3. 密钥封装机制，4.公钥加密算法。</p>
+<h1 id="1-SM9中的一些概念"><a href="#1-SM9中的一些概念" class="headerlink" title="1. SM9中的一些概念"></a>1. SM9中的一些概念</h1><ul>
+<li>标识: identity，可唯一确定一个实体身份的信息，应该由实体无法否认的信息组成，比如电子邮箱、身份证号、电话号码等。</li>
+<li>密钥生成中心：key generation center; KGC，负责选择系统参数，生成主密钥，产生用户私钥的可信机构，相当于PKI体系中的CA。</li>
+<li>主密钥：master key，由KGC生成，主私钥由随机数发生器产生，主公钥由主私钥结合系统参数产生。KGC秘密保存主私钥，公开主公钥。KGC使用主私钥和用户标识产生用户私钥，用户标识相当于用户公钥。另外，密钥分签名系统密钥和加密系统密钥，数字签名算法属于签名系统，使用签名主密钥；密钥交换协议、密钥封装机制和公钥加密算法属于加密系统，使用加密主密钥。</li>
+<li>系统参数：SM9基于ECC算法，系统参数包含一系列参数，以确定SM9的运算规则和范围。由KGC提供，用户选择使用。</li>
+</ul>
+<h1 id="2-数字签名算法"><a href="#2-数字签名算法" class="headerlink" title="2. 数字签名算法"></a>2. 数字签名算法</h1><h2 id="2-1-相关密钥的产生"><a href="#2-1-相关密钥的产生" class="headerlink" title="2.1. 相关密钥的产生"></a>2.1. 相关密钥的产生</h2><table>
+<thead>
+<tr>
+<th>相关密钥</th>
+<th>说明</th>
+<th>产生方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ks</td>
+<td>签名主私钥</td>
+<td>KGC产生随机数作为签名主私钥。KGC秘密保存</td>
+</tr>
+<tr>
+<td>Ppub-s</td>
+<td>签名主公钥</td>
+<td>KGC根据(ks)计算得出签名主公钥。KGC公开</td>
+</tr>
+<tr>
+<td>hid</td>
+<td>函数标识符</td>
+<td>KGC选择并公开一个字节表示的签名私钥生成函数标识符hid</td>
+</tr>
+<tr>
+<td>ID-A</td>
+<td>用户A标识</td>
+<td>A的邮箱，身份证，电话号码等，相当于用户A的公钥</td>
+</tr>
+<tr>
+<td>ds-A</td>
+<td>用户A的签名私钥</td>
+<td>KGC根据(ID-A,hid,ks)计算出A的签名私钥</td>
+</tr>
+</tbody></table>
+<h2 id="2-2-辅助函数"><a href="#2-2-辅助函数" class="headerlink" title="2.2. 辅助函数"></a>2.2. 辅助函数</h2><ol>
+<li>密码杂凑函数Hv(M): 就是hash函数，输出长度为v比特的杂凑值，比如SM3</li>
+<li>密码函数H1(Z, n): 输入比特串Z和整数n, 输出一个整数h1。内部会用到Hv()</li>
+<li>密码函数H2(Z, n): 输入比特串Z和整数n, 输出一个整数h2。内部会用到Hv()</li>
+<li>随机数发生器</li>
+</ol>
+<h2 id="2-3-签名"><a href="#2-3-签名" class="headerlink" title="2.3. 签名"></a>2.3. 签名</h2><p>输入:</p>
+<ol>
+<li>系统参数</li>
+<li>签名主公钥 Ppub-s</li>
+<li>待签名消息 M</li>
+<li>签名密钥 ds-A</li>
+</ol>
+<p>输出:</p>
+<ol>
+<li>签名值(h, S)</li>
+</ol>
+<h2 id="2-5-验签"><a href="#2-5-验签" class="headerlink" title="2.5. 验签"></a>2.5. 验签</h2><p>输入:</p>
+<ol>
+<li>系统参数</li>
+<li>签名主公钥 Ppub-s</li>
+<li>算法识别符 hid</li>
+<li>用户标识(公钥) ID-A</li>
+<li>待验签消息 M’</li>
+<li>数字签名 (h’, S’)</li>
+</ol>
+<p>输出:</p>
+<ol>
+<li>验签通过或不通过</li>
+</ol>
+<h2 id="2-6-小结"><a href="#2-6-小结" class="headerlink" title="2.6. 小结"></a>2.6. 小结</h2><ul>
+<li>签名验签都需要签名主公钥，签名需要用户私钥，验签需要用户公钥(用户标识)</li>
+</ul>
+<h1 id="3-密钥交换协议"><a href="#3-密钥交换协议" class="headerlink" title="3. 密钥交换协议"></a>3. 密钥交换协议</h1><h2 id="3-1-相关密钥的产生"><a href="#3-1-相关密钥的产生" class="headerlink" title="3.1. 相关密钥的产生"></a>3.1. 相关密钥的产生</h2><table>
+<thead>
+<tr>
+<th>相关密钥</th>
+<th>说明</th>
+<th>产生方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ke</td>
+<td>加密主私钥</td>
+<td>KGC产生随机数作为加密主私钥。KGC秘密保存</td>
+</tr>
+<tr>
+<td>Ppub-e</td>
+<td>加密主公钥</td>
+<td>KGC根据(ke)计算得出加密主公钥。KGC公开</td>
+</tr>
+<tr>
+<td>hid</td>
+<td>函数标识符</td>
+<td>KGC选择并公开一个字节表示的签名私钥生成函数标识符hid</td>
+</tr>
+<tr>
+<td>ID-A</td>
+<td>用户A标识</td>
+<td>A的邮箱，身份证，电话号码等，相当于用户A的公钥</td>
+</tr>
+<tr>
+<td>de-A</td>
+<td>用户A的加密私钥</td>
+<td>KGC根据(ID-A,hid,ke)计算出A的加密私钥</td>
+</tr>
+<tr>
+<td>ID-B</td>
+<td>用户B标识</td>
+<td>B的邮箱，身份证，电话号码等，相当于用户B的公钥</td>
+</tr>
+<tr>
+<td>de-B</td>
+<td>用户B的加密私钥</td>
+<td>KGC根据(ID-B,hid,ke)计算出B的加密私钥</td>
+</tr>
+</tbody></table>
+<h2 id="3-2-辅助函数"><a href="#3-2-辅助函数" class="headerlink" title="3.2. 辅助函数"></a>3.2. 辅助函数</h2><ol>
+<li>密码杂凑函数Hv(M): 就是hash函数，输出长度为v比特的杂凑值，比如SM3</li>
+<li>密码函数H1(Z, n): 输入比特串Z和整数n, 输出一个整数h1。内部会用到Hv()</li>
+<li>密码函数H2(Z, n): 输入比特串Z和整数n, 输出一个整数h2。内部会用到Hv()</li>
+<li>密码派生函数KDF(Z, klen): 输入比特串Z和要获得的密钥数据的比特长度klen，输出长度为klen比特位的比特串K。内部会用到Hv()</li>
+<li>随机数发生器</li>
+</ol>
+<h2 id="3-3-密钥交换协议过程"><a href="#3-3-密钥交换协议过程" class="headerlink" title="3.3. 密钥交换协议过程"></a>3.3. 密钥交换协议过程</h2><p>用户A和B通过交换一些公开数据，协商获得密钥数据长度为klen比特的共有密钥参数(相当于预主密钥)。</p>
+<p>用户A：<br>A1. 生成随机数 r-A<br>A2. 根据(r-A, ID-B, hid, Ppub-e)计算得到 R-A<br>A3. 将 R-A 发送给 B</p>
+<p>用户B：<br>B1. 验证 R-A 是否有效，无效则协商失败；有效则根据(R-A, de-B, Ppub-e, r-B)计算出 g1, g2, g3<br>B2. 生成随机数 r-B<br>B3. 根据(r-B, ID-A, hid, Ppub-e)计算得到 R-B<br>B4. 计算 SK-B &#x3D; KDF(ID-A || ID-B || R-A || R-B || g1 || g2 || g3, klen)<br>B5. (可选)计算 S-B &#x3D; Hash(0x82 || g1 || Hash(g2 || g3 || ID-A || ID-B || R-A || R-B))<br>B6. 将 R-B，(可选)S-B发送给 A</p>
+<p>用户A:<br>A4. 验证 R-B 是否有效，无效则协商失败；有效则根据(R-B, de-A, Ppub-e, r-A)计算出g1’, g2’, g3’<br>A5. (可选) 计算 S1 &#x3D; Hash(0x82 || g1’ || Hash(g2’ || g3’ || ID-A || ID-B || R-A || RB))，并校验 S1 &#x3D;&#x3D; S-B，不成立则从B到A的密钥确认失败<br>A6. 计算 SK-A &#x3D; KDF(ID-A || ID-B || R-A || R-B || g1’ || g2’ || g3’, klen)<br>A7. (可选)计算 S-A &#x3D; Hash(0x83 || g1’ || Hash(g2’ || g3’ || ID-A || ID-B || R-A || R-B))，将 S-A 发送给 B</p>
+<p>用户B:<br>B7: (可选)计算 S2 &#x3D; Hash(0x83 || g1 || Hash(g2 || g3 || ID-A || ID-B || R-A || R-B)), 并检验 S2&#x3D;&#x3D;S-A，若不成立，则从A到B的密钥确认失败</p>
+<p>最后协商出的共有密钥是 SK-A 和 SK-B</p>
+<h2 id="3-4-小结"><a href="#3-4-小结" class="headerlink" title="3.4. 小结"></a>3.4. 小结</h2><p>用户A输入的参数：</p>
+<ol>
+<li>系统参数</li>
+<li>加密主公钥 Ppub-e</li>
+<li>算法识别符 hid</li>
+<li>加密私钥 de-A</li>
+<li>双方公钥，标识 ID-A, ID-B</li>
+</ol>
+<p>用户A收到的参数:</p>
+<ol>
+<li>R-B</li>
+<li>(可选)S-B</li>
+</ol>
+<p>用户B输入的参数：</p>
+<ol>
+<li>系统参数</li>
+<li>加密主公钥 Ppub-e</li>
+<li>算法识别符 hid</li>
+<li>加密私钥 de-B</li>
+<li>双方公钥，标识 ID-A, ID-B</li>
+</ol>
+<p>用户B收到的参数:</p>
+<ol>
+<li>R-A</li>
+<li>(可选)S-A</li>
+</ol>
+<h1 id="4-密钥封装机制"><a href="#4-密钥封装机制" class="headerlink" title="4. 密钥封装机制"></a>4. 密钥封装机制</h1><p>将比特长度klen的密钥封装后给B，B解封拿到相应密钥。</p>
+<h2 id="4-1-相关密钥的产生"><a href="#4-1-相关密钥的产生" class="headerlink" title="4.1. 相关密钥的产生"></a>4.1. 相关密钥的产生</h2><table>
+<thead>
+<tr>
+<th>相关密钥</th>
+<th>说明</th>
+<th>产生方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ke</td>
+<td>加密主私钥</td>
+<td>KGC产生随机数作为加密主私钥。KGC秘密保存</td>
+</tr>
+<tr>
+<td>Ppub-e</td>
+<td>加密主公钥</td>
+<td>KGC根据(ke)计算得出加密主公钥。KGC公开</td>
+</tr>
+<tr>
+<td>hid</td>
+<td>函数标识符</td>
+<td>KGC选择并公开一个字节表示的签名私钥生成函数标识符hid</td>
+</tr>
+<tr>
+<td>ID-B</td>
+<td>用户B标识</td>
+<td>B的邮箱，身份证，电话号码等，相当于用户B的公钥</td>
+</tr>
+<tr>
+<td>de-B</td>
+<td>用户B的加密私钥</td>
+<td>KGC根据(ID-B,hid,ke)计算出B的加密私钥</td>
+</tr>
+</tbody></table>
+<h2 id="4-2-辅助函数"><a href="#4-2-辅助函数" class="headerlink" title="4.2. 辅助函数"></a>4.2. 辅助函数</h2><ol>
+<li>密码杂凑函数Hv(M): 就是hash函数，输出长度为v比特的杂凑值，比如SM3</li>
+<li>密码函数H1(Z, n): 输入比特串Z和整数n, 输出一个整数h1。内部会用到Hv()</li>
+<li>密码派生函数KDF(Z, klen): 输入比特串Z和要获得的密钥数据的比特长度klen，输出长度为klen比特位的比特串K。内部会用到Hv()</li>
+<li>随机数发生器</li>
+</ol>
+<h2 id="4-3-密钥封装算法"><a href="#4-3-密钥封装算法" class="headerlink" title="4.3. 密钥封装算法"></a>4.3. 密钥封装算法</h2><p>输入:</p>
+<ol>
+<li>系统参数</li>
+<li>加密主公钥 Ppub-e</li>
+<li>识别符 hid</li>
+<li>标识符 ID-B</li>
+</ol>
+<p>输出:</p>
+<ol>
+<li>(K, C), K是被封装的密钥，C是封装密文</li>
+</ol>
+<h2 id="4-4-密钥解封算法"><a href="#4-4-密钥解封算法" class="headerlink" title="4.4. 密钥解封算法"></a>4.4. 密钥解封算法</h2><p>输入：</p>
+<ol>
+<li>系统参数</li>
+<li>封装密文 C</li>
+<li>标识 ID-B</li>
+<li>加密私钥 de-B</li>
+</ol>
+<p>输出:</p>
+<ol>
+<li>密钥 K’ 或报错</li>
+</ol>
+<h1 id="5-公钥加密算法"><a href="#5-公钥加密算法" class="headerlink" title="5. 公钥加密算法"></a>5. 公钥加密算法</h1><p>要发送的消息为M，mlen是M的比特长度，K1_Len是分组密码算法中密钥K1的比特长度，K2_len是MAC(K2, Z)函数中密钥K2的比特长度。</p>
+<h2 id="5-1-相关密钥的产生"><a href="#5-1-相关密钥的产生" class="headerlink" title="5.1. 相关密钥的产生"></a>5.1. 相关密钥的产生</h2><table>
+<thead>
+<tr>
+<th>相关密钥</th>
+<th>说明</th>
+<th>产生方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ke</td>
+<td>加密主私钥</td>
+<td>KGC产生随机数作为加密主私钥。KGC秘密保存</td>
+</tr>
+<tr>
+<td>Ppub-e</td>
+<td>加密主公钥</td>
+<td>KGC根据(ke)计算得出加密主公钥。KGC公开</td>
+</tr>
+<tr>
+<td>hid</td>
+<td>函数标识符</td>
+<td>KGC选择并公开一个字节表示的签名私钥生成函数标识符hid</td>
+</tr>
+<tr>
+<td>ID-B</td>
+<td>用户B标识</td>
+<td>B的邮箱，身份证，电话号码等，相当于用户B的公钥</td>
+</tr>
+<tr>
+<td>de-B</td>
+<td>用户B的加密私钥</td>
+<td>KGC根据(ID-B,hid,ke)计算出B的加密私钥</td>
+</tr>
+</tbody></table>
+<h2 id="5-2-辅助函数"><a href="#5-2-辅助函数" class="headerlink" title="5.2. 辅助函数"></a>5.2. 辅助函数</h2><ol>
+<li>密码杂凑函数Hv(M): 就是hash函数，输出长度为v比特的杂凑值，比如SM3</li>
+<li>密码函数H1(Z, n): 输入比特串Z和整数n, 输出一个整数h1。内部会用到Hv()</li>
+<li>密码函数H2(Z, n): 输入比特串Z和整数n, 输出一个整数h2。内部会用到Hv()</li>
+<li>密码派生函数KDF(Z, klen): 输入比特串Z和要获得的密钥数据的比特长度klen，输出长度为klen比特位的比特串K。内部会用到Hv()</li>
+<li>分组密码算法，包括加密算法 Enc(K1, m) 和解密算法 Dec(K1, c)。如 SM4</li>
+<li>消息认证码函数MAC(K2, Z)， 防止消息数据Z被非法篡改，使用密钥K2，产生认证码Z。内部会用到Hv()</li>
+<li>随机数发生器</li>
+</ol>
+<h2 id="5-3-加密算法"><a href="#5-3-加密算法" class="headerlink" title="5.3. 加密算法"></a>5.3. 加密算法</h2><p>输入:</p>
+<ol>
+<li>系统参数</li>
+<li>加密主公钥 Ppub-e</li>
+<li>识别符 hid</li>
+<li>长度为 mlen比特的消息 M</li>
+<li>标识 ID-B</li>
+</ol>
+<p>输出:</p>
+<ol>
+<li>密文 C&#x3D;C1 || C3 || C2</li>
+</ol>
+<h2 id="5-3-解密算法"><a href="#5-3-解密算法" class="headerlink" title="5.3. 解密算法"></a>5.3. 解密算法</h2><p>输入:</p>
+<ol>
+<li>系统参数</li>
+<li>密文 C&#x3D;C1 || C3 || C2</li>
+<li>标识 ID-B</li>
+<li>加密私钥 de-B</li>
+</ol>
+<p>输出:</p>
+<ol>
+<li>明文 M’ 或报错</li>
+</ol>
+<h2 id="5-4-小结"><a href="#5-4-小结" class="headerlink" title="5.4. 小结"></a>5.4. 小结</h2><p>A使用B的加密公钥 ID-B 和加密主公钥 Ppub-e 加密消息，B使用私钥 de-B 解密数据。</p>
+<h1 id="6-参考"><a href="#6-参考" class="headerlink" title="6. 参考"></a>6. 参考</h1><ol>
+<li>GMT0044-2016 SM9标识密码算法</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2021/01/14/SM9/" title="SM9">https://suntus.github.io/2021/01/14/SM9/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tls/" rel="tag"># tls</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/04/tr-tls1-3/" rel="prev" title="[tr]tls1.3">
+      <i class="fa fa-chevron-left"></i> [tr]tls1.3
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/23/SM9%E5%9C%A8%E5%9B%BD%E5%AF%86SSL%E5%8D%8F%E8%AE%AE%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/" rel="next" title="SM9在国密SSL协议中的应用">
+      SM9在国密SSL协议中的应用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-SM9%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">1. SM9中的一些概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">2. 数字签名算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E7%9B%B8%E5%85%B3%E5%AF%86%E9%92%A5%E7%9A%84%E4%BA%A7%E7%94%9F"><span class="nav-number">2.1.</span> <span class="nav-text">2.1. 相关密钥的产生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E8%BE%85%E5%8A%A9%E5%87%BD%E6%95%B0"><span class="nav-number">2.2.</span> <span class="nav-text">2.2. 辅助函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E7%AD%BE%E5%90%8D"><span class="nav-number">2.3.</span> <span class="nav-text">2.3. 签名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-%E9%AA%8C%E7%AD%BE"><span class="nav-number">2.4.</span> <span class="nav-text">2.5. 验签</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-%E5%B0%8F%E7%BB%93"><span class="nav-number">2.5.</span> <span class="nav-text">2.6. 小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2%E5%8D%8F%E8%AE%AE"><span class="nav-number">3.</span> <span class="nav-text">3. 密钥交换协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E7%9B%B8%E5%85%B3%E5%AF%86%E9%92%A5%E7%9A%84%E4%BA%A7%E7%94%9F"><span class="nav-number">3.1.</span> <span class="nav-text">3.1. 相关密钥的产生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E8%BE%85%E5%8A%A9%E5%87%BD%E6%95%B0"><span class="nav-number">3.2.</span> <span class="nav-text">3.2. 辅助函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2%E5%8D%8F%E8%AE%AE%E8%BF%87%E7%A8%8B"><span class="nav-number">3.3.</span> <span class="nav-text">3.3. 密钥交换协议过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E5%B0%8F%E7%BB%93"><span class="nav-number">3.4.</span> <span class="nav-text">3.4. 小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E5%AF%86%E9%92%A5%E5%B0%81%E8%A3%85%E6%9C%BA%E5%88%B6"><span class="nav-number">4.</span> <span class="nav-text">4. 密钥封装机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E7%9B%B8%E5%85%B3%E5%AF%86%E9%92%A5%E7%9A%84%E4%BA%A7%E7%94%9F"><span class="nav-number">4.1.</span> <span class="nav-text">4.1. 相关密钥的产生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E8%BE%85%E5%8A%A9%E5%87%BD%E6%95%B0"><span class="nav-number">4.2.</span> <span class="nav-text">4.2. 辅助函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E5%AF%86%E9%92%A5%E5%B0%81%E8%A3%85%E7%AE%97%E6%B3%95"><span class="nav-number">4.3.</span> <span class="nav-text">4.3. 密钥封装算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-%E5%AF%86%E9%92%A5%E8%A7%A3%E5%B0%81%E7%AE%97%E6%B3%95"><span class="nav-number">4.4.</span> <span class="nav-text">4.4. 密钥解封算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%85%AC%E9%92%A5%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">5. 公钥加密算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E7%9B%B8%E5%85%B3%E5%AF%86%E9%92%A5%E7%9A%84%E4%BA%A7%E7%94%9F"><span class="nav-number">5.1.</span> <span class="nav-text">5.1. 相关密钥的产生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-%E8%BE%85%E5%8A%A9%E5%87%BD%E6%95%B0"><span class="nav-number">5.2.</span> <span class="nav-text">5.2. 辅助函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95"><span class="nav-number">5.3.</span> <span class="nav-text">5.3. 加密算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-%E8%A7%A3%E5%AF%86%E7%AE%97%E6%B3%95"><span class="nav-number">5.4.</span> <span class="nav-text">5.3. 解密算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-%E5%B0%8F%E7%BB%93"><span class="nav-number">5.5.</span> <span class="nav-text">5.4. 小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">6. 参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

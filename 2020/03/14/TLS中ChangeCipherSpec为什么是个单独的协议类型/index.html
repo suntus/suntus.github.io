@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="RFC5246中说:  Note: To help avoid pipeline stalls, ChangeCipherSpec is an independent TLS Protocol content type, and is not actually a TLS handshake message.  为了避免pipeline stall，ChangeCipherSpec是个单独的协议类">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TLS中ChangeCipherSpec为什么是个单独的协议类型">
+<meta property="og:url" content="https://suntus.github.io/2020/03/14/TLS%E4%B8%ADChangeCipherSpec%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%AA%E5%8D%95%E7%8B%AC%E7%9A%84%E5%8D%8F%E8%AE%AE%E7%B1%BB%E5%9E%8B/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="RFC5246中说:  Note: To help avoid pipeline stalls, ChangeCipherSpec is an independent TLS Protocol content type, and is not actually a TLS handshake message.  为了避免pipeline stall，ChangeCipherSpec是个单独的协议类">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-14T14:27:25.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.604Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tls">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2020/03/14/TLS%E4%B8%ADChangeCipherSpec%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%AA%E5%8D%95%E7%8B%AC%E7%9A%84%E5%8D%8F%E8%AE%AE%E7%B1%BB%E5%9E%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>TLS中ChangeCipherSpec为什么是个单独的协议类型 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2020/03/14/TLS%E4%B8%ADChangeCipherSpec%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%AA%E5%8D%95%E7%8B%AC%E7%9A%84%E5%8D%8F%E8%AE%AE%E7%B1%BB%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TLS中ChangeCipherSpec为什么是个单独的协议类型
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-14 22:27:25" itemprop="dateCreated datePublished" datetime="2020-03-14T22:27:25+08:00">2020-03-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc5226">RFC5246</a>中说:</p>
+<blockquote>
+<p>Note: To help avoid pipeline stalls, ChangeCipherSpec is an independent TLS Protocol content type, and is not actually a TLS handshake message.</p>
+</blockquote>
+<p>为了避免pipeline stall，<code>ChangeCipherSpec</code>是个单独的协议类型，不属于握手协议。这里什么是pipeline stall？</p>
+<span id="more"></span>
+
+<h1 id="1-pipeline-stall"><a href="#1-pipeline-stall" class="headerlink" title="1. pipeline stall"></a>1. pipeline stall</h1><p>通俗点的理解是，在CPU流水线设计中，有些指令必须在某些指令之后执行，中间需要停顿一下，等待前一个指令执行完，才能开始后一个指令；或者逻辑分支时，需要控制程序指令转移，导致流水线停顿。如果这样的stall过多，就会影响的性能。可以采取一些办法减少或避免停顿。</p>
+<h1 id="2-TLS1-2及之前的ChangeCipherSpec"><a href="#2-TLS1-2及之前的ChangeCipherSpec" class="headerlink" title="2. TLS1.2及之前的ChangeCipherSpec"></a>2. TLS1.2及之前的ChangeCipherSpec</h1><p>为什么<code>ChangeCipherSpec</code>需要是单独的类型呢？如果是握手协议类型，TLS协议规定相同协议类型的数据可以集中到一个record中发送，也就是说，一个record中可以同时存放<code>ClientKeyExchange,ChangeCipherSpec,Finished</code>这三个消息，其中<code>ClientKeyExchange,ChangeCipherSpec</code>这两个是不加密的，<code>Finished</code>是需要加密的。但TLS的加密是以record为单位的，一个record只能加密或不加密，不能其中一部分数据加密，另一部分不加密。所以在实现的时候，必须将<code>Finished</code>放入一个单独的record中，另外，在<code>ChangeCipherSpec</code>和<code>Finished</code>之间，也需要将连接状态从明文状态转换到加密状态，就需要停顿一下。</p>
+<p>但是，并不一定每个实现都能很好的遵循”将<code>Finished</code>放入单独的record中发送”这个约定，这样就在协议设计的时候添加了这样的冗余，相当于使用<code>ChangeCipherSpec</code>将<code>ClientKeyExchange</code>和<code>Finished</code>强制分配到两个record中。</p>
+<h1 id="3-TLS1-3的ChangeCipherSpec"><a href="#3-TLS1-3的ChangeCipherSpec" class="headerlink" title="3. TLS1.3的ChangeCipherSpec"></a>3. TLS1.3的ChangeCipherSpec</h1><p>TLS1.3中并不需要该消息，因为协议本身保证了在状态转换前发送的消息都是确定的，比如握手消息在<code>ClientHello, ServerHello</code>之后都是加密的，应用消息在发送完<code>Finished</code>之后也都是加密的，而且TLS1.3的秘钥推导跟之前版本的也都不一样，不需要CCS这样的冗余设计。但为了兼容性，还是保留了一些。</p>
+<h1 id="4-总结"><a href="#4-总结" class="headerlink" title="4. 总结"></a>4. 总结</h1><p><code>ChangeCipherSpec</code>是TLS1.2及之前的协议设计的冗余消息，目的是从协议上避免实现时的流水线停顿问题。</p>
+<p><strong>参考</strong></p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.technipages.com/definition/pipeline-stall">pipeling stall</a></li>
+<li><a target="_blank" rel="noopener" href="https://security.stackexchange.com/questions/24755/why-is-change-cipher-spec-an-independent-protocol-content-type-and-not-part-of-h">CCS pipeling stall</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/hrhguanli/p/3788316.html">OpenSSL再曝CCS注入漏洞</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2020/03/14/TLS%E4%B8%ADChangeCipherSpec%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%AA%E5%8D%95%E7%8B%AC%E7%9A%84%E5%8D%8F%E8%AE%AE%E7%B1%BB%E5%9E%8B/" title="TLS中ChangeCipherSpec为什么是个单独的协议类型">https://suntus.github.io/2020/03/14/TLS中ChangeCipherSpec为什么是个单独的协议类型/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tls/" rel="tag"># tls</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/14/ticket%E7%9B%B8%E5%85%B3/" rel="prev" title="ticket相关">
+      <i class="fa fa-chevron-left"></i> ticket相关
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/20/PSK%E7%9B%B8%E5%85%B3/" rel="next" title="PSK相关">
+      PSK相关 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-pipeline-stall"><span class="nav-number">1.</span> <span class="nav-text">1. pipeline stall</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-TLS1-2%E5%8F%8A%E4%B9%8B%E5%89%8D%E7%9A%84ChangeCipherSpec"><span class="nav-number">2.</span> <span class="nav-text">2. TLS1.2及之前的ChangeCipherSpec</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-TLS1-3%E7%9A%84ChangeCipherSpec"><span class="nav-number">3.</span> <span class="nav-text">3. TLS1.3的ChangeCipherSpec</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">4. 总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

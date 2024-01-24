@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1.offset管理kafka支持将consumer消费的offset存放到集群中，在0.8.2.2版本，默认存放到zookeeper中，在0.10.1.1中就默认存放到broker中的一个__consumer_offsets的topic中。zookeeper并不是用来做大规模读写管理的，因此放到这里会对系统造成瓶颈。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="librdkafka相关">
+<meta property="og:url" content="https://suntus.github.io/2017/12/04/librdkafka%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="1.offset管理kafka支持将consumer消费的offset存放到集群中，在0.8.2.2版本，默认存放到zookeeper中，在0.10.1.1中就默认存放到broker中的一个__consumer_offsets的topic中。zookeeper并不是用来做大规模读写管理的，因此放到这里会对系统造成瓶颈。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-12-04T07:59:13.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.606Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="c">
+<meta property="article:tag" content="kafka">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2017/12/04/librdkafka%E7%9B%B8%E5%85%B3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>librdkafka相关 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2017/12/04/librdkafka%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          librdkafka相关
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-04 15:59:13" itemprop="dateCreated datePublished" datetime="2017-12-04T15:59:13+08:00">2017-12-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-offset管理"><a href="#1-offset管理" class="headerlink" title="1.offset管理"></a>1.offset管理</h2><p>kafka支持将consumer消费的offset存放到集群中，在0.8.2.2版本，默认存放到zookeeper中，在0.10.1.1中就默认存放到broker中的一个<code>__consumer_offsets</code>的topic中。<br>zookeeper并不是用来做大规模读写管理的，因此放到这里会对系统造成瓶颈。</p>
+<span id="more"></span>
+<p>librdkafka支持两种offset管理方式：</p>
+<ol>
+<li>存放到本地文件</li>
+<li>存放到集群中</li>
+</ol>
+<p>librdkafka consumer的high level API支持存放到broker中，low level API支持存放到本地文件</p>
+<p><strong>存放到集群</strong><br>影响的配置有这么几个：</p>
+<ul>
+<li>group.id: 设置consumer组，因为offset是按组来管理的，所以必须有这个东西</li>
+<li>enable.auto.commit: 设置是否自动保存，[true, false]</li>
+<li>auto.commit.interval.ms: 自动保存的的时间，默认是5000(5s)</li>
+</ul>
+<p>下面是一段示例代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">conf = rd_kafka_conf_new();</span><br><span class="line">rd_kafka_conf_set(conf,&quot;group.id&quot;,&quot;hehe&quot;,errstr,sizeof(errstr));</span><br><span class="line">rd_kafka_conf_set(conf,&quot;enable.auto.commit&quot;,&quot;true&quot;,errstr,sizeof(errstr));</span><br><span class="line">rd_kafka_conf_set(conf,&quot;auto.commit.interval.ms&quot;,&quot;1000&quot;,errstr,sizeof(errstr));</span><br><span class="line">rk = rd_kafka_new(RD_KAFKA_CONSUMER, conf, errstr,sizeof(errstr));</span><br><span class="line"></span><br><span class="line"># 创建个topic_partition list</span><br><span class="line">rtkp_list = rd_kafka_topic_partition_list_new(1);</span><br><span class="line"># 将名字为topic_test的topic添加到rtkp_list中，并将offset设置为RD_KAFKA_OFFSET_STORED，也就是consumer上次存储在broker中的offset。rd_kafka_topic_partition_list_add()返回的是1个rd_kafka_topic_partition_t。</span><br><span class="line">rd_kafka_topic_partition_list_add(rtkp_list,&quot;topic_test&quot;,0)-&gt;offset = RD_KAFKA_OFFSET_STORED;</span><br><span class="line"></span><br><span class="line"># 这里是确定订阅哪个topic了</span><br><span class="line">rd_kafka_assign(rk, rtkp_list);</span><br><span class="line">while(1)&#123;</span><br><span class="line">    msg  = rd_kafka_consumer_poll(rk, 1000);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以用这个去查看存储的offset到哪儿了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ bin/kafka-consumer-offset-checker.sh --zookeeper localhost:2181 --topic topic_test  --group hehe</span><br><span class="line"></span><br><span class="line">Group           Topic                          Pid Offset          logSize         Lag             Owner</span><br><span class="line">hehe            topic_test                    0   6483667         1674985741      1668502074      none</span><br><span class="line"></span><br><span class="line"># offset就是当前存储的offset，logSize是当前最大的offset，lag是还没消费的msg个数</span><br></pre></td></tr></table></figure>
+
+<p><strong>存放到本地</strong><br>诶，参考上边吧</p>
+<h2 id="2-high-level-API多topic操作"><a href="#2-high-level-API多topic操作" class="headerlink" title="2.high level API多topic操作"></a>2.high level API多topic操作</h2><p>有时候需要在一个进程中订阅多个topic，并且每个topic需要单独操作，这时候就可以多申请几个<code>rd_kafka_topic_partition_list_t</code>，分别在每个<code>rd_kafka_topic_partition_list_t</code>中加入各自的topic，在订阅消息的时候，使用<code>rd_kafka_assign(rk, rktp_list);</code>来切换各个topic。就可以了。</p>
+<h2 id="3-high-level-API手动存储consumer的offset"><a href="#3-high-level-API手动存储consumer的offset" class="headerlink" title="3.high level API手动存储consumer的offset"></a>3.high level API手动存储consumer的offset</h2><p>先设置这几个参数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># rk_conf的配置</span><br><span class="line">enable.auto.commit = false</span><br><span class="line">enable.auto.offset.store = false</span><br><span class="line"># 一般还会设置这个配置，指示在broker没有存储offset(最开始时候)或offset出现错误的时候，系统应该初始化的offset位置，默认是latest</span><br><span class="line">auto.offset.reset = [earliest, latest, none]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 开始时候topic_conf的几个配置会让人迷惑，auto.commit.enable 只针对 low level API, high level API需要使用rk_conf的全局配置，enable.autom.commit是auto.commit.enable的别名</span><br><span class="line">auto.commit.enable = false</span><br><span class="line">enable.auto.commit = false</span><br></pre></td></tr></table></figure>
+
+<p>操作的话，需要用到</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 这两个是实际将offset提交到broker的操作，async为false的时候，该操作阻塞。</span><br><span class="line">// 两个的区别是，第一个可以控制提交的offset的具体值，第二个只能提交msg的offset，不能手动控制。</span><br><span class="line">rd_kafka_resp_err_t rd_kafka_commit(</span><br><span class="line">    rd_kafka_t *rk, const rd_kafka_topic_partition_list_t *offsets, int async);</span><br><span class="line"></span><br><span class="line">rd_kafka_resp_err_t rd_kafka_commit_message(</span><br><span class="line">    rd_kafka_t *rk, const rd_kafka_message_t *rkmessage, int async);</span><br></pre></td></tr></table></figure>
+
+<p>另外，还有个跟offset相关的函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rd_kafka_resp_err_t rd_kafka_offset_store(rd_kafka_topic_t *rkt,</span><br><span class="line">                                          int32_t partition, int64_t offset);</span><br></pre></td></tr></table></figure>
+<p>这个函数只是把offset提交到内存，并不是提交到broker存储起来，所以还是需要调用*commit()函数</p>
+<p><strong>注意：如果多topic切换的时候，需要先commit，再切换，否则切换回来还是会从原先的offset开始读取消息。</strong></p>
+<hr>
+<p>参考:</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://www.cnblogs.com/smartloli/p/6266453.html">kafka的offset管理</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/edenhill/librdkafka/wiki/Consumer-offset-management">librdkafka的一些说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/arnaud-lb/php-rdkafka/issues/87">关于high level API手动管理offset的讨论</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2017/12/04/librdkafka%E7%9B%B8%E5%85%B3/" title="librdkafka相关">https://suntus.github.io/2017/12/04/librdkafka相关/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/c/" rel="tag"># c</a>
+              <a href="/tags/kafka/" rel="tag"># kafka</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/24/iniparser-C%E9%85%8D%E7%BD%AE%E8%A7%A3%E6%9E%90/" rel="prev" title="iniparser-C 配置解析">
+      <i class="fa fa-chevron-left"></i> iniparser-C 配置解析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/07/docker%E7%B2%BE%E7%AE%80%E9%95%9C%E5%83%8F%E4%BD%93%E7%A7%AF/" rel="next" title="docker精简镜像体积">
+      docker精简镜像体积 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-offset%E7%AE%A1%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">1.offset管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-high-level-API%E5%A4%9Atopic%E6%93%8D%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">2.high level API多topic操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-high-level-API%E6%89%8B%E5%8A%A8%E5%AD%98%E5%82%A8consumer%E7%9A%84offset"><span class="nav-number">3.</span> <span class="nav-text">3.high level API手动存储consumer的offset</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

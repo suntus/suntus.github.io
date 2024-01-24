@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="netcat——瑞士军刀 1. 功能 TCP服务端客户端 网络测试 ssh的SOCKS或HTTP代理 简单的端口扫描…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="命令_nc">
+<meta property="og:url" content="https://suntus.github.io/2017/09/22/%E5%91%BD%E4%BB%A4_nc/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="netcat——瑞士军刀 1. 功能 TCP服务端客户端 网络测试 ssh的SOCKS或HTTP代理 简单的端口扫描…">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-09-22T08:19:37.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.612Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="cli">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2017/09/22/%E5%91%BD%E4%BB%A4_nc/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>命令_nc | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2017/09/22/%E5%91%BD%E4%BB%A4_nc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          命令_nc
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-22 16:19:37" itemprop="dateCreated datePublished" datetime="2017-09-22T16:19:37+08:00">2017-09-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>netcat——瑞士军刀</p>
+<h1 id="1-功能"><a href="#1-功能" class="headerlink" title="1. 功能"></a>1. 功能</h1><ol>
+<li>TCP服务端客户端</li>
+<li>网络测试</li>
+<li>ssh的SOCKS或HTTP代理</li>
+<li>简单的端口扫描<br>…<span id="more"></span></li>
+</ol>
+<h1 id="2-一些命令"><a href="#2-一些命令" class="headerlink" title="2. 一些命令"></a>2. 一些命令</h1><ul>
+<li>-4：只使用IPv4地址</li>
+<li>-6：只是用IPv6地址</li>
+<li>-b：允许广播</li>
+<li>-C：使用CRLF作为行的结尾</li>
+<li>-D：启动debug</li>
+<li>-d：不从标准输入中读取</li>
+<li>-I length：设置TCP接收缓冲区大小</li>
+<li>-i interval：在发送和接收数据包之间设置时间间隔，也在连接到多个端口的时候设置时间间隔</li>
+<li>-k: 强制nc在连接到1个端口之后监听等待1个连接到来。跟-l配合使用</li>
+<li>-l: 监听模式</li>
+<li>-n：不在任何地址、主机名、端口上做DNS（直接是数字形式的）</li>
+<li>-O length: 设置TCP发送缓冲区大小</li>
+<li>-P proxy_username: 连接到proxy的时候提供用户名来验证</li>
+<li>-p source_port：设置源端口</li>
+<li>-q seconds: 在标准输入发送EOF后，等待这些秒，如果是负数，就一直等下去</li>
+<li>-r: 让源&#x2F;目的端口随机，不让在一个范围内分配</li>
+<li>-S：开启RFC 2385 TCP MD5 signature option</li>
+<li>-s source: 设置源地址，如果是unix domain socket，就指定文件</li>
+<li>-T toskeyword：改变IPv4的TOS字段</li>
+<li>-U：使用unix domain socket</li>
+<li>-u：使用udp，而不是默认的TCP。不用-s指定的话，会在&#x2F;tmp目录下新建临时文件</li>
+<li>-V rtable: 设置使用的路由表</li>
+<li>-v: verbose输出</li>
+<li>-w timeout: 向外连接的时候设置超时时间</li>
+<li>-X proxy_protocol: 设置代理协议，4” (SOCKS v.4), “5” (SOCKS v.5) and “connect”(HTTPS proxy)。默认是5</li>
+<li>-x proxy_address[:port]：设置连接的代理地址</li>
+<li>-Z:DCCP模式</li>
+<li>-z: 只是扫描一下监听端口，而不发送任何数据。</li>
+</ul>
+<h1 id="3-简单的用法"><a href="#3-简单的用法" class="headerlink" title="3. 简单的用法"></a>3. 简单的用法</h1><h2 id="1-设置TCP服务端和客户端"><a href="#1-设置TCP服务端和客户端" class="headerlink" title="1. 设置TCP服务端和客户端"></a>1. 设置TCP服务端和客户端</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">服务端：</span><br><span class="line"># rm -f /tmp/f; mkfifo /tmp/f</span><br><span class="line"># cat /tmp/f | /bin/sh -i 2&gt;&amp;1 | nc -l 127.0.0.1 1234 &gt; /tmp/f</span><br><span class="line"></span><br><span class="line">客户端：</span><br><span class="line">$ nc host.example.com 1234</span><br><span class="line">$ (shell prompt from host.example.com)</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-文件传输"><a href="#2-文件传输" class="headerlink" title="2. 文件传输"></a>2. 文件传输</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">一端</span><br><span class="line">$ nc -l 1234 &gt; filename.out</span><br><span class="line"></span><br><span class="line">另一端：</span><br><span class="line">$ nc host.example.com 1234 &lt; filename.in</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-连接服务器"><a href="#3-连接服务器" class="headerlink" title="3. 连接服务器"></a>3. 连接服务器</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ nc [-C] localhost 25 &lt;&lt; EOF</span><br><span class="line">HELO host.example.com</span><br><span class="line">MAIL FROM:&lt;user@host.example.com&gt;</span><br><span class="line">RCPT TO:&lt;user2@host.example.com&gt;</span><br><span class="line">DATA</span><br><span class="line">Body of email.</span><br><span class="line">.</span><br><span class="line">QUIT</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-端口扫描"><a href="#4-端口扫描" class="headerlink" title="4. 端口扫描"></a>4. 端口扫描</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ nc -zv host.example.com 20-30</span><br><span class="line">$ nc -zv host.example.com 80 20 22</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>参考:</p>
+<ol>
+<li>man nc</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2017/09/22/%E5%91%BD%E4%BB%A4_nc/" title="命令_nc">https://suntus.github.io/2017/09/22/命令_nc/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
+              <a href="/tags/cli/" rel="tag"># cli</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/09/22/shell%20IO%E9%87%8D%E5%AE%9A%E5%90%91/" rel="prev" title="shell IO重定向">
+      <i class="fa fa-chevron-left"></i> shell IO重定向
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/10/20/nginx%E5%9B%BE%E9%9B%86/" rel="next" title="nginx图集">
+      nginx图集 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%8A%9F%E8%83%BD"><span class="nav-number">1.</span> <span class="nav-text">1. 功能</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E4%B8%80%E4%BA%9B%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">2. 一些命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E7%AE%80%E5%8D%95%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">3. 简单的用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%AE%BE%E7%BD%AETCP%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%92%8C%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">3.1.</span> <span class="nav-text">1. 设置TCP服务端和客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93"><span class="nav-number">3.2.</span> <span class="nav-text">2. 文件传输</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%BF%9E%E6%8E%A5%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">3.3.</span> <span class="nav-text">3. 连接服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="nav-number">3.4.</span> <span class="nav-text">4. 端口扫描</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

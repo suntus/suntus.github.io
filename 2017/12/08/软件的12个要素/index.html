@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="由Heroku创始人Adam Wiggins在2012年发布。 是一个开发服务器应用的方法论。开发运行一个服务器程序，应该考虑这些方面。 使用于任意语言和后端服务开发的应用程序。 最佳阅读人员：服务器开发和运维人员。 中心思想是隔离。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软件的12个要素">
+<meta property="og:url" content="https://suntus.github.io/2017/12/08/%E8%BD%AF%E4%BB%B6%E7%9A%8412%E4%B8%AA%E8%A6%81%E7%B4%A0/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="由Heroku创始人Adam Wiggins在2012年发布。 是一个开发服务器应用的方法论。开发运行一个服务器程序，应该考虑这些方面。 使用于任意语言和后端服务开发的应用程序。 最佳阅读人员：服务器开发和运维人员。 中心思想是隔离。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-12-08T09:37:57.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.616Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="ongoing">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2017/12/08/%E8%BD%AF%E4%BB%B6%E7%9A%8412%E4%B8%AA%E8%A6%81%E7%B4%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>软件的12个要素 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2017/12/08/%E8%BD%AF%E4%BB%B6%E7%9A%8412%E4%B8%AA%E8%A6%81%E7%B4%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          软件的12个要素
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-08 17:37:57" itemprop="dateCreated datePublished" datetime="2017-12-08T17:37:57+08:00">2017-12-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ul>
+<li>由Heroku创始人Adam Wiggins在2012年发布。</li>
+<li>是一个开发服务器应用的方法论。开发运行一个服务器程序，应该考虑这些方面。</li>
+<li>使用于任意语言和后端服务开发的应用程序。</li>
+<li>最佳阅读人员：服务器开发和运维人员。</li>
+<li>中心思想是隔离。</li>
+</ul>
+<span id="more"></span>
+<h2 id="1-基准代码"><a href="#1-基准代码" class="headerlink" title="1.基准代码"></a>1.基准代码</h2><p>1个模块只有1份基准代码，多个模块组成的是一个分布式系统。基准代码应该用版本管理工具加以控制，每个基准代码应该独占1个库，同属1个系统的多个基准代码库可以加入组。</p>
+<h2 id="2-依赖"><a href="#2-依赖" class="headerlink" title="2.依赖"></a>2.依赖</h2><ul>
+<li>显示声明依赖。</li>
+<li>通过依赖隔离工具来确保程序不会调用系统种存在但清单中未声明的依赖项。这种做法应该统一应用到开发和生产环境。</li>
+</ul>
+<h2 id="3-配置"><a href="#3-配置" class="headerlink" title="3.配置"></a>3.配置</h2><ul>
+<li>与代码分离。</li>
+<li>推荐保存到环境变量。</li>
+</ul>
+<h2 id="4-后端服务"><a href="#4-后端服务" class="headerlink" title="4.后端服务"></a>4.后端服务</h2><ul>
+<li>把后端服务当做附加资源。如数据库，MQ,SMTP，缓存等。</li>
+<li>应该保证应用在不改动任何代码的情况下，将本地mysql换成第三方服务(如Amazon RDS)</li>
+</ul>
+<h2 id="5-构建，发布，运行"><a href="#5-构建，发布，运行" class="headerlink" title="5.构建，发布，运行"></a>5.构建，发布，运行</h2><p>严格分离构建和运行<br>基准代码转换成一份部署需要三个阶段：<br>1）构建阶段：将代码转化成可执行包的过程。构建时会使用指定版本的代码，获取和打包依赖项，编译成二进制文件和资源文件<br>2）发布阶段：将构建结果和当前部署所需配置相结合，并能够立即在运行环境中投入使用<br>3）运行阶段：只针对选定的发布版本，在执行环境中启动一系列运行程序进程</p>
+<h2 id="6-进程"><a href="#6-进程" class="headerlink" title="6.进程"></a>6.进程</h2><ul>
+<li>系统可以有1个或多个进程，进程必须无状态且无共享，任何需要持久化的数据都存储在后端服务中（比如数据库）。</li>
+<li>内存和磁盘可以作为进程在进行某种事务型操作时的缓存（比如下载一个很大的文件）。不考虑这些缓存的内容是不是可以保留给之后的请求使用。</li>
+<li>如果需要在内存中保存数据，优先考虑使用redis等内存数据库。</li>
+</ul>
+<h2 id="7-端口绑定"><a href="#7-端口绑定" class="headerlink" title="7.端口绑定"></a>7.端口绑定</h2><ul>
+<li>使用端口提供服务。</li>
+</ul>
+<h2 id="8-并发"><a href="#8-并发" class="headerlink" title="8.并发"></a>8.并发</h2><ul>
+<li>应该更多考虑水平扩展的可能。</li>
+<li>不需要自己设置守护进程，而应交给其他进程托管系统。</li>
+</ul>
+<h2 id="9-易处理"><a href="#9-易处理" class="headerlink" title="9.易处理"></a>9.易处理</h2><ul>
+<li>可以瞬间开启或停止，有利于快速、弹性的伸缩应用</li>
+<li>进程接收到终止信号会优雅的终止。对网络进程，优雅就是停止监听服务的端口，拒绝信的请求，并执行当前已接收到的请求，然后退出。对worker进程，优雅终止就是当前任务退出队列。任务都应该可重复，使重复操作幂等实现。</li>
+<li>应该可以处理 意外的、不优雅的终止。</li>
+</ul>
+<h2 id="10-开发环境与线上环境等价"><a href="#10-开发环境与线上环境等价" class="headerlink" title="10.开发环境与线上环境等价"></a>10.开发环境与线上环境等价</h2><p>尽可能保持开发、预发布、线上环境相同<br>开发环境和线上环境的差异有：</p>
+<ol>
+<li>时间差异：开发的代码可能几天，几周才会上线</li>
+<li>人员差异：开发人员编写代码，运维人员部署代码</li>
+<li>工具差异： 开发人员或许使用nginx，sqlite， osx，线上环境使用apache，mysql，linux</li>
+</ol>
+<h2 id="11-日志"><a href="#11-日志" class="headerlink" title="11.日志"></a>11.日志</h2><p>把日志当做事件流。<br>日志使应用程序运行的动作变得透明。服务器环境中，日志通常被写在文件中，但这只是一种输出格式。<br>日志应该是事件流的汇总，将所有运行中进程和后端服务的数据流按照时间顺序收集起来。<br>应用本身不应考虑存储自己的数据流，不应该试图去写或管理日志文件，都应该直接输出的标准输出（stdout）。最后汇总到统一的日志处理系统中。</p>
+<h2 id="12-管理进程"><a href="#12-管理进程" class="headerlink" title="12.管理进程"></a>12.管理进程</h2><p>后台管理任务当做一次性进程运行。</p>
+<hr>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://12factor.net/zh_cn/">The Twelve-Factor App</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2017/12/08/%E8%BD%AF%E4%BB%B6%E7%9A%8412%E4%B8%AA%E8%A6%81%E7%B4%A0/" title="软件的12个要素">https://suntus.github.io/2017/12/08/软件的12个要素/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ongoing/" rel="tag"># ongoing</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/08/%E7%94%A8%E5%88%B0%E7%9A%84docker/" rel="prev" title="用到的docker">
+      <i class="fa fa-chevron-left"></i> 用到的docker
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/19/%E9%A1%BA%E6%97%B6%E9%92%88%E8%A7%84%E5%88%99--C%E8%AF%AD%E8%A8%80%E5%A3%B0%E6%98%8E/" rel="next" title="顺时针规则--C语言声明">
+      顺时针规则--C语言声明 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%9F%BA%E5%87%86%E4%BB%A3%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">1.基准代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%BE%9D%E8%B5%96"><span class="nav-number">2.</span> <span class="nav-text">2.依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">3.配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%90%8E%E7%AB%AF%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">4.后端服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%9E%84%E5%BB%BA%EF%BC%8C%E5%8F%91%E5%B8%83%EF%BC%8C%E8%BF%90%E8%A1%8C"><span class="nav-number">5.</span> <span class="nav-text">5.构建，发布，运行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E8%BF%9B%E7%A8%8B"><span class="nav-number">6.</span> <span class="nav-text">6.进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E7%AB%AF%E5%8F%A3%E7%BB%91%E5%AE%9A"><span class="nav-number">7.</span> <span class="nav-text">7.端口绑定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E5%B9%B6%E5%8F%91"><span class="nav-number">8.</span> <span class="nav-text">8.并发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-%E6%98%93%E5%A4%84%E7%90%86"><span class="nav-number">9.</span> <span class="nav-text">9.易处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%8E%E7%BA%BF%E4%B8%8A%E7%8E%AF%E5%A2%83%E7%AD%89%E4%BB%B7"><span class="nav-number">10.</span> <span class="nav-text">10.开发环境与线上环境等价</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-%E6%97%A5%E5%BF%97"><span class="nav-number">11.</span> <span class="nav-text">11.日志</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-%E7%AE%A1%E7%90%86%E8%BF%9B%E7%A8%8B"><span class="nav-number">12.</span> <span class="nav-text">12.管理进程</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

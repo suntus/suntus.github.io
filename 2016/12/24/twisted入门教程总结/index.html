@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="是这个的总结了：http:&#x2F;&#x2F;wiki.jikexueyuan.com&#x2F;project&#x2F;twisted-intro&#x2F;p01.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="twisted入门教程总结">
+<meta property="og:url" content="https://suntus.github.io/2016/12/24/twisted%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="是这个的总结了：http:&#x2F;&#x2F;wiki.jikexueyuan.com&#x2F;project&#x2F;twisted-intro&#x2F;p01.html">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://suntus.github.io/img/twisted1.jpg">
+<meta property="article:published_time" content="2016-12-24T02:42:54.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.607Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://suntus.github.io/img/twisted1.jpg">
+
+<link rel="canonical" href="https://suntus.github.io/2016/12/24/twisted%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>twisted入门教程总结 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2016/12/24/twisted%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          twisted入门教程总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-12-24 10:42:54" itemprop="dateCreated datePublished" datetime="2016-12-24T10:42:54+08:00">2016-12-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>是这个的总结了：<a target="_blank" rel="noopener" href="http://wiki.jikexueyuan.com/project/twisted-intro/p01.html">http://wiki.jikexueyuan.com/project/twisted-intro/p01.html</a></p>
+<span id="more"></span>
+
+<h2 id="1-twisted理论基础"><a href="#1-twisted理论基础" class="headerlink" title="1.twisted理论基础"></a>1.twisted理论基础</h2><hr>
+<p>问题：同步框架响应I&#x2F;O时间慢<br>解决：异步事件驱动框架</p>
+<p>就是讲事件驱动的理论基础，没什么说的</p>
+<h2 id="2-异步编程模式与Reactor初探"><a href="#2-异步编程模式与Reactor初探" class="headerlink" title="2.异步编程模式与Reactor初探"></a>2.异步编程模式与Reactor初探</h2><hr>
+<p>问题: 异步框架都需要有什么东西？<br>解决如下：</p>
+<p>异步框架需要做到的东西：</p>
+<ol>
+<li>处理所有不同系统会出现的I&#x2F;O事件</li>
+<li>提供优雅的抽象来帮助你在使用时少花些心思去考虑它的存在</li>
+<li>提供可以在抽象层外使用的公共协议实现</li>
+</ol>
+<p>twisted提供的就是reactor模式</p>
+<h2 id="3-初识Twisted"><a href="#3-初识Twisted" class="headerlink" title="3.初识Twisted"></a>3.初识Twisted</h2><hr>
+<p>twisted的基础用法</p>
+<h2 id="4-由twisted支持的客户端"><a href="#4-由twisted支持的客户端" class="headerlink" title="4.由twisted支持的客户端"></a>4.由twisted支持的客户端</h2><hr>
+<p>问题：twisted的整体组织是怎样的？<br>解决：通过大量接口去定义规范。</p>
+<p>从twisted底层开始讲起，非常有必要去看看<code>twisted.internet.interfaces</code>模块，很有用。写这么多接口一是为了文档化，而是为了结构化，更好的组织整个框架。twisted里边高层次的抽象大部分都是基于低层次的接口，<code>twisted.internet.interfaces</code>模块提供了很多低层次的接口规范。</p>
+<h2 id="5-由Twisted扶持的客户端"><a href="#5-由Twisted扶持的客户端" class="headerlink" title="5.由Twisted扶持的客户端"></a>5.由Twisted扶持的客户端</h2><hr>
+<p>问题：twisted的基本概念<br>解决：transport, protocol, protocol factory</p>
+<p>twisted三大概念：</p>
+<ol>
+<li><strong>transport</strong>: 表示一个TCP连接，每个客户端连进来都会有一个transport跟它对应。</li>
+<li><strong>protocol</strong>: 表示连接上的协议，收到的数据应该怎么处理，实际上就是协议所要做的事情了。</li>
+<li><strong>protocol factory</strong>: 产生协议的工厂，监听一个端口的话，每连进来一个客户端，就会生成一个协议实例，每个协议实例会指向一个transport实例，而protocol facotry就是管理所有这些连接的地方。</li>
+</ol>
+<h2 id="6-更加”抽象”的运用Twisted"><a href="#6-更加”抽象”的运用Twisted" class="headerlink" title="6.更加”抽象”的运用Twisted"></a>6.更加”抽象”的运用Twisted</h2><hr>
+<p>问题：如何组织一个异步处理函数<br>解决：回调</p>
+<p>将我们需要的功能封装成一个函数get_poetry()，这里的关键是<strong>回调</strong>，其实异步框架最主要的概念之一就是回调。还说了一些如何twisted中错误的基础处理方法，后边会提到正规的处理方法。</p>
+<h2 id="7-小插曲-Deferred"><a href="#7-小插曲-Deferred" class="headerlink" title="7.小插曲 Deferred"></a>7.小插曲 Deferred</h2><hr>
+<p>问题：如何组织很多回调？<br>解决：defer</p>
+<p>用defer组建回调链。defer其实就是关于方便组织回调的一种抽象方式。异步事件处理中最常遇到的问题是我如何去获取、处理一个异步函数<code>func()</code>的结果。我不可能直接用<code>data = func()</code>来获取，只能用回调<code>func(cb1())</code>，当func()完成时，它自己知道什么时候去调用<code>cb1()</code>函数；但有时候我还想在<code>cb1()</code>处理一遍结果之后，再接着处理<code>cb1()</code>的结果，正常来说是在最开始调用<code>func()</code>的时候接着嵌套一个回调，比如这样<code>func(cb1(cb2()))</code>，放在<code>cb2()</code>里边是因为只有<code>cb1()</code>才知道什么时候应该去调用<code>cb2()</code>；当前还可能有更多回调。。。。这就组成了一个回调链。twisted就提供了这样一种机制，把<code>cb1()</code>,<code>cb2()</code>或者还有<code>cb3()</code>等等给串起来，在这条链的执行过程中，不是由这些回调自己去管理如何从一个函数切换到另一个函数，而是由twisted管理什么时候该切换去执行哪个函数，这种机制就是defer。当然上边说的只是正常的回调，在这些回调过程中任何一个环节都可能发生错误，也需要defer去组织如何处理错误的回调。错误回调就不说了，看那个回调的执行图就可以了。</p>
+<p><img src="/img/twisted1.jpg"></p>
+<h2 id="8-使用Deferred的诗歌下载客户端"><a href="#8-使用Deferred的诗歌下载客户端" class="headerlink" title="8.使用Deferred的诗歌下载客户端"></a>8.使用Deferred的诗歌下载客户端</h2><hr>
+<p>上一节是理论，这一节是实践</p>
+<h2 id="9-第二个小插曲，deferred"><a href="#9-第二个小插曲，deferred" class="headerlink" title="9.第二个小插曲，deferred"></a>9.第二个小插曲，deferred</h2><hr>
+<p>问题：defer是如何同时管理正常的回调和错误回调的，如何去切换执行在回调链上的各个函数的？<br>解决：第7节给的那个图。</p>
+<p>向defer中添加回调时是按照回调对儿添加的，一次添加两个：正常回调cb():callback,错误回调eb():errback。对某一层回调，不管上层调用的是cb()还是eb()，上层正常，这一次层就调用cb()；上层产生错误，这一次层就调用eb()。依次往后。</p>
+<h2 id="10-增强defer功能的客户端"><a href="#10-增强defer功能的客户端" class="headerlink" title="10.增强defer功能的客户端"></a>10.增强defer功能的客户端</h2><hr>
+<p>更详细的讲了上一节我总结的流程。defer回调链<strong>路由</strong></p>
+<h2 id="11-改进诗歌下载服务器"><a href="#11-改进诗歌下载服务器" class="headerlink" title="11.改进诗歌下载服务器"></a>11.改进诗歌下载服务器</h2><hr>
+<p>问题：如何管理服务器的多个tcp连接？<br>解决：Transport、Protocol、Protocol Factory</p>
+<p>第5节三大概念的实践</p>
+<h2 id="12-改进诗歌下载服务器"><a href="#12-改进诗歌下载服务器" class="headerlink" title="12.改进诗歌下载服务器"></a>12.改进诗歌下载服务器</h2><hr>
+<p>问题：如何处理收到的数据，如何去组织这个处理过程？<br>解决：基于Protocol的一些协议实现</p>
+<p>twisted自带的一些Protocol的实现</p>
+<h2 id="13-使用Deferred新功能实现新客户端"><a href="#13-使用Deferred新功能实现新客户端" class="headerlink" title="13.使用Deferred新功能实现新客户端"></a>13.使用Deferred新功能实现新客户端</h2><hr>
+<p>问题：在代码中如何去组织defer<br>解决：通常情况下，一个对象创建了一个deferred，那么它应当负责激活它</p>
+<h2 id="14-Deferred用于同步环境"><a href="#14-Deferred用于同步环境" class="headerlink" title="14.Deferred用于同步环境"></a>14.Deferred用于同步环境</h2><hr>
+<p>问题：一个函数可能实时返回结果，也可能返回一个defer，如何实现？<br>解决：使用maybeDeferred()函数，返回一个激活了的defer。</p>
+<p>利用的是激活的defer也可以再添加回调函数，方便后续去处理。</p>
+<h2 id="15-测试诗歌"><a href="#15-测试诗歌" class="headerlink" title="15.测试诗歌"></a>15.测试诗歌</h2><hr>
+<p>代码测试</p>
+<h2 id="16-Twisted-进程守护"><a href="#16-Twisted-进程守护" class="headerlink" title="16.Twisted 进程守护"></a>16.Twisted 进程守护</h2><hr>
+<p>守护进程一类的辅助框架</p>
+<h2 id="17-构造”回调”的另一种方法"><a href="#17-构造”回调”的另一种方法" class="headerlink" title="17.构造”回调”的另一种方法"></a>17.构造”回调”的另一种方法</h2><hr>
+<p>问题：回调链会很长很长，每次回调都要去<em>定义</em>一个函数来实现，这种阅读、重构起来会很麻烦。<br>解决：使用inlineCallbacks。</p>
+<p>回调链相当于在一个时间点上横向去延展处理逻辑，但我们通常的理解方式是纵向的、从上到下的去理解，那defer组织的回调就不自然（当然理解之后也就那样）。twisted提供了纵向组织回调的方法，也就是inlineCallbacks,需要结合yield。</p>
+<h2 id="18-Deferreds-全貌"><a href="#18-Deferreds-全貌" class="headerlink" title="18.Deferreds 全貌"></a>18.Deferreds 全貌</h2><hr>
+<p>问题：一个程序里边可能有很多defer，如何管理他们？<br>解决：用DeferredList</p>
+<p>DeferredList也可以用defer控制，添加回调等</p>
+<h2 id="19-取消之前的意图"><a href="#19-取消之前的意图" class="headerlink" title="19.取消之前的意图"></a>19.取消之前的意图</h2><hr>
+<p>问题：一个defer启动回调，我们忽然又不想要这个结果了，怎么办？<br>解决：defer.cancel()</p>
+<p>这里取消并不是取消那个处理过程，而是不要结果的意思。比如说我在defer中添加了回调cb()，defer激活之后，就会运行下去，在cb执行之前，我调用了cancel()，并不是说cb()不执行了，它还会执行，只是结果我们就不需要了。实际取消一个回调链，可能还需要执行一些其他动作，比如关闭网络连接，回滚数据库事务，结束子进程等，在创建defer的时候，还是用回调去实现这种处理，d &#x3D; Deferred(canceller())，就可以在defer.cancel()的时候实际去执行这些操作。</p>
+<hr>
+<p>剩下的三章就不去说了。总之，twisted提供了一个异步处理框架，这个框架提供了三个基本概念: <code>transport, protocol, protocol factory</code>, 提供了两个组织回调的工具:<code>defer, inlineCallbacks</code>，————最主要的也就是这两个部分了，其他的就按需要再去学习了。</p>
+<p>最后想说的是，在刚开始学的时候还是很难理解，但理解了之后就发现异步框架也就是这样，twisted是这样，tornado也是这样，然后你去看nginx代码，发现也是这样。顺便提一下，读nginx代码，就像是同时看一个twisted源码跟它之上的一个应用，是一个套路的。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2016/12/24/twisted%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%E6%80%BB%E7%BB%93/" title="twisted入门教程总结">https://suntus.github.io/2016/12/24/twisted入门教程总结/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/12/20/%E7%94%A8%E5%88%B0%E7%9A%84cmake/" rel="prev" title="用到的cmake">
+      <i class="fa fa-chevron-left"></i> 用到的cmake
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/12/24/python%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%A7%A3%E6%9E%90/" rel="next" title="python命令行解析">
+      python命令行解析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-twisted%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">1.twisted理论基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F%E4%B8%8EReactor%E5%88%9D%E6%8E%A2"><span class="nav-number">2.</span> <span class="nav-text">2.异步编程模式与Reactor初探</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%88%9D%E8%AF%86Twisted"><span class="nav-number">3.</span> <span class="nav-text">3.初识Twisted</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E7%94%B1twisted%E6%94%AF%E6%8C%81%E7%9A%84%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">4.</span> <span class="nav-text">4.由twisted支持的客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E7%94%B1Twisted%E6%89%B6%E6%8C%81%E7%9A%84%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">5.</span> <span class="nav-text">5.由Twisted扶持的客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E6%9B%B4%E5%8A%A0%E2%80%9D%E6%8A%BD%E8%B1%A1%E2%80%9D%E7%9A%84%E8%BF%90%E7%94%A8Twisted"><span class="nav-number">6.</span> <span class="nav-text">6.更加”抽象”的运用Twisted</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E5%B0%8F%E6%8F%92%E6%9B%B2-Deferred"><span class="nav-number">7.</span> <span class="nav-text">7.小插曲 Deferred</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E4%BD%BF%E7%94%A8Deferred%E7%9A%84%E8%AF%97%E6%AD%8C%E4%B8%8B%E8%BD%BD%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">8.</span> <span class="nav-text">8.使用Deferred的诗歌下载客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-%E7%AC%AC%E4%BA%8C%E4%B8%AA%E5%B0%8F%E6%8F%92%E6%9B%B2%EF%BC%8Cdeferred"><span class="nav-number">9.</span> <span class="nav-text">9.第二个小插曲，deferred</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-%E5%A2%9E%E5%BC%BAdefer%E5%8A%9F%E8%83%BD%E7%9A%84%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">10.</span> <span class="nav-text">10.增强defer功能的客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-%E6%94%B9%E8%BF%9B%E8%AF%97%E6%AD%8C%E4%B8%8B%E8%BD%BD%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">11.</span> <span class="nav-text">11.改进诗歌下载服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-%E6%94%B9%E8%BF%9B%E8%AF%97%E6%AD%8C%E4%B8%8B%E8%BD%BD%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">12.</span> <span class="nav-text">12.改进诗歌下载服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#13-%E4%BD%BF%E7%94%A8Deferred%E6%96%B0%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0%E6%96%B0%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">13.</span> <span class="nav-text">13.使用Deferred新功能实现新客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#14-Deferred%E7%94%A8%E4%BA%8E%E5%90%8C%E6%AD%A5%E7%8E%AF%E5%A2%83"><span class="nav-number">14.</span> <span class="nav-text">14.Deferred用于同步环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#15-%E6%B5%8B%E8%AF%95%E8%AF%97%E6%AD%8C"><span class="nav-number">15.</span> <span class="nav-text">15.测试诗歌</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#16-Twisted-%E8%BF%9B%E7%A8%8B%E5%AE%88%E6%8A%A4"><span class="nav-number">16.</span> <span class="nav-text">16.Twisted 进程守护</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#17-%E6%9E%84%E9%80%A0%E2%80%9D%E5%9B%9E%E8%B0%83%E2%80%9D%E7%9A%84%E5%8F%A6%E4%B8%80%E7%A7%8D%E6%96%B9%E6%B3%95"><span class="nav-number">17.</span> <span class="nav-text">17.构造”回调”的另一种方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#18-Deferreds-%E5%85%A8%E8%B2%8C"><span class="nav-number">18.</span> <span class="nav-text">18.Deferreds 全貌</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#19-%E5%8F%96%E6%B6%88%E4%B9%8B%E5%89%8D%E7%9A%84%E6%84%8F%E5%9B%BE"><span class="nav-number">19.</span> <span class="nav-text">19.取消之前的意图</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

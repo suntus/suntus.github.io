@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一些常用的工具放在这里">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用到的一些工具(持续更新)">
+<meta property="og:url" content="https://suntus.github.io/2014/10/01/%E7%94%A8%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="一些常用的工具放在这里">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://suntus.github.io/img/sometools1.png">
+<meta property="article:published_time" content="2014-10-01T14:44:28.000Z">
+<meta property="article:modified_time" content="2020-11-09T14:28:59.615Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="setting">
+<meta property="article:tag" content="tools">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://suntus.github.io/img/sometools1.png">
+
+<link rel="canonical" href="https://suntus.github.io/2014/10/01/%E7%94%A8%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>用到的一些工具(持续更新) | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2014/10/01/%E7%94%A8%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用到的一些工具(持续更新)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-10-01 22:44:28" itemprop="dateCreated datePublished" datetime="2014-10-01T22:44:28+08:00">2014-10-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>一些常用的工具放在这里</p>
+<span id="more"></span>
+<ol>
+<li><p>cloc统计代码行数（apt）.</p>
+</li>
+<li><p>valgrind, 检测c程序内存泄漏</p>
+<pre><code> valgrind --tool=memcheck --leak-check=full --suppressions=vg.supp someprog
+</code></pre>
+</li>
+</ol>
+<p>关于zmq使用的代码:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">vg.supp</span><br><span class="line">&#123;</span><br><span class="line">   &lt;socketcall_sendto&gt;</span><br><span class="line">   Memcheck:Param</span><br><span class="line">   socketcall.sendto(msg)</span><br><span class="line">   fun:send</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">   &lt;socketcall_sendto&gt;</span><br><span class="line">   Memcheck:Param</span><br><span class="line">   socketcall.send(msg)</span><br><span class="line">   fun:send</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li><p><code>tail file.name -f </code> 跟踪文件，查看在文件尾插入日志记录的时候很用。</p>
+</li>
+<li><p><code> git config --global alias.lg &quot;log --color --graph --pretty=format:&#39;%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset&#39; --abbrev-commit&quot;</code> git log 别名： git lg</p>
+</li>
+<li><p><code>python -m SimpleHTTPServer 8080</code> python自带的一个很好用的简单web server，我用来做简单的tcp并发测试工作了。<a target="_blank" rel="noopener" href="http://coolshell.cn/articles/1480.html">参考地址</a></p>
+</li>
+<li><p><code>http_load -p 64 -s 100 -r 10 url</code>，用于http压力测试的工具，简单参数就是这些了，-p表示并发数为64，-s表示测试时间为100s，-r表示每秒测试10个，所以总数就是(-s)100 * (-r)10 &#x3D; 1000个，url是存放url的文件，里边直接写上要测试的http地址就可以了。</p>
+</li>
+<li><p><code>date +%s</code>，显示UNIX时间戳</p>
+</li>
+<li><p><code>date --date=@1439351296</code>， 将UNIX时间戳换成当前时间</p>
+</li>
+<li><p><code>(gdb) b ngx_rbtree.c:32</code>，随意设置断点</p>
+</li>
+<li><p><code>(gdb) set follow-fork-mode [parent|child]</code>， 跟随父进程&#x2F;子进程，<code>(gdb) set detach-on-fork [on|off]</code>, on：断开调试set follow-fork-mode指定的进程，off：follow-fork-mode指定的进程将被调试，另一个进程置于暂停（suspended）状态。</p>
+</li>
+<li><p><code>(gdb) attach pid</code>，加载正在运行的进程来调试，我用它解决了死循环</p>
+</li>
+<li><p><code>taskset -pc 5 pid</code>, 把进程号为pid的进程绑定到5号cpu上，去掉5可以看当前进程占用哪个cpu,也就是<code>taskset -pc pid</code>，在top中按f，找到Last used cpu(SMP)，让它显示出来，也能看到当前占用的cpu，进top按1，可以显示当前所有cpu的使用情况, <code>top -Hp 1469</code>也可以显示出来，更具体。</p>
+</li>
+<li><p><code>fuser filename</code>， 查找文件被哪个进程占用</p>
+</li>
+<li><p><code>find . -type d -name &quot;.svn&quot; | xargs rm -rf</code> 查找文件中的.svn文件夹，并删除</p>
+</li>
+<li><p><del><a target="_blank" rel="noopener" href="https://www.trankynam.com/xtrafinder/">XtraFinder</a>，先前找了好长时间的东西。MAC里没办法在当前目录打开终端，试过快捷键设置，但是没什么用，后来用了<code>go2shell</code>，但是要在finder工具栏那里加个图标，而且多桌面情况下打开的时候老是跳来跳去，并不好用。终于让我遇到了XtraFinder，就有了右键打开终端、新建文件夹的功能：</del>(升级到10.11后就失效了)<br><img src="/img/sometools1.png" alt="f1{100}"></p>
+</li>
+<li><p>tar借助openssl加密压缩文件:</p>
+<pre><code>tar -zcvf - update|openssl des3 -salt -k password | dd of=update.tar.gz
+</code></pre>
+</li>
+</ol>
+<p>解压时会要求输入密码，用：<br>        dd if&#x3D;update.tar.gz |openssl des3 -d |tar zxvf -<br>17. <code>ethtool -p eth0</code>，能让eth0网口灯不停闪，在多网口服务器上确定是哪个物理网口的时候很有用.</p>
+<ol start="18">
+<li><p><code>&quot;/corefile/core-%e-%p-%t&quot; &gt; /proc/sys/kernel/core_pattern</code>, 统一把生成的core dump文件放到&#x2F;corefile目录下，文件名的格式为core-命令名-pid-时间戳.</p>
+</li>
+<li><p><code>while true; do echo haha; sleep 1; done</code>，常用来周期性查看某项性能参数或者监控日志</p>
+</li>
+<li><p><code>echo 1 &gt; /proc/sys/vm/drop_caches</code>，清理linux中的cache和buff</p>
+</li>
+<li><p><code>tar --exclude=./.* -zcvf haha.tar.gz .</code>，打包本目录下除隐藏文件(点开头的)的所有文件，<code>tar ztvf haha.tar.gz</code>，查看打包文件中的文件</p>
+</li>
+<li><p><code>echo hehe | tee hello.txt</code>, 将日志输出到标准输出和文件hello.txt中，<code>tee</code>从标准输入读入数据，输出到标准输出和文件，相当于从1个口进入，分成两个口出去了。想要追加文件可以用 <code>tee -a</code></p>
+</li>
+<li><p><code>mkdir /data/blank ;rsync --delete-before -d /data/blank/ /var/spool/clientmqueue/ </code>, 快速删除大量文件(几十万以上).</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2014/10/01/%E7%94%A8%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7/" title="用到的一些工具(持续更新)">https://suntus.github.io/2014/10/01/用到的一些工具/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/setting/" rel="tag"># setting</a>
+              <a href="/tags/tools/" rel="tag"># tools</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2014/10/02/ubuntu14-04%E9%85%8D%E7%BD%AEmysql-cdt/" rel="next" title="ubuntu14.04配置mysql+cdt">
+      ubuntu14.04配置mysql+cdt <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

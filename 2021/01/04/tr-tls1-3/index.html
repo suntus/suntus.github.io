@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="tls1.3翻译备忘">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[tr]tls1.3">
+<meta property="og:url" content="https://suntus.github.io/2021/01/04/tr-tls1-3/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="tls1.3翻译备忘">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-04T12:39:35.000Z">
+<meta property="article:modified_time" content="2021-06-20T15:52:05.076Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tls">
+<meta property="article:tag" content="tr">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2021/01/04/tr-tls1-3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>[tr]tls1.3 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2021/01/04/tr-tls1-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [tr]tls1.3
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-04 20:39:35" itemprop="dateCreated datePublished" datetime="2021-01-04T20:39:35+08:00">2021-01-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-20 23:52:05" itemprop="dateModified" datetime="2021-06-20T23:52:05+08:00">2021-06-20</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>tls1.3翻译备忘</p>
+<span id="more"></span>
+
+<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>该文档定义了TLS(Transport Layer Security)协议的1.3版本。TLS可以让C&#x2F;S应用在互联网上通过一种能抵御信息泄露、破坏或篡改的方式安全通信。<br>该文档更新了RFC 5705和6066，废弃了RFC 5077、5246、6961。也对TLS1.2的实现做了些新的规定。</p>
+<h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h1><p>TLS的首要目标在两个通信端点之间提供一个安全通道；对底层传输通道的唯一要求就是传输可靠、没有乱序。具体来说，这个安全通道应该提供一下特性：</p>
+<ul>
+<li>可鉴别：server端总是可被鉴别，client端可选被鉴别。鉴别可以通过非对称算法(比如RSA，ECDSA或者EdDSA)或者对称的预共享密钥(PSK)进行。</li>
+<li>可信: 通道建立后传输的数据只能被两端看到。TLS不会隐藏传输数据的长度，但端点可以对TLS记录层进行填充，以此来隐藏实际长度，提高抵抗流量分析的能力。</li>
+<li>完整性：通道建立后传输的数据一旦被攻击者篡改，就可以被检测到。</li>
+</ul>
+<p>这些特性在面对那些完全掌握网络的攻击者的时候，应该也要保证是对的，见[RFC3552]。附录E对相关的安全特性有个更完整的说明。</p>
+<p>TLS包含两个主要部分:</p>
+<ul>
+<li>一个握手协议(#4)，负责鉴别通信实体、协商加密模式和参数、建立共享的密钥材料。握手协议被设计的可以抗篡改：一个主动攻击者是没有办法迫使通信双方协商出一个跟没有被攻击时不一样的参数的。</li>
+<li>一个记录层协议(#5)，用握手协议建立的参数来保护通信双方的流量。记录层协议将流量分割成一系列的record，每个record都由通信密钥单独保护。</li>
+</ul>
+<p>TLS是跟应用协议无关的: 更高层的协议可以透明的建立在TLS协议之上。但TLS标准并没规定应用协议怎么用TLS来增加安全性: 怎么初始化TLS握手、怎么处理交换的鉴别证书这些问题，被留给那些设计和实现应用协议的人去权衡。</p>
+<p>本文档定义了TLS1.3版本。尽管TLS1.3跟之前的版本没有直接兼容，但所有版本的TLS会用一个版本协商机制来协商出一个两端共同支持的版本。</p>
+<p>本文档取代和废弃了之前的TLS版本，包括TLS1.2[RFC5246]。也废弃了[RFC5077]中定义的ticket机制，用#2.2中的新机制替代。TLS1.3调整了密钥推导的方式，因此在#7.5中更新了[RFC5705]。它也在#4.4.2.1中调整了OCSP消息的携带方式，因此更新了[RFC6066]，废弃了[RFC7961]。</p>
+<h2 id="1-1-约定和术语"><a href="#1-1-约定和术语" class="headerlink" title="1.1 约定和术语"></a>1.1 约定和术语</h2><p>关键词*”MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECONMMENDED”, “NOT RECOMMENDED”, “MAY”, “OPTIONAL”*按照[RFC2119][RFC8174]中描述的解释，当且仅当他们是大写的时候。</p>
+<p>本文档会用到以下术语：</p>
+<ul>
+<li>client: 发起TLS连接的端点。</li>
+<li>connection: 两个端点之间的传输层连接。</li>
+<li>endpoint: connection中的client或server。</li>
+<li>handshake: client和server之间为建立TLS后续使用的参数进行的初始化协商。</li>
+<li>peer: 一个端点。当讨论一个具体端点的时候，”peer”指的是讨论中不是首要对象的另一个端点。</li>
+<li>receiver: 接收record的端点。</li>
+<li>sender: 发送record的端点。</li>
+<li>server: 不是发起TLS连接的端点。</li>
+</ul>
+<h2 id="1-2-跟TLS1-2的主要区别"><a href="#1-2-跟TLS1-2的主要区别" class="headerlink" title="1.2. 跟TLS1.2的主要区别"></a>1.2. 跟TLS1.2的主要区别</h2><p>以下列出的是TLS1.2和1.3之间主要功能上的不同点，没有包括完全，另外还有很多其他细小的差别。</p>
+<ul>
+<li>所有被认为过时的对称加密算法都从支持的列表中删除了，剩下的都是AEAD算法。加密套件的概念也变了，现在用来将认证和秘钥交换算法与记录层保护算法(包括秘钥长度)和一个在秘钥推导和MAC中用到的hash算法分开。</li>
+<li>增加了一个0-RTT模式，为某些应用数据在连接建立的时候节省了一个往返的时间，但是牺牲了一定的安全性。</li>
+<li>移除了静态RSA和DH算法套件；现在所有以公钥为基础的密钥交换机制都提供前向安全性。</li>
+<li><code>ServerHello</code>之后的所有握手消息都被加密起来了。新添加的<code>EncryptedExtensions</code>消息让之前在<code>ServerHello</code>中明文传输的扩展项都得以保护起来。</li>
+<li>重新设计了密钥推导函数。新设计的函数由于提高了密钥的独立性，更易于被密码学家分析。函数底层使用了HKDF算法。</li>
+<li>重新组织了握手状态机，更具有一致性，然后移除了像<code>ChangeCipherSpec</code>这样多余的消息(有时候为了中间件的兼容性，还需要保留)。</li>
+<li>现在椭圆曲线算法占主导地位，并加入了新的签名算法，比如EdDSA。TLS1.3移除了点格式的协商，对每种曲线，只取一种点格式。</li>
+<li>其他密码学上的改进，比如调整了RSA padding算法，使用RSASSA-PSS填充。溢出了压缩、DSA算法和自定义的DHE族。</li>
+<li>不推荐使用TLS1.2的版本协商机制，而是在扩展项中使用一个版本列表来做版本协商。这对现有的没有正确实现版本协商机制的server增加了兼容性。</li>
+<li>带或不带服务端状态的会话恢复机制，还有之前TLS版本中存在的PSK加密套件，都被合并进了一个新的PSK交换机制中。</li>
+<li>更新了引用，指向那些更新过版本的RFC(比如指向RFC 5280，而不是RFC 3280)。</li>
+</ul>
+<h2 id="1-3-更新对TLS1-2的影响"><a href="#1-3-更新对TLS1-2的影响" class="headerlink" title="1.3. 更新对TLS1.2的影响"></a>1.3. 更新对TLS1.2的影响</h2><p>本文档定义了几个可能会影响TLS1.2实现的改变，其中几项TLS1.3也不支持:</p>
+<ul>
+<li>4.1.3节中定义的一个防止版本降级的机制</li>
+<li>4.2.3中定义的RSASSA-PSS签名算法</li>
+<li><code>ClientHello</code>扩展中的 “supported_versions” 可以用来协商TLS使用的版本，替换之前<code>ClientHello</code>中的 <code>legacy_version</code>字段</li>
+<li>“signature_algorithms_cert”扩展项允许client指明自己能哪些签名算法验证X.509证书。</li>
+</ul>
+<p>另外，本文档阐述了几条对早期TLS版本的兼容性要求，见#9.3.</p>
+<h1 id="2-协议总览"><a href="#2-协议总览" class="headerlink" title="2. 协议总览"></a>2. 协议总览</h1><p>安全通道用到的加密参数由TLS握手协议产生。该TLS子协议由client和server首次通信的时候使用。握手协议允许两端协商协议版本、选择加密算法、可选进行双方认证和建立共享的密钥材料。一旦握手完成，两端就可以使用建立的key去保护应用层流量了。</p>
+<p>握手失败或其他协议错误会导致连接中止，有时还可能先发送一个alert消息。</p>
+<p>TLS支持的3个基本的密钥交换模式为：</p>
+<ul>
+<li>(EC)DHE(基于有限域或椭圆曲线的Diffie-Hellman)</li>
+<li>PSK-only</li>
+<li>PSK with (EC)DHE</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">      Client                                           Server</span><br><span class="line"></span><br><span class="line">Key  ^ ClientHello</span><br><span class="line">Exch | + key_share*</span><br><span class="line">     | + signature_algorithms*</span><br><span class="line">     | + psk_key_exchange_modes*</span><br><span class="line">     v + pre_shared_key*       --------&gt;</span><br><span class="line">                                                  ServerHello  ^ Key</span><br><span class="line">                                                 + key_share*  | Exch</span><br><span class="line">                                            + pre_shared_key*  v</span><br><span class="line">                                        &#123;EncryptedExtensions&#125;  ^  Server</span><br><span class="line">                                        &#123;CertificateRequest*&#125;  v  Params</span><br><span class="line">                                               &#123;Certificate*&#125;  ^</span><br><span class="line">                                         &#123;CertificateVerify*&#125;  | Auth</span><br><span class="line">                                                   &#123;Finished&#125;  v</span><br><span class="line">                               &lt;--------  [Application Data*]</span><br><span class="line">     ^ &#123;Certificate*&#125;</span><br><span class="line">Auth | &#123;CertificateVerify*&#125;</span><br><span class="line">     v &#123;Finished&#125;              --------&gt;</span><br><span class="line">       [Application Data]      &lt;-------&gt;  [Application Data]</span><br><span class="line"></span><br><span class="line">        + : 表示消息中发送的重要的扩展项</span><br><span class="line">        * : 表示可选的或依据不同情况发送的、不是每次都必须发送的消息或扩展项</span><br><span class="line">        &#123;&#125;: 表示该消息用一个[sender]_handshake_traffic_secret中推导出来的key保护</span><br><span class="line">        []: 表示该消息用一个[sender]_application_traffic_secret_N中推导出来的key保护</span><br><span class="line"></span><br><span class="line">            图1: 完整握手的消息流</span><br></pre></td></tr></table></figure>
+
+<p>可以认为握手有3个阶段(上图显示的那样):</p>
+<ul>
+<li>密钥交换: 建立共享密钥材料和选择加密参数。该阶段之后所有的消息都会被加密。</li>
+<li>server参数: 建立其他握手参数(client是否要被认证，应用层协议支持等等…)。</li>
+<li>认证：认证server(和&#x2F;或client)，提供key的确认和握手完整性校验。</li>
+</ul>
+<p>在密钥交换阶段，client发送<code>ClientHello</code>消息，该消息包含一个随机数(<code>ClientHello.random</code>)，支持的协议版本，一个对称加密算法&#x2F;HKDF hash算法对儿的列表；另外还有一个DH共享密钥材料集合(在<code>key_share</code>扩展项中)或者一个预共享密钥标签集合(在<code>pre_shared_key</code>扩展项中)，或者两个都有；另外还可能有其他的扩展项。也可能因为为兼容中间件而存在其他字段和&#x2F;或消息。</p>
+<p>server处理<code>ClientHello</code>，决定连接使用的加密参数，然后在<code>ServerHello</code>中回复选择的连接参数。<code>ClientHello</code>和<code>ServerHello</code>合起来决定共享密钥。如果用到了(EC)DHE密钥交换算法，<code>ServerHello</code>会在一个<code>key_share</code>扩展项中带上server的临时DH共享密钥；server的共享密钥必须属于client支持的组中的其中一个。如果用到了PSK密钥交换算法，<code>ServerHello</code>会包含一个<code>pre_shared_key</code>扩展项，用于指示选择用哪个client提供的PSK。注意具体实现可能会同时用(EC)DHE和PSK，这两个扩展此时都会提供。</p>
+<p>然后server发送两条消息去建立server端参数：</p>
+<p><code>EncryptedExtensions</code>: 响应<code>ClientHello</code>中不是决定加密参数的其他扩展项(针对单独证书的那些要求也不在这里处理)。<br><code>CertificateRequest</code>: 如果要用基于证书的认证方法来认证client，对证书要求的一些参数就在该消息中发送。如果不需要认证client，就不发送该消息。</p>
+<p>最后，client和server交换认证信息。如果使用基于证书的认证方式，每次TLS都使用同样的一组消息。(基于PSK的认证属于密钥交换的一个附带效果)。特别的：<br><code>Certificate</code>: 包含端点证书和每个证书的扩展。如果不使用证书认证，server不会发送该消息，如果server没发送<code>CertificateRequest</code>(表示client不用证书进行认证)，client不会发送该消息。<br><code>CertificateVerify</code>: 用<code>Certifiacte</code>消息中的公钥对应的私钥对整个握手进行的一个签名。如果端点不是基于证书进行的认证，就不会发送该消息。<br><code>Finished</code>: 整个握手的一个MAC(Message Authentication Code)。该消息提供key的确认，将端点身份跟交换的密钥进行绑定，在PSK模式中也用来认证握手。</p>
+<p>一旦受到server的消息，client会回应自己这边的认证消息，也就是自己的<code>Certificate, CertificateVerify</code>和<code>Finished</code>。</p>
+<p>这时握手已经完成了，client和server会推导出记录层需要的密钥材料，来保护应用数据。在发送<code>Finished</code>之前不能发送应用数据(除了#2.3描述的情况)。注意，尽管server可能在收到client的认证消息之前就能发送应用数据，但这时候client还没得到认证，是个未认证的对端。</p>
+<h2 id="2-1-不正确的DHE共享"><a href="#2-1-不正确的DHE共享" class="headerlink" title="2.1. 不正确的DHE共享"></a>2.1. 不正确的DHE共享</h2><p>如果client没有提供合适的”key_share”扩展项信息(比如只包含server不接受或不支持的DHE或ECDHE族)，server用<code>HelloRetryRequest</code>来修正这个问题，client需要用合适的”key_share”扩展项来重新握手，如图2。如果没有合适的参数，server必须用相应的告警中止握手。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Client                                               Server</span><br><span class="line"></span><br><span class="line">ClientHello</span><br><span class="line">+ key_share             --------&gt;</span><br><span class="line">                                          HelloRetryRequest</span><br><span class="line">                        &lt;--------               + key_share</span><br><span class="line">ClientHello</span><br><span class="line">+ key_share             --------&gt;</span><br><span class="line">                                                ServerHello</span><br><span class="line">                                                + key_share</span><br><span class="line">                                      &#123;EncryptedExtensions&#125;</span><br><span class="line">                                      &#123;CertificateRequest*&#125;</span><br><span class="line">                                             &#123;Certificate*&#125;</span><br><span class="line">                                       &#123;CertificateVerify*&#125;</span><br><span class="line">                                                 &#123;Finished&#125;</span><br><span class="line">                        &lt;--------       [Application Data*]</span><br><span class="line">&#123;Certificate*&#125;</span><br><span class="line">&#123;CertificateVerify*&#125;</span><br><span class="line">&#123;Finished&#125;              --------&gt;</span><br><span class="line">[Application Data]      &lt;-------&gt;        [Application Data]</span><br><span class="line"></span><br><span class="line">             Figure 2: Message Flow for a Full Handshake with</span><br><span class="line">                   Mismatched Parameters</span><br></pre></td></tr></table></figure>
+
+<p>注意：握手副本(handshake transcript)包含开始的 <code>ClientHello/HelloRetryRequest</code> 消息，不会用新的 <code>ClientHello</code> 重置。</p>
+<p>TLS也允许几种基本握手的优化变形，如下章节所述。</p>
+<h2 id="2-2-会话恢复和预共享密钥-PSK"><a href="#2-2-会话恢复和预共享密钥-PSK" class="headerlink" title="2.2. 会话恢复和预共享密钥(PSK)"></a>2.2. 会话恢复和预共享密钥(PSK)</h2><p>尽管TLS的PSK可以从外部设置，也可以在前一个连接中建立，然后用于建立一个新的连接(“会话恢复”或用PSK进行”恢复”)。一旦握手完成，server可以发送给client一个PSK id，该PSK id对应从初始握手中导出的一个唯一密钥(#4.6.1)。client将来就可以用PSK id去协商新的握手了。如果server接受PSK，新连接的加密上下文就跟最初的连接关联起来了，并且从最初握手中推导出秘钥来初始化新的加密上下文，而不是再从完整握手推导。在TLS1.2及以下，该功能由”session IDs”和”session tickets”[RFC5077]提供，这两种机制在TLS1.3中都不再使用了。</p>
+<p>PSK可以跟(EC)DHE秘钥交换一起使用，以此来提供前向安全性，也可以单独使用，代价就是应用数据丧失了前项安全性。</p>
+<p>图3显示了先进行一次完整握手来建立一个PSK，再在第二次握手中使用该PSK:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">       Client                                               Server</span><br><span class="line"></span><br><span class="line">Initial Handshake:</span><br><span class="line">       ClientHello</span><br><span class="line">       + key_share               --------&gt;</span><br><span class="line">                                                       ServerHello</span><br><span class="line">                                                       + key_share</span><br><span class="line">                                             &#123;EncryptedExtensions&#125;</span><br><span class="line">                                             &#123;CertificateRequest*&#125;</span><br><span class="line">                                                    &#123;Certificate*&#125;</span><br><span class="line">                                              &#123;CertificateVerify*&#125;</span><br><span class="line">                                                        &#123;Finished&#125;</span><br><span class="line">                                 &lt;--------     [Application Data*]</span><br><span class="line">       &#123;Certificate*&#125;</span><br><span class="line">       &#123;CertificateVerify*&#125;</span><br><span class="line">       &#123;Finished&#125;                --------&gt;</span><br><span class="line">                                 &lt;--------      [NewSessionTicket]</span><br><span class="line">       [Application Data]        &lt;-------&gt;      [Application Data]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Subsequent Handshake:</span><br><span class="line">       ClientHello</span><br><span class="line">       + key_share*</span><br><span class="line">       + pre_shared_key          --------&gt;</span><br><span class="line">                                                       ServerHello</span><br><span class="line">                                                  + pre_shared_key</span><br><span class="line">                                                      + key_share*</span><br><span class="line">                                             &#123;EncryptedExtensions&#125;</span><br><span class="line">                                                        &#123;Finished&#125;</span><br><span class="line">                                 &lt;--------     [Application Data*]</span><br><span class="line">       &#123;Finished&#125;                --------&gt;</span><br><span class="line">       [Application Data]        &lt;-------&gt;      [Application Data]</span><br><span class="line"></span><br><span class="line">            Figure 3: Message Flow for Resumption and PSK</span><br></pre></td></tr></table></figure>
+
+<p>因为server通过PSK进行认证，就不需要再发送 <code>Certificate 和 CertificateVerify</code>消息了。当client要通过PSK恢复会话，它应该同时提供一个”key_share”扩展项，让server在需要的时候能够拒绝恢复会话而回退到完整握手。server回复”pre_shared_key”扩展项来协商是否使用PSK，并且可以同时回复”key_share”扩展来进行(EC)DHE秘钥交换，以此来提供前向安全性。</p>
+<p>当PSK由外部提供，就需要同时提供PSK id和配套使用的KDF算法。</p>
+<p>注意：当使用外部提供的PSK时，特别需要注意在秘钥生成的时候提供足够的熵，RFC4086 中有相关讨论。从一个密码或者其他低熵源推导秘钥是不安全的。密码或低熵源会受到基于PSK binder的字典攻击。即使同时使用DH秘钥交换算法，这样的PSK认证也不是一个基于密码的强认证秘钥交换机制。特别是它没有办法抵御攻击者基于密码&#x2F;PSK的暴力攻击。</p>
+<h2 id="2-3-0-RTT-数据"><a href="#2-3-0-RTT-数据" class="headerlink" title="2.3 0-RTT 数据"></a>2.3 0-RTT 数据</h2><p>当client和server使用PSK时(不管从外部获取还是从之前的握手)，TLS1.3允许client在第一阶段就发送数据(“早期数据, early data”)。client用PSK去认证server并且加密早期数据。</p>
+<p>如图4所示，0-RTT只是加在了1-RTT握手的第一阶段，握手的剩下部分跟用PSK进行恢复的1-RTT握手所用消息相同。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">Client                                               Server</span><br><span class="line"></span><br><span class="line">ClientHello</span><br><span class="line">+ early_data</span><br><span class="line">+ key_share*</span><br><span class="line">+ psk_key_exchange_modes</span><br><span class="line">+ pre_shared_key</span><br><span class="line">(Application Data*)     --------&gt;</span><br><span class="line">                                                ServerHello</span><br><span class="line">                                           + pre_shared_key</span><br><span class="line">                                               + key_share*</span><br><span class="line">                                      &#123;EncryptedExtensions&#125;</span><br><span class="line">                                              + early_data*</span><br><span class="line">                                                 &#123;Finished&#125;</span><br><span class="line">                        &lt;--------       [Application Data*]</span><br><span class="line">(EndOfEarlyData)</span><br><span class="line">&#123;Finished&#125;              --------&gt;</span><br><span class="line">[Application Data]      &lt;-------&gt;        [Application Data]</span><br><span class="line"></span><br><span class="line">      +  Indicates noteworthy extensions sent in the</span><br><span class="line">         previously noted message.</span><br><span class="line"></span><br><span class="line">      *  Indicates optional or situation-dependent</span><br><span class="line">         messages/extensions that are not always sent.</span><br><span class="line"></span><br><span class="line">      () Indicates messages protected using keys</span><br><span class="line">         derived from a client_early_traffic_secret.</span><br><span class="line"></span><br><span class="line">      &#123;&#125; Indicates messages protected using keys</span><br><span class="line">         derived from a [sender]_handshake_traffic_secret.</span><br><span class="line"></span><br><span class="line">      [] Indicates messages protected using keys</span><br><span class="line">         derived from [sender]_application_traffic_secret_N.</span><br><span class="line"></span><br><span class="line">      Figure 4: Message Flow for a 0-RTT Handshake</span><br></pre></td></tr></table></figure>
+
+<p>重要提示: 0-RTT数据的加密性质弱于其他类型的TLS数据，具体来说：</p>
+<ol>
+<li>早期数据不是前向安全的，因为它只是用提供的PSK推导出的密钥加密的。</li>
+<li>不保证连接之间没有数据包重放。常规的TLS1.3 1-RTT数据的防重放由server的random保证，但0-RTT数据不依赖 <code>ServerHello</code>，就没有那么强的保证。如果早期数据由TLS client认证机制或在应用协议中进行认证，这就尤其重要了。任何对<code>early_exporter_master_secret</code>的使用也都有同样的注意事项。</li>
+</ol>
+<p>0-RTT数据不能在一个连接中重复(比如server不会在同一个连接中处理同一个数据两次)，攻击者也不可能让0-RTT数据作为1-RTT数据出现(因为早期数据由不同的密钥保护)。附录E5对潜在攻击进行了说明，#8 说了些server可以用来限制重放影响的一些机制。</p>
+<h1 id="3-描述语言"><a href="#3-描述语言" class="headerlink" title="3. 描述语言"></a>3. 描述语言</h1><h1 id="4-握手协议"><a href="#4-握手协议" class="headerlink" title="4. 握手协议"></a>4. 握手协议</h1><p>握手协议用于协商一条连接的加密参数。握手消息交给TLS记录层，在记录层按照当前有效的连接状态上下文信息封装成一个或多个 <code>TLSPlaintext</code> 或 <code>TSLCiphertext</code> 结构发出去。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">enum &#123;</span><br><span class="line">    client_hello(1),</span><br><span class="line">    server_hello(2),</span><br><span class="line">    new_session_ticket(4),</span><br><span class="line">    end_of_early_data(5),</span><br><span class="line">    encrypted_extensions(8),</span><br><span class="line">    certificate(11),</span><br><span class="line">    certificate_request(13),</span><br><span class="line">    certificate_verify(15),</span><br><span class="line">    finished(20),</span><br><span class="line">    key_update(24),</span><br><span class="line">    message_hash(254),</span><br><span class="line">    (255)</span><br><span class="line">&#125; HandshakeType;</span><br><span class="line"></span><br><span class="line">struct &#123;</span><br><span class="line">    HandshakeType msg_type;    /* handshake type */</span><br><span class="line">    uint24 length;             /* remaining bytes in message */</span><br><span class="line">    select (Handshake.msg_type) &#123;</span><br><span class="line">        case client_hello:          ClientHello;</span><br><span class="line">        case server_hello:          ServerHello;</span><br><span class="line">        case end_of_early_data:     EndOfEarlyData;</span><br><span class="line">        case encrypted_extensions:  EncryptedExtensions;</span><br><span class="line">        case certificate_request:   CertificateRequest;</span><br><span class="line">        case certificate:           Certificate;</span><br><span class="line">        case certificate_verify:    CertificateVerify;</span><br><span class="line">        case finished:              Finished;</span><br><span class="line">        case new_session_ticket:    NewSessionTicket;</span><br><span class="line">        case key_update:            KeyUpdate;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125; Handshake;</span><br></pre></td></tr></table></figure>
+
+<p>协议消息必须按照 #4.4.1 中定义和 #2 中显示的顺序发送。收到不按照顺序的握手消息的话，必须中止握手并发送 “unexpected_message”告警。</p>
+<p>新的握手消息类型由IANA分配，如 #11 所述。</p>
+<h2 id="4-1-秘钥交换消息"><a href="#4-1-秘钥交换消息" class="headerlink" title="4.1. 秘钥交换消息"></a>4.1. 秘钥交换消息</h2><p>秘钥交换信息用于确定client和server的加密能力，建立共享秘钥，该秘钥用于保护握手阶段剩下的消息和之后的应用数据。</p>
+<h3 id="4-1-1-密码协商"><a href="#4-1-1-密码协商" class="headerlink" title="4.1.1. 密码协商"></a>4.1.1. 密码协商</h3><p>在TLS中，client在 <code>ClientHello</code> 中提供了一下4组选项之后，密码参数协商就开始了：</p>
+<ul>
+<li>client提供的指示 AEAD&#x2F;HKDF hash算法对的一组加密套件</li>
+<li>一个”supported_groups”扩展项(#4.2.7)，用于表示client支持的(EC)DHE族和一个”key_share”扩展项(#4.2.8)，其中包含部分或全部族的(EC)DHE共享密钥</li>
+<li>一个”signature_algorithms”扩展项(#4.2.3)，用于表示client接受的签名算法。也可能加上一个”signature_algorithms_cert”扩展项(#4.2.3)来表示支持的证书中使用的签名算法</li>
+<li>一个”pre_shared_key”扩展项(#4.2.11)，包含client知道的一组对称加密密钥和一个”psk_key_exchange_modes”扩展项(#4.2.9)来指示可以跟PSK一起使用的密钥交换模式</li>
+</ul>
+<p>如果server没选择PSK，那前3个选项就是完全正交的: server独立挑选一个加密套件，一个(EC)DHE族和相应的共享密钥，还有一个签名算法&#x2F;证书对来向client认证自己。如果server收到的”supported_groups”和支持的算法族没有重叠的，就必须用”handshake_failure”或”insufficient_security”告警中止握手。</p>
+<p>如果server选择了一个PSK，那就必须从client的”psk_key_exchange_modes”扩展项(单独PSK或和(EC)DHE一起两种模式)中选择一种密钥交换模式。注意如果PSK可以脱离(EC)DHE单独使用的话，那与”supported_groups”中参数没有重叠就不会是个严重错误，跟前边讨论的non-PSK情况一致。</p>
+<p>如果server选择了一个(EC)DHE族，并且client没在最开始的<code>ClientHello</code>中提供对应的”key_share”扩展项参数，server必须回复个<code>HelloRetryRequest</code>消息(#4.1.4)。</p>
+<p>如果server成功选择了相应参数，并且不要求返回<code>HelloRetryRequest</code>，就会在<code>ServerHello</code>中按照如下方式表示选择的参数:</p>
+<ul>
+<li>如果选择了PSK，server会发送一个”pre_shared_key”扩展项来表示选择的哪个key</li>
+<li>如果选择了(EC)DHE，server必须提供一个”key_share”扩展项。如果没用PSK，那就必须用到(EC)DHE和基于证书的认证方式了。</li>
+<li>当通过证书进行认证时，server会发送<code>Certificate</code>(#4.4.2)和<code>CertificateVerify</code>(#4.4.3)消息，在TLS1.3中，必须至少用PSK或证书中的一个进行认证，不能两个都不用。将来的文档可能会定义两个怎么一起用。</li>
+</ul>
+<p>如果server没办法协商出一组支持的参数(比如client和server之间的参数没有重叠的)，就必须用”handshake_failure”或”insufficient_security”严重告警来中止握手。</p>
+<h3 id="4-1-2-Client-Hello"><a href="#4-1-2-Client-Hello" class="headerlink" title="4.1.2. Client Hello"></a>4.1.2. Client Hello</h3><p>当client首次连接server，要求第一个发送的TLS消息是<code>ClientHello</code>。如果server用<code>HelloRetryRequest</code>回复第一个<code>ClientHello</code>，client还需要再发送一次<code>ClientHello</code>，这种情况下，client需要保证除了一下这些，其他字段保持不变:</p>
+<ul>
+<li>如果<code>HelloRetryRequest</code>中提供了”key_share”扩展项，需要换掉那组共享密钥，用一个只包含一个共享密钥的链表替换，这个共享密钥是协商出来的族中对应的</li>
+<li>如果之前有”early_data”扩展项(#4.2.10)，需要移除，<code>HelloRetryRequest</code>中不允许出现早期数据</li>
+<li>如果<code>HelloRetryRequest</code>中有”cookie”扩展项，需要包含到第二个<code>ClientHello</code>中</li>
+<li>如果有”pre_shared_key”扩展项，需要重新计算”obfuscated_ticket_age”和binder的值；并且如果有的话，移除跟server选择的加密套件不兼容的PSK</li>
+<li>可选添加、删除或调整”padding”扩展项的长度</li>
+<li>将来定义的其他出现在<code>HelloRetryRequest</code>中的扩展项需要的调整</li>
+</ul>
+<p>因为TLS1.3禁止重新协商，如果server选择使用TLS1.3，并且在任何其他时候收到了<code>ClientHello</code>，必须用”unexpected_message”告警中止连接。</p>
+<p>如果server使用之前的版本建立了TLS连接，然后收到了个TLS1.3的重新协商的<code>ClientHello</code>，必须维持之前的协议，也就是不准重新协商成TLS1.3。</p>
+<p>该消息的结构是:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">uint16 ProtocolVersion;</span><br><span class="line">opaque Random[32];</span><br><span class="line"></span><br><span class="line">uint8 CipherSuite[2];    /* Cryptographic suite selector */</span><br><span class="line"></span><br><span class="line">struct &#123;</span><br><span class="line">    ProtocolVersion legacy_version = 0x0303;    /* TLS v1.2 */</span><br><span class="line">    Random random;</span><br><span class="line">    opaque legacy_session_id&lt;0..32&gt;;</span><br><span class="line">    CipherSuite cipher_suites&lt;2..2^16-2&gt;;</span><br><span class="line">    opaque legacy_compression_methods&lt;1..2^8-1&gt;;</span><br><span class="line">    Extension extensions&lt;8..2^16-1&gt;;</span><br><span class="line">&#125; ClientHello;</span><br></pre></td></tr></table></figure>
+
+<p><em>legacy_version</em>: 在之前的TLS版本中，这个字段用于协商版本号，表示的是client支持的最高的版本。实践表明很多server没有正确实现这种版本协商机制，导致server收到了比它支持的版本更高的<code>ClientHello</code>版本号时，拒绝连接，造成”版本不兼容”。TLS1.3中，client在扩展项”supported_versions”中表明自己期望的版本，”legacy_version”字段必须填成<code>0x0303</code>，也就是TLS1.2的版本号的值。TLS1.3的<code>ClientHello</code>靠”legacy_version”是<code>0x0303</code>和”supported_versions”扩展项中最高支持版本是<code>0x0304</code>来确定。(向后兼容性的详细说明见附录D。)</p>
+<p><em>random</em>: 随机数生成器生成的32字节串。其他信息见附录C。</p>
+<p><em>legacy_session_id</em>: TLS1.3之前版本支持一个”会话恢复”的特性，TLS1.3中该特性并入了PSK机制中。如果client缓存了TLS1.3之前的server设置的session ID，就需要在这个字段设置该值。在兼容模式中(见附录D.4)，该值必须非空，所以如果client没有使用TLS1.3之前版本的会话进行恢复，就需要生成一个新的32字节串。该值可以不是随机的，但应该是不可预测的，以避免实现的时候固定到某个特殊值上(也叫”钙化”)。否则就必须设置成0长向量(也就是1个字节的0值)。</p>
+<p><em>cipher_suites</em>: 一个client支持的对称加密套件的列表，按照client期望的顺序排列，用于指定记录层保护算法(包括密钥长度)和用于HKDF的hash算法。值在附录B.4中定义。如果列表中包含server不认识的套件，就继续正常处理下一个。如果client希望使用PSK建立会话，列表中就应该至少包含一个套件中的hash算法是跟PSK相匹配的。</p>
+<p><em>legacy_compression_methods</em>: TLS1.3之前的协议版本支持的压缩算法以列表形式存放在这里。对每个TLS1.3的<code>ClientHello</code>，该向量必须只包含1个字节，值是0，对应之前TLS版本中的”null”压缩方法。如果收到的TLS1.3的<code>ClientHello</code>的本字段有其他值，server必须发送”illegal_parameter”告警中止握手。注意TLS1.3的server可能会收到包含其他压缩算法值的TLS1.2或更早版本的<code>ClientHello</code>，就按照协商出来的之前的版本正常处理。</p>
+<p><em>extensions</em>: client可以在扩展项字段中要求server的扩展功能。扩展项格式的定义在 #4.2。TLS1.3中，为了保持<code>ClientHello</code>跟之前版本的兼容性，有些功能移入了扩展项中，因此有些扩展项是必须的。server必须忽略不认识的扩展项。</p>
+<p>所有TLS版本都允许在<code>comperssion_methods</code>字段之后可选的跟上一个扩展项字段。TLS1.3的<code>ClientHello</code>消息总是包含扩展项(最少包含”supported_versions”，否则会被当做TLS1.2的<code>ClientHello</code>消息去处理)。但是TLS1.3的server也可能会收到不带扩展项的早期版本的<code>ClientHello</code>。可以通过检查<code>ClientHello</code>消息在<code>compression_methods</code>字段之后是否还有值来判断是否有扩展项。注意这种检查是否存在可选数据的方法跟通常TLS判断变长字段的方法不一样，主要是为了兼容之前没有定义扩展项的TLS版本。TLS1.3的server需要先检查是否有扩展项，如果存在“supported_version”扩展项，就尝试按照TLS1.3去协商。如果协商出TLS1.3之前的版本，server必须检查<code>ClientHello</code>消息，要么在<code>legacy_compression_methods</code>之后没有数据，要么只有一个有效的扩展项块，而没有其他额外数据；如果检查没通过，必发送”decode_errro”告警中止握手。</p>
+<p>如果client用扩展项要求了额外的功能，但server不支持该功能，client可以终止握手。</p>
+<p>发送<code>ClientHello</code>消息之后，client会等着<code>ServerHello</code>或者<code>HelloRetryRequest</code>消息。如果用了早期数据，client可能会在等下一个握手消息的时候发送早期应用数据(#2.3)。</p>
+<h3 id="4-1-3-Server-Hello"><a href="#4-1-3-Server-Hello" class="headerlink" title="4.1.3. Server Hello"></a>4.1.3. Server Hello</h3><p>如果server能根据<code>ClientHello</code>提供的握手参数中协商出可接受的参数，就会发送该消息以继续握手。</p>
+<p>该消息的结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">struct &#123;</span><br><span class="line">    ProtocolVersion legacy_version = 0x0303;    /* TLS v1.2 */</span><br><span class="line">    Random random;</span><br><span class="line">    opaque legacy_session_id_echo&lt;0..32&gt;;</span><br><span class="line">    CipherSuite cipher_suite;</span><br><span class="line">    uint8 legacy_compression_method = 0;</span><br><span class="line">    Extension extensions&lt;6..2^16-1&gt;;</span><br><span class="line">&#125; ServerHello;</span><br></pre></td></tr></table></figure>
+
+<p><em>legacy_version</em>: 之前的TLS版本中，该字段用于版本协商，表示选择出的该连接使用的版本号。不幸的是，如果该字段使用了新的值，有些中间件会失效。在TLS1.3中，server在“supporte_version”扩展项中指示自己选择的版本(#4.2.1)，<code>legacy_version</code>字段必须设置成 <code>0x0303</code>，也就是TLS1.2的版本号的值。(关于向后兼容性的更详细的信息见附录D。)</p>
+<p><em>random</em>: 32字节随机串，见附录C。如果协商出TLS1.2或者TLS1.1，最后8字节必须按照如下规则设置，其他字节必须保持随机。该值由server生成，并且不能依赖<code>ClientHello.random</code>。</p>
+<p><em>legacy_session_id_echo</em>: client <code>legacy_sesion_id</code> 字段的内容。注意即使该值表示一个缓存的TLS1.3之前版本的会话，但server选择不进行恢复，也要原样返回。如果client收到的<code>legacy_session_id_echo</code>的值跟它在<code>ClientHello</code>中发送出去的不一样，必须发送”illegal_parameter”告警来中止握手。</p>
+<p><em>cihper_suite</em>: server从<code>ClientHello.cihper_suites</code>列表中挑选的1个加密套件。如果client收到了不是自己提供的加密套件，必须发送”illegal_parameter”告警来中止握手。</p>
+<p><em>legacy_compression_method</em>: 1个字节，值必须是0。</p>
+<p><em>extensions</em>: 扩展项列表。<code>ServerHello</code>必须只能包含那些为了建立加密上下文和协商协议版本而必须的扩展项。所有的TLS1.3的<code>ServerHello</code>消息必须包含”supported_versions”扩展项。当前<code>ServerHello</code>消息还包含”pre_shared_key”或”key_share”扩展项，或者两个同时包含(当使用带(EC)DHE密钥的PSK建立握手的时候)。其他的扩展项(见#4.2)在单独的<code>EncryptoedExtensions</code>消息中单独发送。</p>
+<p>为了向后兼容中间件(见#D.4), <code>HelloRetryRequest</code>消息的结构跟<code>ServerHello</code>一样，但随机数设置的是固定值，就是字符串”HelloRetryRequest”的SHA256:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CF 21 AD 74 E5 9A 61 11 BE 1D 8C 02 1E 65 B8 91</span><br><span class="line">C2 A2 11 16 7A BB 8C 5E 07 9E 09 E2 C8 A8 33 9C</span><br></pre></td></tr></table></figure>
+
+<p>一旦收到类型是 “server_hello” 的消息，实现者必须先检查随机数的值，如果跟这个值相匹配，就要按照4.1.4节的处理。</p>
+<p>TLS1.3在server的随机数值中有个内嵌的防降级攻击机制。TLS1.3的server如果跟TLS1.2或之前的版本协商，必须将<code>ServerHello</code>的”Random”值的最后8字节设置成特定的值。<br>如果跟TLS1.2协商，TLS1.3的server必须将随机数的最后8字节设置成:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">44 4F 57 4E 47 52 44 01</span><br></pre></td></tr></table></figure>
+
+<p>如果跟TLS1.1或之前的版本协商，TLS1.3的server必须，TLS1.2的server应该，将随机数的最后8字节设置成:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">44 4F 57 4E 47 52 44 00</span><br></pre></td></tr></table></figure>
+
+<p>TLS1.3的client收到表示TLS1.2或更早的<code>ServerHello</code>的时候，必须检查随机数最后8字节是否等于这些值。TLS1.2的client应该检查是否等于第二个值。如果匹配，client必须用发送”illegal_parameter”告警中止握手。该机制提供了除<code>Finished</code>交换之外的防降级攻击: 因为TLS1.2或之前的版本中出现的<code>ServerKeyExchange</code>消息中包含两个随机值的签名，只要使用了瞬时加密套件，主动攻击者就没办法更改随机数而不被两端发现。但使用静态RSA的时候，就不提供防降级保护了。</p>
+<p>注意：这是跟[RFC5246]不一样，所以实际上很多TLS1.2的client和server不会按照上边描述的那样处理。</p>
+<p>一个旧版本的client跟TLS1.2或之前的版本进行重新协商的时候，如果收到了TLS1.3的<code>ServerHello</code>，必须发送”protocol_version”告警中止握手。注意TLS1.3中没有重新协商的操作。</p>
+<h3 id="4-1-4-Hello-Retry-Request"><a href="#4-1-4-Hello-Retry-Request" class="headerlink" title="4.1.4. Hello Retry Request"></a>4.1.4. Hello Retry Request</h3><p>如果server能协商出一套参数，但<code>ClientHello</code>没有提供足够的信息以使握手继续，server就会回复该消息。4.1.3节中说过，<code>HelloRetryRequest</code>消息跟<code>ServerHello</code>消息的结构是一样的，并且”legacy_version, legacy_session_id_echo, cipher_suite, and legacy_compression_method”字段都有相同的意思。但为了方便，本文将”HelloRetryRequest”认为是个单独的消息。</p>
+<p>server的扩展项必须包含”supported_versions”。另外，应该包含让client生成正确的 <code>ClientHello</code> 对的最小必须扩展项集合。跟<code>ServerHello</code>一样，除了”cookie”扩展项，<code>HelloRetryRequest</code>不能包含任何第一个<code>ClientHello</code>中没有提供的扩展项。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2021/01/04/tr-tls1-3/" title="[tr]tls1.3">https://suntus.github.io/2021/01/04/tr-tls1-3/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tls/" rel="tag"># tls</a>
+              <a href="/tags/tr/" rel="tag"># tr</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/25/AEAD%E6%8E%A5%E5%8F%A3%E5%92%8CGCM%E7%AE%97%E6%B3%95/" rel="prev" title="AEAD接口和GCM算法">
+      <i class="fa fa-chevron-left"></i> AEAD接口和GCM算法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/14/SM9/" rel="next" title="SM9">
+      SM9 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">1. 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E7%BA%A6%E5%AE%9A%E5%92%8C%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 约定和术语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E8%B7%9FTLS1-2%E7%9A%84%E4%B8%BB%E8%A6%81%E5%8C%BA%E5%88%AB"><span class="nav-number">2.2.</span> <span class="nav-text">1.2. 跟TLS1.2的主要区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E6%9B%B4%E6%96%B0%E5%AF%B9TLS1-2%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">2.3.</span> <span class="nav-text">1.3. 更新对TLS1.2的影响</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%8D%8F%E8%AE%AE%E6%80%BB%E8%A7%88"><span class="nav-number">3.</span> <span class="nav-text">2. 协议总览</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E4%B8%8D%E6%AD%A3%E7%A1%AE%E7%9A%84DHE%E5%85%B1%E4%BA%AB"><span class="nav-number">3.1.</span> <span class="nav-text">2.1. 不正确的DHE共享</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E4%BC%9A%E8%AF%9D%E6%81%A2%E5%A4%8D%E5%92%8C%E9%A2%84%E5%85%B1%E4%BA%AB%E5%AF%86%E9%92%A5-PSK"><span class="nav-number">3.2.</span> <span class="nav-text">2.2. 会话恢复和预共享密钥(PSK)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-0-RTT-%E6%95%B0%E6%8D%AE"><span class="nav-number">3.3.</span> <span class="nav-text">2.3 0-RTT 数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%8F%8F%E8%BF%B0%E8%AF%AD%E8%A8%80"><span class="nav-number">4.</span> <span class="nav-text">3. 描述语言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E6%8F%A1%E6%89%8B%E5%8D%8F%E8%AE%AE"><span class="nav-number">5.</span> <span class="nav-text">4. 握手协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E7%A7%98%E9%92%A5%E4%BA%A4%E6%8D%A2%E6%B6%88%E6%81%AF"><span class="nav-number">5.1.</span> <span class="nav-text">4.1. 秘钥交换消息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-1-%E5%AF%86%E7%A0%81%E5%8D%8F%E5%95%86"><span class="nav-number">5.1.1.</span> <span class="nav-text">4.1.1. 密码协商</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-2-Client-Hello"><span class="nav-number">5.1.2.</span> <span class="nav-text">4.1.2. Client Hello</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-3-Server-Hello"><span class="nav-number">5.1.3.</span> <span class="nav-text">4.1.3. Server Hello</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-4-Hello-Retry-Request"><span class="nav-number">5.1.4.</span> <span class="nav-text">4.1.4. Hello Retry Request</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
