@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式">
+<meta property="og:url" content="https://suntus.github.io/2024/01/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="…">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T16:06:48.000Z">
+<meta property="article:modified_time" content="2024-01-27T16:08:27.815Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="cpp">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>设计模式 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          设计模式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-28 00:06:48 / 修改时间：00:08:27" itemprop="dateCreated datePublished" datetime="2024-01-28T00:06:48+08:00">2024-01-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>…</p>
+<span id="more"></span>
+
+<h1 id="1-创建型-如何生成一个实例"><a href="#1-创建型-如何生成一个实例" class="headerlink" title="1. 创建型 - 如何生成一个实例"></a>1. 创建型 - 如何生成一个实例</h1><ol>
+<li>工厂方法</li>
+</ol>
+<ul>
+<li>静态工厂<br>用户用抽象工厂，根据传入的参数生成不同的子类:<br>A &#x3D; Factory.Create(“ClassA”);<br>B &#x3D; Factory.Create(“ClassB”);</li>
+</ul>
+<p>新增 ClassC 的时候，用户只用调整下参数，不需要关心 Factory 内部。</p>
+<ul>
+<li>动态工厂<br>与静态工厂不同的是，用户获取到的也是个抽象产品类，用户不关心具体的子类:<br>Base &#x3D; Factory.Create(“ClassA”);<br>Base &#x3D; Factory.Create(“ClassB”);<br>用户只使用 Base 的相关方法，不关心内部到底是 ClassA 还是 ClassB</li>
+</ul>
+<p>新增 ClassC 的时候，用户只用调整传入参数， 不需要关心 Factory 内部</p>
+<ol start="2">
+<li>抽象工厂<br>工厂方法只能创建一种产品，抽象工厂可以创建一个工厂，这个工厂可以创建一系列不同的类，每个工厂都会实现这些具体类:<br>FactoryA &#x3D; AbstractFactory.create(“FactoryA”); &#x2F;&#x2F; 用户用这个<br>FactoryB &#x3D; AbstractFactory.create(“FactoryB”); &#x2F;&#x2F; 或者用这个</li>
+</ol>
+<p>&#x2F;&#x2F; 以下代码都不变<br>BaseF &#x3D; FactoryA.create(“BaseA”);<br>A &#x3D; BaseF.creat(“ClassA”);</p>
+<p>就是把工厂再抽象一层。</p>
+<ol start="3">
+<li>生成器<br>把一个复杂对象的生成步骤给抽象成一个个单独的步骤，每个步骤都由用户去控制:<br>bA &#x3D; new BuilderA();<br>A &#x3D; ba.op1().op2().op2().build(); &#x2F;&#x2F; 一步步构建出来</li>
+</ol>
+<p>Protobuf 用到了</p>
+<ol start="4">
+<li><p>原型<br>库提供一些原型，用户通过复制原型新建自己的类。用到少。</p>
+</li>
+<li><p>单例<br>用的多。</p>
+</li>
+</ol>
+<h1 id="2-结构型-对象间如何组合，静态组合或动态组合"><a href="#2-结构型-对象间如何组合，静态组合或动态组合" class="headerlink" title="2. 结构型 - 对象间如何组合，静态组合或动态组合"></a>2. 结构型 - 对象间如何组合，静态组合或动态组合</h1><ol>
+<li>适配器<br>一个接口适配成另一个接口，一个类适配成另一个类。用户的参数和要用的接口不适配，可以增加一个适配器，让用户参数可以间接使用实际的接口。<br>用户持有 a,b, 要调用 methodA(a, b, c);</li>
+</ol>
+<p>新建个接口 methodB(a,b), 内部调用 method(a,b,constC);</p>
+<ol start="2">
+<li><p>桥接<br>通过抽象层，分离具体的实现。用的比较少。</p>
+</li>
+<li><p>组合<br>层级结构，或者属性结构的类的组织形式。</p>
+</li>
+<li><p>装饰器<br>运行期动态给对象实例增加功能的方法，<br>一层层包裹原始接口，增加新的功能<br>A &#x3D; DecoratorB(A);<br>A &#x3D; DecoratorC(A);</p>
+</li>
+<li><p>外观<br>库创建一个 Facade 类，用户使用这个外观（中介），跟库里边的多个组件打交道，完成一个复杂的操作；</p>
+</li>
+<li><p>享元<br>库内部缓存一个固定的实例，用户使用接口获取新的实例的时候，实际用的是新建实例还是共享实例，由库内部控制，用户不用知道这些，比如 Guava 的缓存 Cache</p>
+</li>
+<li><p>代理<br>对比适配器: 适配器只是转换接口，代理会增加额外的功能;<br>对比装饰器: 用户持有核心类，使用一层层装饰器增加功能; 代理时候用户不持有核心类，直接就是一个代理，库内部保存核心类，并增加一系列功能。</p>
+</li>
+</ol>
+<h1 id="3-行为型-算法和对象间的职责分配，对象如何通信、协作来完成一个整体任务"><a href="#3-行为型-算法和对象间的职责分配，对象如何通信、协作来完成一个整体任务" class="headerlink" title="3. 行为型 - 算法和对象间的职责分配，对象如何通信、协作来完成一个整体任务"></a>3. 行为型 - 算法和对象间的职责分配，对象如何通信、协作来完成一个整体任务</h1><ol>
+<li><p>责任链<br>处理过程提前组成一个链，一个对象在这个链上流转，谁处理、谁结束、谁异常都提前规定好就行;</p>
+</li>
+<li><p>命令<br>将一个请求或通知封装成一个对象，可以排队或执行撤销操作。比如socket的可读通知。</p>
+</li>
+<li><p>解释器<br>解析引擎，给定一个特定领域的文法，使用引擎来执行特定的动作，比如用户只需要用SQL语言，由JDBC解释执行特定动作;</p>
+</li>
+<li><p>迭代器<br>相当于抽象指针，来指向容器内部对象。</p>
+</li>
+<li><p>中介<br>多个对象间都有通信，使用中介来集中处理这些通信，方便相互调用;</p>
+</li>
+<li><p>备忘录<br>主要用于捕获一个对象的内部状态，以便在将来的某个时候恢复此状态。就是将状态封装成一个对象。</p>
+</li>
+<li><p>观察者<br>发布-订阅模式。观察者提前设置监听，然后被动接收通知。</p>
+</li>
+<li><p>状态<br>带有状态的对象，不同状态下会执行不同的动作。有限状态机，关键在与实现不同状态类、状态类之间的切换;</p>
+</li>
+<li><p>策略<br>抽象出动作、算法，供不同的对象使用；</p>
+</li>
+<li><p>模板方法<br>抽象类，父类定义骨架，客户端子类实现某些细节。</p>
+</li>
+<li><p>访问者<br>访问复杂数据结构，操作数据对象，将这个操作封装成一个对象。<br>访问者模式的核心思想是为了访问比较复杂的数据结构，不去改变数据结构，而是把对数据的操作抽象出来。</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" title="设计模式">https://suntus.github.io/2024/01/28/设计模式/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cpp/" rel="tag"># cpp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/28/type-casting-operator/" rel="prev" title="type casting operator">
+      <i class="fa fa-chevron-left"></i> type casting operator
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%88%9B%E5%BB%BA%E5%9E%8B-%E5%A6%82%E4%BD%95%E7%94%9F%E6%88%90%E4%B8%80%E4%B8%AA%E5%AE%9E%E4%BE%8B"><span class="nav-text">1. 创建型 - 如何生成一个实例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E7%BB%93%E6%9E%84%E5%9E%8B-%E5%AF%B9%E8%B1%A1%E9%97%B4%E5%A6%82%E4%BD%95%E7%BB%84%E5%90%88%EF%BC%8C%E9%9D%99%E6%80%81%E7%BB%84%E5%90%88%E6%88%96%E5%8A%A8%E6%80%81%E7%BB%84%E5%90%88"><span class="nav-text">2. 结构型 - 对象间如何组合，静态组合或动态组合</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E8%A1%8C%E4%B8%BA%E5%9E%8B-%E7%AE%97%E6%B3%95%E5%92%8C%E5%AF%B9%E8%B1%A1%E9%97%B4%E7%9A%84%E8%81%8C%E8%B4%A3%E5%88%86%E9%85%8D%EF%BC%8C%E5%AF%B9%E8%B1%A1%E5%A6%82%E4%BD%95%E9%80%9A%E4%BF%A1%E3%80%81%E5%8D%8F%E4%BD%9C%E6%9D%A5%E5%AE%8C%E6%88%90%E4%B8%80%E4%B8%AA%E6%95%B4%E4%BD%93%E4%BB%BB%E5%8A%A1"><span class="nav-text">3. 行为型 - 算法和对象间的职责分配，对象如何通信、协作来完成一个整体任务</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">148</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

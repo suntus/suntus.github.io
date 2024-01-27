@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用到的java">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84java/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="…">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T15:46:38.000Z">
+<meta property="article:modified_time" content="2024-01-27T16:00:30.634Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84java/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>用到的java | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用到的java
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-01-27 23:46:38" itemprop="dateCreated datePublished" datetime="2024-01-27T23:46:38+08:00">2024-01-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-28 00:00:30" itemprop="dateModified" datetime="2024-01-28T00:00:30+08:00">2024-01-28</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>…</p>
+<span id="more"></span>
+
+<h1 id="1-idea-maven配置"><a href="#1-idea-maven配置" class="headerlink" title="1 idea maven配置"></a>1 idea maven配置</h1><p>maven home directory 也要调整成<br>E:&#x2F;progam&#x2F;apache-maven-3.3.9<br>user settings file:<br>    E:\progam\apache-maven-3.3.9\conf\settings.xml<br>local repository:<br>    E:\mavenws</p>
+<h1 id="2-IoC"><a href="#2-IoC" class="headerlink" title="2 IoC"></a>2 IoC</h1><p>一个bean就是一个组件</p>
+<ol>
+<li><p>用XML创建组件和说明组件之间的关系<br><bean id="" class="">&lt;property name&#x3D;”” ref&#x3D;””或value&#x3D;””&gt;</property></bean>，<br>使用set()或者构造函数注入</p>
+</li>
+<li><p>用注释配置<br>@Component 定义一个Bean<br>@Autowired 注入一个Bean</p>
+</li>
+</ol>
+<p>@Configuration 配置类，在调用AnnotationConfigApplicationContext()时必须传入1个标注了 @Configuration 的类名<br>@ComponentScan 自动搜索当前类所在的包和子包，找出所有 @Component 的Bean自动创建出来，并在 @Autowired 自动装配<br>@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) &#x2F;&#x2F; @Scope(“prototype”) 每次创建一个新的实例<br>@Order(1) 创建实例时的顺序，可以注入List&lt;&gt;<br>@Bean 在 @Configuration 类中创建一个组件，管理第三方bean，Spring对标记为@Bean的方法只调用一次，因此返回的Bean仍然是单例；<br>@PostConstruct 创建后的初始化<br>@PreDestroy 销毁前清理<br>@Qualifier(“utc8”) 指定别名, 可以用@Bean(“name”)指定别名，也可以用@Bean+@Qualifier(“name”)指定别名<br>@Value(“classpath:&#x2F;logo.txt”) private Resource resource; 注入资源文件<br>@PropertySource 自动读取配置， @Value(“${app.zone:Z}”) 注入<br>@Profile(“!test”)， @Profile({ “test”, “master” }) 条件装配， -Dspring.profiles.active&#x3D;test,master<br>@ConditionalOnProperty(name&#x3D;”app.smtp”, havingValue&#x3D;”true”)</p>
+<h1 id="3-连接数据库"><a href="#3-连接数据库" class="headerlink" title="3 连接数据库"></a>3 连接数据库</h1><ul>
+<li><p>使用JDBC连接<br>JDBC: java定义的关系型数据库统一接口<br>javax.sql.DataSource: JDBC连接池统一接口，实现有: HikariCP, C3P0, BoneCP, Druid</p>
+<ol>
+<li>创建全局DataSource实例，表示数据库连接池；</li>
+<li>在需要读写数据库的方法内部，按如下步骤访问数据库：<br> 从全局DataSource实例获取Connection实例；<br> 通过Connection实例创建PreparedStatement实例；<br> 执行SQL语句，如果是查询，则通过ResultSet读取结果集，如果是修改，则获得int结果。</li>
+</ol>
+</li>
+<li><p>使用spring连接</p>
+</li>
+</ul>
+<ol>
+<li>JdbcTemplate 对 JDBC 的一种简单封装<br>使用IoC创建并管理一个DataSouce实例，然后spring提供了一个 JdbcTemplate，方便操作JDBC，通常会实例化一个JdbcTemplate<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@ComponentScan</span></span><br><span class="line"><span class="meta">@PropertySource(&quot;jdbc.properties&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AppConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;jdbc.url&#125;&quot;)</span></span><br><span class="line">    String jdbcUrl;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;jdbc.username&#125;&quot;)</span></span><br><span class="line">    String jdbcUsername;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;jdbc.password&#125;&quot;)</span></span><br><span class="line">    String jdbcPassword;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    DataSource <span class="title function_">createDataSource</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">HikariConfig</span> <span class="variable">config</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HikariConfig</span>();</span><br><span class="line">        config.setJdbcUrl(jdbcUrl);</span><br><span class="line">        config.setUsername(jdbcUsername);</span><br><span class="line">        config.setPassword(jdbcPassword);</span><br><span class="line">        config.addDataSourceProperty(<span class="string">&quot;autoCommit&quot;</span>, <span class="string">&quot;true&quot;</span>);</span><br><span class="line">        config.addDataSourceProperty(<span class="string">&quot;connectionTimeout&quot;</span>, <span class="string">&quot;5&quot;</span>);</span><br><span class="line">        config.addDataSourceProperty(<span class="string">&quot;idleTimeout&quot;</span>, <span class="string">&quot;60&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">HikariDataSource</span>(config);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    JdbcTemplate <span class="title function_">createJdbcTemplate</span><span class="params">(<span class="meta">@Autowired</span> DataSource dataSource)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">JdbcTemplate</span>(dataSource);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 通过@PropertySource(&quot;jdbc.properties&quot;)读取数据库配置文件；</span></span><br><span class="line"><span class="comment">// 通过@Value(&quot;$&#123;jdbc.url&#125;&quot;)注入配置文件的相关配置；</span></span><br><span class="line"><span class="comment">// 创建一个DataSource实例，它的实际类型是HikariDataSource，创建时需要用到注入的配置；</span></span><br><span class="line"><span class="comment">// 创建一个JdbcTemplate实例，它需要注入DataSource，这是通过方法参数完成注入的。</span></span><br></pre></td></tr></table></figure>
+JdbcTemplate方法:<br>jdbcTemplate.execute((Connection conn)-&gt;{})<br>jdbcTemplate.execute(“SELECT * FROM users WHERE name &#x3D; ?”, (PreparedStatement ps)-&gt;{})<br>jdbcTemplate.queryForObject(“SELECT * FROM users WHERE email &#x3D; ?”, (ResultSet rs, int rowNum) -&gt; {}, email)<br>jdbcTemplate.update(“UPDATE users SET name &#x3D; ? WHERE id &#x3D; ?”, user.getName(), user.getId())</li>
+</ol>
+<p>JTA: java transaction API, 分布式事务<br>@EnableTransactionManagement: 开启声明式事务<br>@Transactional 表示一个方法需要事务支持</p>
+<p>DAO: Data Access Object，编写数据访问层时使用DAO模式，就是操作数据库<br>spring提供了一个 JdbcDaoSupport 虚拟类, 方便DAO模式编写<br>DAO模式就是一个简单的数据访问模式</p>
+<p>Hibernate: 自动ORM，将数据字段映射为 java bean, 用于替换 JdbcTemplate，但是配置复杂, 不怎么用<br>JPA：Java Persistence API: JavaEE定义的ORM接口, 也不怎么用<br>MyBatis: 介于全自动ORM如Hibernate和手写全部如JdbcTemplate之间,半自动的ORM</p>
+<p>JDBC: java操作数据库接口<br>ORM: java数据和数据库数据之间的自动映射<br>JPA: Spring提供的一种ORM</p>
+<p>简单的就是 JdbcTemplate, 大项目就是 MyBatis</p>
+<h2 id="springboot-配置项"><a href="#springboot-配置项" class="headerlink" title="springboot 配置项"></a>springboot 配置项</h2><p>@Configuration<br>@ConfigurationProperties(“storage.local”)</p>
+<p>@Autowired<br>    StorageConfiguration storageConfig;<br>     logger.info(“Load configuration: root-dir &#x3D; {}”, storageConfig.getRootDir());</p>
+<p>以下这几个注解, 只有 @Repository 会自动处理传输异常<br>@Component ：通用的注解，可标注任意类为 Spring 组件。如果一个 Bean 不知道属于哪个层，可以使用@Component 注解标注。<br>@Repository : 对应持久层即 Dao 层，主要用于数据库相关操作。会自动捕获程序的特殊异常，转成spring的数据异常再抛出;<br>@Service : 对应服务层，主要涉及一些复杂的逻辑，需要用到 Dao 层。<br>@Controller : 对应 Spring MVC 控制层, 用于传入用户数据和给用户展示，主要用户接受用户请求并调用 Service 层返回数据给前端页面。通常配合 @RequestMapping<br>@RestController注解是@Controller和@ResponseBody的合集，表示这是个控制器 bean,并且是将函数的返回值直 接填入 HTTP 响应体中,是 REST 风格的控制器。</p>
+<p>@Scope(“singleton”)<br>singleton : 唯一 bean 实例，Spring 中的 bean 默认都是单例的。<br>prototype : 每次请求都会创建一个新的 bean 实例。<br>request : 每一次 HTTP 请求都会产生一个新的 bean，该 bean 仅在当前 HTTP request 内有效。<br>session : 每一次 HTTP 请求都会产生一个新的 bean，该 bean 仅在当前 HTTP session 内有效。</p>
+<p>@Configuration 一般用来声明配置类，可以使用 @Component注解替代，不过使用Configuration注解声明配置类更加语义化。</p>
+<p>@Value(“${property}”) 读取比较简单的配置信息：<br>@ConfigurationProperties(prefix &#x3D; “library”)读取配置信息并与 bean 绑定</p>
+<p>所有的注解，推荐使用 JSR 注解，即javax.validation.constraints，而不是org.hibernate.validator.constraints<br>一些常用的字段验证的注解<br>@NotEmpty 被注释的字符串的不能为 null 也不能为空<br>@NotBlank 被注释的字符串非 null，并且必须包含一个非空白字符<br>@Null 被注释的元素必须为 null<br>@NotNull 被注释的元素必须不为 null<br>@AssertTrue 被注释的元素必须为 true<br>@AssertFalse 被注释的元素必须为 false<br>@Pattern(regex&#x3D;,flag&#x3D;)被注释的元素必须符合指定的正则表达式<br>@Email 被注释的元素必须是 Email 格式。<br>@Min(value)被注释的元素必须是一个数字，其值必须大于等于指定的最小值<br>@Max(value)被注释的元素必须是一个数字，其值必须小于等于指定的最大值<br>@DecimalMin(value)被注释的元素必须是一个数字，其值必须大于等于指定的最小值<br>@DecimalMax(value) 被注释的元素必须是一个数字，其值必须小于等于指定的最大值<br>@Size(max&#x3D;, min&#x3D;)被注释的元素的大小必须在指定的范围内<br>@Digits (integer, fraction)被注释的元素必须是一个数字，其值必须在可接受的范围内<br>@Past被注释的元素必须是一个过去的日期<br>@Future 被注释的元素必须是一个将来的日期</p>
+<p>@EnableScheduling+@Scheduled， 通过@EnableScheduling启用定时任务，@Scheduled定义任务<br>cron：cron表达式，指定任务在特定时间执行；<br>fixedDelay：表示上一次任务执行完成后多久再次执行，参数类型为long，单位ms；<br>fixedDelayString：与fixedDelay含义一样，只是参数类型变为String；<br>fixedRate：表示按一定的频率执行任务，参数类型为long，单位ms；<br>fixedRateString: 与fixedRate的含义一样，只是将参数类型变为String；<br>initialDelay：表示延迟多久再第一次执行任务，参数类型为long，单位ms；<br>initialDelayString：与initialDelay的含义一样，只是将参数类型变为String；<br>zone：时区，默认为当前时区，一般没有用到。</p>
+<h1 id="容器"><a href="#容器" class="headerlink" title="容器"></a>容器</h1><p>List<br>    List<String> list &#x3D; new ArrayList&lt;&gt;();<br>    List<String> list &#x3D; new LinkedList&lt;&gt;();<br>    List<Integer> list &#x3D; List.of(1, 2, 5)<br>Set<br>    Set<String> set &#x3D; new HashSet&lt;&gt;();<br>Map<br>    Map&lt;String, Student&gt; map &#x3D; new HashMap&lt;&gt;();<br>Queue<br>    Queue<String> q &#x3D; new LinkedList&lt;&gt;();</p>
+<h1 id="maven使用-protobuf-插件"><a href="#maven使用-protobuf-插件" class="headerlink" title="maven使用 protobuf 插件"></a>maven使用 protobuf 插件</h1><plugin>
+    <groupId>org.xolstice.maven.plugins</groupId>
+    <artifactId>protobuf-maven-plugin</artifactId>
+    <version>0.5.1</version>
+    <configuration>
+        <!-- 本地protoc执行程序  -->
+        <protocExecutable>src/main/resources/proto/protoc.exe</protocExecutable>
+        <!-- .proto 文件路径 -->
+        <protoSourceRoot>src/main/resources/proto</protoSourceRoot>
+        <!-- 生成的文件路径 -->
+        <outputDirectory>src/main/java</outputDirectory>
+        <!-- 不清理目标路径 -->
+        <clearOutputDirectory>false</clearOutputDirectory>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>compile</goal>
+                <goal>test-compile</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+
+
+
+<h1 id="4-fastjson"><a href="#4-fastjson" class="headerlink" title="4. fastjson"></a>4. fastjson</h1><p>maven依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>fastjson<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>x.x.x<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="java对象和json字符串转换"><a href="#java对象和json字符串转换" class="headerlink" title="java对象和json字符串转换"></a>java对象和json字符串转换</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line">     </span><br><span class="line">    <span class="meta">@JSONField(name = &quot;AGE&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> age;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@JSONField(name = &quot;FULL NAME&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String fullName;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@JSONField(name = &quot;DATE OF BIRTH&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Date dateOfBirth;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Person</span><span class="params">(<span class="type">int</span> age, String fullName, Date dateOfBirth)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>();</span><br><span class="line">        <span class="built_in">this</span>.age = age;</span><br><span class="line">        <span class="built_in">this</span>.fullName= fullName;</span><br><span class="line">        <span class="built_in">this</span>.dateOfBirth = dateOfBirth;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 标准 getters &amp; setters</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> <span class="meta">@JSONField(name = &quot;AGE&quot;, serialize = false)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// java -&gt; json</span></span><br><span class="line">String jsonOutput= JSON.toJSONString(Person);</span><br><span class="line"><span class="comment">// 或</span></span><br><span class="line"><span class="keyword">private</span> List&lt;Person&gt; PersonsList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;Person&gt;();</span><br><span class="line">String jsonOutput= JSON.toJSONString(PersonsList);</span><br><span class="line"></span><br><span class="line"><span class="comment">// json string -&gt; java</span></span><br><span class="line"><span class="type">Person</span> <span class="variable">newPerson</span> <span class="operator">=</span> JSON.parseObject(jsonOutput, Person.class);</span><br><span class="line"></span><br><span class="line"><span class="comment">// json string -&gt; JSONObject</span></span><br><span class="line"><span class="type">JSONObject</span> <span class="variable">j</span> <span class="operator">=</span> JSONObject.parseObject(str);</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建-json"><a href="#创建-json" class="headerlink" title="创建 json"></a>创建 json</h2><p>只需使用 JSONObject（fastJson提供的json对象） 和 JSONArray（fastJson提供json数组对象） 对象即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void whenGenerateJson_thanGenerationCorrect() throws ParseException &#123;</span><br><span class="line">    JSONArray jsonArray = new JSONArray();</span><br><span class="line">    for (int i = 0; i &lt; 2; i++) &#123;</span><br><span class="line">        JSONObject jsonObject = new JSONObject();</span><br><span class="line">        jsonObject.put(&quot;AGE&quot;, 10);</span><br><span class="line">        jsonObject.put(&quot;FULL NAME&quot;, &quot;Doe &quot; + i);</span><br><span class="line">        jsonObject.put(&quot;DATE OF BIRTH&quot;, &quot;2016/12/12 12:12:12&quot;);</span><br><span class="line">        jsonArray.add(jsonObject);</span><br><span class="line">    &#125;</span><br><span class="line">    String jsonOutput = jsonArray.toJSONString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="JSONPath"><a href="#JSONPath" class="headerlink" title="JSONPath"></a>JSONPath</h2><p>使用jsonpath访问json字段<br>List<String> list_of_string &#x3D; (List<String>) JSONPath.eval(ds.getMsg(), “$.BaseLocationInfo.ListOfObject”);</p>
+<h1 id="5-protobuf使用"><a href="#5-protobuf使用" class="headerlink" title="5. protobuf使用"></a>5. protobuf使用</h1><ol>
+<li><p>定义proto结构 Person.proto</p>
+<figure class="highlight proto"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">message </span><span class="title class_">Person</span> &#123;</span><br><span class="line">  <span class="type">string</span> name = <span class="number">1</span>;</span><br><span class="line">  <span class="type">int32</span> age = <span class="number">2</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>生成java类<br>protoc -I&#x3D;.&#x2F; –java_out&#x3D;.&#x2F; Person.proto<br>生成 Person.java 文件</p>
+</li>
+</ol>
+<p>Builder 可以修改，Message不可以修改</p>
+<ol start="3">
+<li><p>序列化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Person</span> <span class="variable">person</span> <span class="operator">=</span> Person.newBuilder()</span><br><span class="line">    .setName(<span class="string">&quot;张三&quot;</span>)</span><br><span class="line">    .setAge(<span class="number">25</span>)</span><br><span class="line">    .build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 转换成字节流</span></span><br><span class="line"><span class="type">byte</span>[] data = person.toByteArray();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>反序列化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">byte</span>[] receivedData =...;</span><br><span class="line"><span class="type">Person</span> <span class="variable">receivedPerson</span> <span class="operator">=</span> Person.parseFrom(receivedData);</span><br><span class="line"></span><br><span class="line"><span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> receivedPerson.getName();</span><br><span class="line"><span class="type">int</span> <span class="variable">age</span> <span class="operator">=</span> receivedPerson.getAge();</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="时间"><a href="#时间" class="headerlink" title="时间"></a>时间</h1><ul>
+<li><p>时间戳<br>System.currentTimeMillis()</p>
+</li>
+<li><p>Date<br>Date date &#x3D; new Date(); &#x2F;&#x2F; 当前时间<br>date.toString() &#x2F;&#x2F; 转换为String<br>date.toGMTString() &#x2F;&#x2F; 转GMT时区<br>date.toLocaleString(); &#x2F;&#x2F; 转本地时区<br>(new SimpleDateFormat(“yyyy-MM-dd HH:mm:ss.SSS”)).format(date) &#x2F;&#x2F; 转格式</p>
+</li>
+</ul>
+<p>Date 1. 不能转时区，总是以计算机当前时区为基础; 2. 不能加减</p>
+<ul>
+<li>Calendar<br>比Date多了一个日期和时间运算</li>
+</ul>
+<p>Calendar c &#x3D; Calendar.getInstance(); &#x2F;&#x2F; 当前时间<br>利用Calendar.getTime()可以将一个Calendar对象转换成Date对象，然后就可以用SimpleDateFormat进行格式化了。</p>
+<ul>
+<li>TimeZone<br>比 Date 和 Calendar 多了时区转换</li>
+</ul>
+<p>TimeZone tzDefault &#x3D; TimeZone.getDefault(); &#x2F;&#x2F; 当前时区<br>TimeZone tzGMT9 &#x3D; TimeZone.getTimeZone(“GMT+09:00”); &#x2F;&#x2F; GMT+9:00时区</p>
+<p>加入时区的时间转换<br>&#x2F;&#x2F; 当前时间:<br>Calendar c &#x3D; Calendar.getInstance();<br>&#x2F;&#x2F; 清除所有:<br>c.clear();<br>&#x2F;&#x2F; 设置为北京时区:<br>c.setTimeZone(TimeZone.getTimeZone(“Asia&#x2F;Shanghai”));<br>&#x2F;&#x2F; 设置年月日时分秒:<br>c.set(2019, 10 &#x2F;* 11月 *&#x2F;, 20, 8, 15, 0);</p>
+<ul>
+<li>LocalDateTime， 8开始的新API，最常用, 不涉及时区的都能用这个<br>LocalDateTime dt &#x3D; LocalDateTime.now(); &#x2F;&#x2F; 当前日期和时间</li>
+</ul>
+<p>注意ISO 8601规定的日期和时间分隔符是T。标准格式如下：<br>日期：yyyy-MM-dd<br>时间：HH:mm:ss<br>带毫秒的时间：HH:mm:ss.SSS<br>日期和时间：yyyy-MM-dd’T’HH:mm:ss<br>带毫秒的日期和时间：yyyy-MM-dd’T’HH:mm:ss.SSS<br>LocalDateTime dt &#x3D; LocalDateTime.parse(“2019-11-19T15:16:17”);</p>
+<p>&#x2F;&#x2F; 自定义格式化:<br>DateTimeFormatter dtf &#x3D; DateTimeFormatter.ofPattern(“yyyy&#x2F;MM&#x2F;dd HH:mm:ss”);<br>dtf.format(LocalDateTime.now());<br>&#x2F;&#x2F; 用自定义格式解析:<br>LocalDateTime dt2 &#x3D; LocalDateTime.parse(“2019&#x2F;11&#x2F;30 15:16:17”, dtf);</p>
+<p>&#x2F;&#x2F; 加5天减3小时:<br>LocalDateTime dt2 &#x3D; dt.plusDays(5).minusHours(3);</p>
+<p>&#x2F;&#x2F; 两时刻间隔<br>Duration d &#x3D; Duration.between(start, end);<br>&#x2F;&#x2F; 两时间天数<br>Period p &#x3D; LocalDate.of(2019, 11, 19).until(LocalDate.of(2020, 1, 9));</p>
+<p><em>缺点</em>: LocalDateTime无法与时间戳进行转换，因为LocalDateTime没有时区，无法确定某一时刻; ZonedDateTime 可以</p>
+<ul>
+<li>ZonedDateTime: LocalDateTime + ZoneId</li>
+</ul>
+<p>ZonedDateTime zbj &#x3D; ZonedDateTime.now();</p>
+<ul>
+<li>Instant 当前时间戳<br>Instant now &#x3D; Instant.now();<br>System.out.println(now.getEpochSecond()); &#x2F;&#x2F; 秒<br>System.out.println(now.toEpochMilli()); &#x2F;&#x2F; 毫秒</li>
+</ul>
+<p>&#x2F;&#x2F; 以指定时间戳创建Instant:<br>Instant ins &#x3D; Instant.ofEpochSecond(1568568760);<br>ZonedDateTime zdt &#x3D; ins.atZone(ZoneId.systemDefault());</p>
+<p><strong>几个时间的总体关系</strong><br>LocalDateTime + ZoneId &#x3D; ZonedDateTime    &lt;—&gt;  Instant &lt;—&gt; long</p>
+<h1 id="spring-boot-单元测试"><a href="#spring-boot-单元测试" class="headerlink" title="spring boot 单元测试"></a>spring boot 单元测试</h1><dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+     <!--表示只能在maven的测试域中使用-->
+    <scope>test</scope>
+</dependency>
+
+
+<h1 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h1><ul>
+<li><p>接口<br>字节流<br>InputStream<br>OutputStream</p>
+</li>
+<li><p>基础数据来源<br>FileInputStream<br>ByteArrayInputStream<br>ServletInputStream</p>
+</li>
+<li><p>附加功能<br>BufferedInputStream<br>DigestInputStream<br>CipherInputStream</p>
+</li>
+</ul>
+<p>try (InputStream input &#x3D; new FileInputStream(“src&#x2F;readme.txt”)) {<br>    int n;<br>    while ((n &#x3D; input.read()) !&#x3D; -1) {<br>        System.out.println(n);<br>    }<br>} &#x2F;&#x2F; 编译器在此自动为我们写入finally并调用close()</p>
+<ul>
+<li><p>ByteArrayInputStream会模拟一个输入流<br> byte[] data &#x3D; { 72, 101, 108, 108, 111, 33 };<br>try (InputStream input &#x3D; new ByteArrayInputStream(data)) {}</p>
+</li>
+<li><p>字符流接口<br>Reader</p>
+</li>
+</ul>
+<p>try (Reader reader &#x3D; new FileReader(“src&#x2F;readme.txt”, StandardCharsets.UTF_8) {<br>    &#x2F;&#x2F; TODO<br>}</p>
+<p>CharArrayReader,StringReader 模拟输入流</p>
+<ul>
+<li>spring 读入文件<br>Resource res &#x3D; new FileSystemResourceLoader().getResource(“classpath:test-car-info.txt”);<br>try (BufferedReader r &#x3D; new BufferedReader(new InputStreamReader(res.getInputStream(), StandardCharsets.UTF_8))) {<br>  r.lines().forEach(l -&gt; {</li>
+</ul>
+<h1 id="带值初始化列表"><a href="#带值初始化列表" class="headerlink" title="带值初始化列表"></a>带值初始化列表</h1><ol>
+<li><p>List<String> list &#x3D; Arrays.asList(“foo”, “bar”);<br>固定长度，元素共享；因为底层用的是 String[] 固定长度数组</p>
+</li>
+<li><p>List<String> list &#x3D; Stream.of(“foo”, “bar”).collect(Collectors.toList());<br>8开始</p>
+</li>
+<li><p>List<String> list &#x3D; List.of(“foo”, “bar”, “baz”);<br>9开始</p>
+</li>
+</ol>
+<h1 id="map-insert-or-update"><a href="#map-insert-or-update" class="headerlink" title="map insert or update"></a>map insert or update</h1><p>m.put(key, m.getOrDefault(key, 0)+ 10);</p>
+<h1 id="字符和字符串"><a href="#字符和字符串" class="headerlink" title="字符和字符串"></a>字符和字符串</h1><p>byte[] 字节流, 8位<br>char[] 字符流, 保存1个 Unicode 字符, 占2字节<br>Java的String和char在内存中总是以Unicode编码表示</p>
+<p>格式化字符串 String.format(“%.2f”, 0.2F);</p>
+<p>类型转换<br>String.valueOf(123F);</p>
+<ul>
+<li><p>char[] –&gt; String<br>char[] cs &#x3D; “Hello”.toCharArray();</p>
+</li>
+<li><p>byte[] &lt;–&gt; string<br>byte[] bs &#x3D; “Hello”.getBytes();<br>byte[] bs &#x3D; “Hello”.getBytes(“UTF-8”);<br>byte[] bs &#x3D; “Hello”.getBytes(StandardCharsets.UTF_8); &#x2F;&#x2F; 转成其他编码<br>String s &#x3D; new String(bs, “GBK”); &#x2F;&#x2F; byte[] 转成String</p>
+</li>
+<li><p>byte[] -&gt; hex<br>HexFormat hf &#x3D; HexFormat.of();<br>String hex &#x3D; hf.formatHex(bs);</p>
+</li>
+</ul>
+<p>byte[] bs &#x3D; HexFormat.of().parseHex(“48656c6c6f”);</p>
+<h1 id="springboot-启动时执行任务"><a href="#springboot-启动时执行任务" class="headerlink" title="springboot 启动时执行任务"></a>springboot 启动时执行任务</h1><p>两种方式:</p>
+<ol>
+<li><p>CommandLineRunner<br>实现 run 方法;<br>如果有多个实现，按照 @Order 顺序执行;<br>参数是main传入的参数;</p>
+</li>
+<li><p>ApplicationRunner<br>实现 run 方法;<br>如果有多个实现，按照 @Order 顺序执行;<br>参数是 ApplicationArguments</p>
+</li>
+</ol>
+<h1 id="遍历-map"><a href="#遍历-map" class="headerlink" title="遍历 map"></a>遍历 map</h1><p>(1) 如果只获取 key 或者 value, 推荐使用 keySet() 或 values() 方法;<br>(2) 如果需要同时获取 key 和value, 推荐使用 entrySet;<br>(3) 如果需要在遍历过程中删除元素, 推荐使用 Iterator;<br>(4) 如果需要在遍历过程中添加元素, 可以新建一个临时 Map 存放新增的元素, 遍历结束后, 再把临时 Map 添加到原 Map 中.</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84java/" title="用到的java">https://suntus.github.io/2024/01/27/用到的java/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84ffmpeg/" rel="prev" title="用到的ffmpeg">
+      <i class="fa fa-chevron-left"></i> 用到的ffmpeg
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84linux/" rel="next" title="用到的linux">
+      用到的linux <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-idea-maven%E9%85%8D%E7%BD%AE"><span class="nav-text">1 idea maven配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-IoC"><span class="nav-text">2 IoC</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-text">3 连接数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#springboot-%E9%85%8D%E7%BD%AE%E9%A1%B9"><span class="nav-text">springboot 配置项</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%B9%E5%99%A8"><span class="nav-text">容器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#maven%E4%BD%BF%E7%94%A8-protobuf-%E6%8F%92%E4%BB%B6"><span class="nav-text">maven使用 protobuf 插件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-fastjson"><span class="nav-text">4. fastjson</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#java%E5%AF%B9%E8%B1%A1%E5%92%8Cjson%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%BD%AC%E6%8D%A2"><span class="nav-text">java对象和json字符串转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA-json"><span class="nav-text">创建 json</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JSONPath"><span class="nav-text">JSONPath</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-protobuf%E4%BD%BF%E7%94%A8"><span class="nav-text">5. protobuf使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%B6%E9%97%B4"><span class="nav-text">时间</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#spring-boot-%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-text">spring boot 单元测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6"><span class="nav-text">文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%A6%E5%80%BC%E5%88%9D%E5%A7%8B%E5%8C%96%E5%88%97%E8%A1%A8"><span class="nav-text">带值初始化列表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#map-insert-or-update"><span class="nav-text">map insert or update</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-text">字符和字符串</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#springboot-%E5%90%AF%E5%8A%A8%E6%97%B6%E6%89%A7%E8%A1%8C%E4%BB%BB%E5%8A%A1"><span class="nav-text">springboot 启动时执行任务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%81%8D%E5%8E%86-map"><span class="nav-text">遍历 map</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">148</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

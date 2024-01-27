@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1 介绍这里说的音频编码(或者说音频格式)指的是现实中的声音保存在计算机中的形式，模拟信号经过数字化转换后，才能保存到计算机中。数字化的过程叫 PCM(Pulse-code modulation, 脉冲编码调制), 形成的最原始的编码也叫 PCM 。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="音频编码">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="1 介绍这里说的音频编码(或者说音频格式)指的是现实中的声音保存在计算机中的形式，模拟信号经过数字化转换后，才能保存到计算机中。数字化的过程叫 PCM(Pulse-code modulation, 脉冲编码调制), 形成的最原始的编码也叫 PCM 。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T15:14:42.000Z">
+<meta property="article:modified_time" content="2024-01-27T15:15:59.786Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="media">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>音频编码 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          音频编码
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 23:14:42 / 修改时间：23:15:59" itemprop="dateCreated datePublished" datetime="2024-01-27T23:14:42+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1 介绍"></a>1 介绍</h1><p>这里说的音频编码(或者说音频格式)指的是现实中的声音保存在计算机中的形式，模拟信号经过数字化转换后，才能保存到计算机中。数字化的过程叫 PCM(Pulse-code modulation, 脉冲编码调制), 形成的最原始的编码也叫 <code>PCM</code> 。</p>
+<span id="more"></span>
+
+<p>关于音频有以下几个属性。</p>
+<h2 id="1-1-采样率-sample-rate"><a href="#1-1-采样率-sample-rate" class="headerlink" title="1.1 采样率(sample rate)"></a>1.1 采样率(sample rate)</h2><p>原始声音的模拟信号是一系列的高低压电平，数字化的时候，使用固定频率的脉冲去采集某一时刻的电压大小(描述不准确)，就是音频采样；比如使用 2Hz 的频率去采样，就是1s对原始音频信号取 2 个值，采样率就2Hz, 当然通常情况下不会这么慢，这时候如果播放出来，就是<code>哔哔</code>两声，不是连续的声音了。常见的采样率是 8kHz, 44.1kHz(<a href="why-44.1khz-is-the-minimum-high-fidelity-sampleing-rate-in-audio.md">为什么是这个值</a>) 等。</p>
+<p>可以看到，采样率越高，声音越接近原始音频，最后的音频文件也越大。</p>
+<h2 id="1-2-位深-sample-depth"><a href="#1-2-位深-sample-depth" class="headerlink" title="1.2 位深(sample depth)"></a>1.2 位深(sample depth)</h2><p>描述1个采样点需要的位数，如果使用2位，那最多就是4种声音；如果使用8位，就可以表达 <code>2^8=256</code> 种声音。常见的位深有 8,16,20,24,32 等。位深越大，声音越真实。</p>
+<h2 id="1-3-轨道数-track"><a href="#1-3-轨道数-track" class="headerlink" title="1.3 轨道数(track)"></a>1.3 轨道数(track)</h2><p>一般1个麦克风采样1个轨道的音频(描述不准确)，但如果使用立体声，会有多个采样源，这样一个音频流就可以包含多轨，更真实的描述声音。</p>
+<h2 id="1-4-码率-bits-rate"><a href="#1-4-码率-bits-rate" class="headerlink" title="1.4 码率(bits rate)"></a>1.4 码率(bits rate)</h2><p>描述1s音频数据的大小，这个跟压缩有关。未压缩的格式可以计算出来码率，比如 8k 采样率，16bits 位深, 单轨道，则码率为 <code>8000 * 16 = 128000bps</code>, 也就是 <code>128kbps</code>。如果是压缩后的，可能会有 <code>CBR, ABR, VBR</code> 几种码率类型,</p>
+<ul>
+<li>CBR: Constant bitrate, 恒定码率, 码率不会变，压缩率较小;</li>
+<li>VBR: Variable bitrate, 可变码率, 会根据声音复杂度变化,</li>
+<li>ABR: Average bitrate, 平均码率，介于CBR 和 VBR, 会根据前后内容调节码率，但算法较复杂;</li>
+</ul>
+<p>声音经过采样之后，为了方便存储和传输，会转换成各种格式，下面是一些格式介绍。</p>
+<h1 id="2-未压缩格式"><a href="#2-未压缩格式" class="headerlink" title="2 未压缩格式"></a>2 未压缩格式</h1><table>
+<thead>
+<tr>
+<th>格式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>WAV(Waveform Audio File)</td>
+<td>微软出品, 保存所有的原始数据，支持高音质，自带时间编码, 音频工作者的理想格式。</td>
+</tr>
+<tr>
+<td>AIFF(Audio Interchange File Format)</td>
+<td>Apple出品，不包含时间, 编辑和混合的时候不适合</td>
+</tr>
+<tr>
+<td>DSD(Direct Stream Digital)</td>
+<td>非常大，需要高级的音频处理系统</td>
+</tr>
+<tr>
+<td><strong>PCM(Pulse-Code Modulation)</strong></td>
+<td>CD 和 DVD 中使用, 在DSD出现之前，这是最接近原始模拟声音的格式了</td>
+</tr>
+</tbody></table>
+<p>PCM(也说LPCM)是 CD 中的标准，在计算机中存储的时候，通常是在容器中: <code>WAV,AIFF,AU</code> 或者原始音频格式，<br>但也不是必须的。与 <code>PCM</code> 类似的未压缩格式有 <code>PDM(Pulse-density modulation, DSD格式)</code>, <code>PAM(Pulse-amplitude modulation)</code> 。</p>
+<h1 id="3-无损压缩"><a href="#3-无损压缩" class="headerlink" title="3 无损压缩"></a>3 无损压缩</h1><table>
+<thead>
+<tr>
+<th>格式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FLAC(Free Lossless Audio Codec)</td>
+<td>开源</td>
+</tr>
+<tr>
+<td>ALAC(Apple’s Lossless Audio Codec)</td>
+<td>只在 Apple 上用</td>
+</tr>
+</tbody></table>
+<h1 id="4-有损压缩"><a href="#4-有损压缩" class="headerlink" title="4 有损压缩"></a>4 有损压缩</h1><table>
+<thead>
+<tr>
+<th>格式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MP3 (MPEG-1 Audio Layer III)</td>
+<td>体积小，最大支持16bits位深,音质低</td>
+</tr>
+<tr>
+<td>AAC(Advanced Audio Coding)</td>
+<td>同等体积下比MP3音质更好, 应用范围广，适合流媒体</td>
+</tr>
+<tr>
+<td>Ogg Vorbis</td>
+<td>开源, Spotify 使用, 适合流媒体</td>
+</tr>
+</tbody></table>
+<h1 id="5-说明"><a href="#5-说明" class="headerlink" title="5 说明"></a>5 说明</h1><h2 id="5-1-PCM-和-LPCM-的关系"><a href="#5-1-PCM-和-LPCM-的关系" class="headerlink" title="5.1 PCM 和 LPCM 的关系"></a>5.1 PCM 和 LPCM 的关系</h2><p>PCM(Pulse-code modulation) 脉冲编码调制是一种模拟信号转数字信号的技术，也是音频采样中最常用的技术，其他技术还有 PDM(Pulse-density modulation) 和 PAM(Pulse-amplitude modulation)。LPCM(Linear PCM) 是PCM的一种特殊形式，</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81/" title="音频编码">https://suntus.github.io/2024/01/27/音频编码/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/media/" rel="tag"># media</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/27/%E8%A2%AB%E8%AE%A8%E5%8E%8C%E7%9A%84%E5%8B%87%E6%B0%94/" rel="prev" title="被讨厌的勇气">
+      <i class="fa fa-chevron-left"></i> 被讨厌的勇气
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/why-44-1khz-is-the-minimum-high-fidelity-sampleing-rate-in-audio/" rel="next" title="why-44.1khz-is-the-minimum-high-fidelity-sampleing-rate-in-audio">
+      why-44.1khz-is-the-minimum-high-fidelity-sampleing-rate-in-audio <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E4%BB%8B%E7%BB%8D"><span class="nav-text">1 介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E9%87%87%E6%A0%B7%E7%8E%87-sample-rate"><span class="nav-text">1.1 采样率(sample rate)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E4%BD%8D%E6%B7%B1-sample-depth"><span class="nav-text">1.2 位深(sample depth)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E8%BD%A8%E9%81%93%E6%95%B0-track"><span class="nav-text">1.3 轨道数(track)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-%E7%A0%81%E7%8E%87-bits-rate"><span class="nav-text">1.4 码率(bits rate)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%9C%AA%E5%8E%8B%E7%BC%A9%E6%A0%BC%E5%BC%8F"><span class="nav-text">2 未压缩格式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%97%A0%E6%8D%9F%E5%8E%8B%E7%BC%A9"><span class="nav-text">3 无损压缩</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E6%9C%89%E6%8D%9F%E5%8E%8B%E7%BC%A9"><span class="nav-text">4 有损压缩</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E8%AF%B4%E6%98%8E"><span class="nav-text">5 说明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-PCM-%E5%92%8C-LPCM-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-text">5.1 PCM 和 LPCM 的关系</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">148</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

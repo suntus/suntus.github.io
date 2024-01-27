@@ -329,7 +329,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%8B%E5%86%85%E6%A0%B8%E4%B9%8B%E5%89%8D%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%E4%B8%80%E4%BA%9B%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%E7%9A%84%E7%9F%A5%E8%AF%86%EF%BC%8C%E6%9C%AC%E6%96%87%E4%BB%8B%E7%BB%8DIA32%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%A0%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E3%80%82-%E9%80%9A%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%9AEAX-EBX-ECX-EDX-ESI-EDI-EBP-ESP-%E6%AE%B5%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%9ACS-DS-ES-FS-GS-SS-EFLAGES%E5%AF%84%E5%AD%98%E5%99%A8-EIP%E5%AF%84%E5%AD%98%E5%99%A8-%E6%8E%A7%E5%88%B6%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%9ACR0-CR1-CR2-CR3-CR4-GDTR-LDTR-IDTR%E5%AF%84%E5%AD%98%E5%99%A8-TR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">看内核之前需要了解一些体系结构相关的知识，本文介绍IA32常用的几个寄存器。- 通用寄存器：EAX,EBX,ECX,EDX,ESI,EDI,EBP,ESP- 段寄存器：CS,DS,ES,FS,GS,SS- EFLAGES寄存器- EIP寄存器- 控制寄存器：CR0,CR1,CR2,CR3,CR4- GDTR,LDTR,IDTR寄存器- TR寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E9%80%9A%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">1. 通用寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%AE%B5%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">3.</span> <span class="nav-text">2. 段寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-EFLAGS"><span class="nav-number">4.</span> <span class="nav-text">3. EFLAGS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-EIP%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text">4. EIP寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%8E%A7%E5%88%B6%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">6.</span> <span class="nav-text">5. 控制寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-GDTR-LDTR-IDTR"><span class="nav-number">7.</span> <span class="nav-text">6. GDTR,LDTR,IDTR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-TR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">8.</span> <span class="nav-text">7. TR寄存器</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%8B%E5%86%85%E6%A0%B8%E4%B9%8B%E5%89%8D%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%E4%B8%80%E4%BA%9B%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%E7%9A%84%E7%9F%A5%E8%AF%86%EF%BC%8C%E6%9C%AC%E6%96%87%E4%BB%8B%E7%BB%8DIA32%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%A0%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8%E3%80%82-%E9%80%9A%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%9AEAX-EBX-ECX-EDX-ESI-EDI-EBP-ESP-%E6%AE%B5%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%9ACS-DS-ES-FS-GS-SS-EFLAGES%E5%AF%84%E5%AD%98%E5%99%A8-EIP%E5%AF%84%E5%AD%98%E5%99%A8-%E6%8E%A7%E5%88%B6%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%9ACR0-CR1-CR2-CR3-CR4-GDTR-LDTR-IDTR%E5%AF%84%E5%AD%98%E5%99%A8-TR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-text">看内核之前需要了解一些体系结构相关的知识，本文介绍IA32常用的几个寄存器。- 通用寄存器：EAX,EBX,ECX,EDX,ESI,EDI,EBP,ESP- 段寄存器：CS,DS,ES,FS,GS,SS- EFLAGES寄存器- EIP寄存器- 控制寄存器：CR0,CR1,CR2,CR3,CR4- GDTR,LDTR,IDTR寄存器- TR寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E9%80%9A%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-text">1. 通用寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%AE%B5%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-text">2. 段寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-EFLAGS"><span class="nav-text">3. EFLAGS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-EIP%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-text">4. EIP寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%8E%A7%E5%88%B6%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-text">5. 控制寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-GDTR-LDTR-IDTR"><span class="nav-text">6. GDTR,LDTR,IDTR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-TR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-text">7. TR寄存器</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -343,14 +343,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-count">148</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-count">38</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

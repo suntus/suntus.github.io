@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用到的mysql">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84mysql/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="…">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T15:50:47.000Z">
+<meta property="article:modified_time" content="2024-01-27T15:51:22.457Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tools">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84mysql/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>用到的mysql | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用到的mysql
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 23:50:47 / 修改时间：23:51:22" itemprop="dateCreated datePublished" datetime="2024-01-27T23:50:47+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>…</p>
+<span id="more"></span>
+
+<h1 id="sqlite"><a href="#sqlite" class="headerlink" title="sqlite"></a>sqlite</h1><p>sqlite3 filename.db</p>
+<p>.databases<br>.tables<br>.scheme tbname</p>
+<h1 id="sql-语句"><a href="#sql-语句" class="headerlink" title="sql 语句"></a>sql 语句</h1><p>select * from tbname;</p>
+<h2 id="join"><a href="#join" class="headerlink" title="join"></a>join</h2><p>A inner join B: A交B<br>A left join B: A表所有<br>A right join B: B表所有<br>A full outer join B: A和B的所有<br>cross join：笛卡尔积，A 乘 B</p>
+<p>on 和 where<br>on: 只是限定 join 的匹配字段，返回时不管这个真假的<br>where: 限定过滤条件</p>
+<h2 id="union，合并两个或多个-SELECT-语句的结果集。"><a href="#union，合并两个或多个-SELECT-语句的结果集。" class="headerlink" title="union，合并两个或多个 SELECT 语句的结果集。"></a>union，合并两个或多个 SELECT 语句的结果集。</h2><p>union: 选取不同的值<br>union all: 选取所有值</p>
+<h2 id="create-table"><a href="#create-table" class="headerlink" title="create table"></a>create table</h2><p>CREATE TABLE table_name<br>(<br>column_name1 data_type(size),<br>column_name2 data_type(size),<br>column_name3 data_type(size),<br>….<br>);</p>
+<h2 id="sql约束"><a href="#sql约束" class="headerlink" title="sql约束"></a>sql约束</h2><p>NOT NULL - 指示某列不能存储 NULL 值。<br>UNIQUE - 保证某列的每行必须有唯一的值。<br>PRIMARY KEY - NOT NULL 和 UNIQUE 的结合。确保某列（或两个列多个列的结合）有唯一标识，有助于更容易更快速地找到表中的一个特定的记录。<br>FOREIGN KEY - 保证一个表中的数据匹配另一个表中的值的参照完整性。<br>CHECK - 保证列中的值符合指定的条件。<br>DEFAULT - 规定没有给列赋值时的默认值。</p>
+<h2 id="having"><a href="#having" class="headerlink" title="having"></a>having</h2><ul>
+<li>在 SQL 中增加 HAVING 子句原因是，WHERE 关键字无法与聚合函数一起使用。</li>
+<li>where在group by前， having在group by 之后</li>
+</ul>
+<p>SELECT column_name, aggregate_function(column_name)<br>FROM table_name<br>WHERE column_name operator value<br>GROUP BY column_name<br>HAVING aggregate_function(column_name) operator value;</p>
+<h2 id="exists"><a href="#exists" class="headerlink" title="exists"></a>exists</h2><ul>
+<li>判断查询子句是否有记录，如果有一条或多条记录存在返回 True，否则返回 False。<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> column_name(s)</span><br><span class="line"><span class="keyword">FROM</span> table_name</span><br><span class="line"><span class="keyword">WHERE</span> <span class="keyword">EXISTS</span></span><br><span class="line">(<span class="keyword">SELECT</span> column_name <span class="keyword">FROM</span> table_name <span class="keyword">WHERE</span> <span class="keyword">condition</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">	websites.NAME,</span><br><span class="line">	websites.url</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">	websites</span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">	<span class="keyword">EXISTS</span> ( <span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> access_log <span class="keyword">WHERE</span> websites.id <span class="operator">=</span> access_log.site_id <span class="keyword">AND</span> count <span class="operator">&gt;</span> <span class="number">200</span> )</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>对外表做loop，每次做子查询，子查询如果有，就返回true</p>
+<h2 id="row-number-over-PARTITION-BY-tcb-vin-tcb-SERVICEID-ORDER-BY-tcb-TIME-STAMP-DESC-rn"><a href="#row-number-over-PARTITION-BY-tcb-vin-tcb-SERVICEID-ORDER-BY-tcb-TIME-STAMP-DESC-rn" class="headerlink" title="row_number ( ) over ( PARTITION BY tcb.vin, tcb.SERVICEID ORDER BY tcb.TIME_STAMP DESC ) rn"></a>row_number ( ) over ( PARTITION BY tcb.vin, tcb.SERVICEID ORDER BY tcb.TIME_STAMP DESC ) rn</h2><p>oracle<br>按照 tcb.vin, tcp.SERVICEID  分组，内部按照 tcb.TIME_STAMP 降序排列， 最后的值 rn 是每组内部排序后的顺序编号(组内连续且唯一)</p>
+<h1 id="时间-int-timestamp-datetime-效率"><a href="#时间-int-timestamp-datetime-效率" class="headerlink" title="时间 int, timestamp, datetime 效率"></a>时间 int, timestamp, datetime 效率</h1><p>对于 MyISAM 引擎，不建立索引的情况下（推荐），效率从高到低：int &gt; UNIXTIMESTAMP(timestamp) &gt; datetime（直接和时间比较）&gt; timestamp（直接和时间比较）&gt; UNIXTIMESTAMP(datetime) 。<br>对于 MyISAM 引擎，建立索引的情况下，效率从高到低：UNIXTIMESTAMP(timestamp) &gt; int &gt; datetime（直接和时间比较）&gt;timestamp（直接和时间比较）&gt;UNIXTIMESTAMP(datetime) 。<br>对于 InnoDB 引擎，没有索引的情况下(不建议)，效率从高到低：int &gt; UNIXTIMESTAMP(timestamp) &gt; datetime（直接和时间比较） &gt; timestamp（直接和时间比较）&gt; UNIXTIMESTAMP(datetime)。<br>对于 InnoDB 引擎，建立索引的情况下，效率从高到低：int &gt; datetime（直接和时间比较） &gt; timestamp（直接和时间比较）&gt; UNIXTIMESTAMP(timestamp) &gt; UNIXTIMESTAMP(datetime)。<br>一句话，对于 MyISAM 引擎，采用 UNIX_TIMESTAMP(timestamp) 比较；对于InnoDB 引擎，建立索引，采用 int 或 datetime直接时间比较。</p>
+<h1 id="mysql"><a href="#mysql" class="headerlink" title="mysql"></a>mysql</h1><h2 id="mysql不支持子查询使用-limit"><a href="#mysql不支持子查询使用-limit" class="headerlink" title="mysql不支持子查询使用 limit"></a>mysql不支持子查询使用 limit</h2><p>比如:<br>select  t2.id, t2.uuid from  tb_alarm_addinfo t2 where t2.uuid in (<br>select t1.uuid from tb_alarm_record t1 where t1.starttime &lt;&#x3D; UNIX_TIMESTAMP(‘2020-06-01 00:00:00’ limit 10 )</p>
+<p>会报错</p>
+<p>可以多加一层，建个虚拟表就行</p>
+<p>select  t2.id, t2.uuid from  tb_alarm_addinfo t2 where t2.uuid in (<br>select tt.uuid from (<br>select t1.uuid from tb_alarm_record t1 where t1.starttime &lt;&#x3D; UNIX_TIMESTAMP(‘2020-06-01 00:00:00’) limit 10) as tt )</p>
+<h2 id="时间戳"><a href="#时间戳" class="headerlink" title="时间戳"></a>时间戳</h2><p>mysql中存储 unix_timestamp, 用的是 UTC 时间</p>
+<p>设置单次会话的时区<br>set time_zone&#x3D;’+8:00’;</p>
+<p>select from_unixtime(starttime), uuid from ivss.tb_alarm_record where starttime &gt;&#x3D; unix_timestamp(‘2022-10-06 00:00:00’) and starttime &lt;&#x3D; unix_timestamp(‘2022-10-07 00:00:00’) order by id desc limit 10;</p>
+<h2 id="二进制打印"><a href="#二进制打印" class="headerlink" title="二进制打印"></a>二进制打印</h2><p>select *,hex(from_base64(alarm_uuid)) from ivss.tb_alarm_extend order by id desc limit 10;</p>
+<h1 id="binlog"><a href="#binlog" class="headerlink" title="binlog"></a>binlog</h1><ul>
+<li>查看binlog：<br>show binary logs;</li>
+<li>删除某个binlog文件之前的所有binlog文件，不包括该文件<br>purge binary logs to ‘mysql-bin.002639’;</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84mysql/" title="用到的mysql">https://suntus.github.io/2024/01/27/用到的mysql/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tools/" rel="tag"># tools</a>
+              <a href="/tags/mysql/" rel="tag"># mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/27/shell/" rel="prev" title="用到的shell">
+      <i class="fa fa-chevron-left"></i> 用到的shell
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84ssh/" rel="next" title="用到的ssh">
+      用到的ssh <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#sqlite"><span class="nav-text">sqlite</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#sql-%E8%AF%AD%E5%8F%A5"><span class="nav-text">sql 语句</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#join"><span class="nav-text">join</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#union%EF%BC%8C%E5%90%88%E5%B9%B6%E4%B8%A4%E4%B8%AA%E6%88%96%E5%A4%9A%E4%B8%AA-SELECT-%E8%AF%AD%E5%8F%A5%E7%9A%84%E7%BB%93%E6%9E%9C%E9%9B%86%E3%80%82"><span class="nav-text">union，合并两个或多个 SELECT 语句的结果集。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#create-table"><span class="nav-text">create table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sql%E7%BA%A6%E6%9D%9F"><span class="nav-text">sql约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#having"><span class="nav-text">having</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#exists"><span class="nav-text">exists</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#row-number-over-PARTITION-BY-tcb-vin-tcb-SERVICEID-ORDER-BY-tcb-TIME-STAMP-DESC-rn"><span class="nav-text">row_number ( ) over ( PARTITION BY tcb.vin, tcb.SERVICEID ORDER BY tcb.TIME_STAMP DESC ) rn</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%B6%E9%97%B4-int-timestamp-datetime-%E6%95%88%E7%8E%87"><span class="nav-text">时间 int, timestamp, datetime 效率</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mysql"><span class="nav-text">mysql</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mysql%E4%B8%8D%E6%94%AF%E6%8C%81%E5%AD%90%E6%9F%A5%E8%AF%A2%E4%BD%BF%E7%94%A8-limit"><span class="nav-text">mysql不支持子查询使用 limit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E6%88%B3"><span class="nav-text">时间戳</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%89%93%E5%8D%B0"><span class="nav-text">二进制打印</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#binlog"><span class="nav-text">binlog</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">148</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

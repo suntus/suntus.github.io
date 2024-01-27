@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="type casting operator">
+<meta property="og:url" content="https://suntus.github.io/2024/01/28/type-casting-operator/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="…">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T16:06:01.000Z">
+<meta property="article:modified_time" content="2024-01-27T16:06:21.190Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="cpp">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/28/type-casting-operator/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>type casting operator | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/28/type-casting-operator/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          type casting operator
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-28 00:06:01 / 修改时间：00:06:21" itemprop="dateCreated datePublished" datetime="2024-01-28T00:06:01+08:00">2024-01-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>…</p>
+<span id="more"></span>
+
+<h1 id="1-basic-type-casting"><a href="#1-basic-type-casting" class="headerlink" title="1 basic type casting"></a>1 basic type casting</h1><h2 id="1-1-const-cast"><a href="#1-1-const-cast" class="headerlink" title="1.1 const_cast"></a>1.1 const_cast</h2><p>Remove the constness of variables. inmutable to mutable.</p>
+<h3 id="1-1-1-change-non-const-class-members-inside-a-const-member-function"><a href="#1-1-1-change-non-const-class-members-inside-a-const-member-function" class="headerlink" title="1.1.1 change non-const class members inside a const member function"></a>1.1.1 change non-const class members inside a const member function</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">int</span> roll;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">fun</span><span class="params">()</span> <span class="type">const</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        (<span class="built_in">const_cast</span>&lt;student *&gt;(<span class="keyword">this</span>))-&gt;roll = <span class="number">5</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-1-2-pass-const-data-to-a-function-that-doesn’t-receive-const"><a href="#1-1-2-pass-const-data-to-a-function-that-doesn’t-receive-const" class="headerlink" title="1.1.2 pass const data to a function that doesn’t receive const"></a>1.1.2 pass const data to a function that doesn’t receive const</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">func</span><span class="params">(<span class="type">int</span> *ptr)</span></span>&#123; <span class="keyword">return</span> (*ptr + <span class="number">10</span>);&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> val = <span class="number">10</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> *ptr = &amp;val;</span><br><span class="line"><span class="type">int</span> *ptr1 = <span class="built_in">const_cast</span>&lt;<span class="type">int</span> *&gt;(ptr);</span><br><span class="line"><span class="built_in">func</span>(ptr1); <span class="comment">// pass a non-const data</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-1-3-undefined-behavior-to-modify-a-value-which-is-initially-declared-as-const"><a href="#1-1-3-undefined-behavior-to-modify-a-value-which-is-initially-declared-as-const" class="headerlink" title="1.1.3 undefined behavior to modify a value which is initially declared as const"></a>1.1.3 <strong>undefined behavior</strong> to modify a value which is initially declared as const</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">func</span><span class="params">(<span class="type">int</span> *ptr)</span></span>&#123;</span><br><span class="line">    *ptr = *ptr + <span class="number">10</span>; <span class="comment">// undefined behavior</span></span><br><span class="line">    <span class="keyword">return</span> (*ptr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> val = <span class="number">10</span>; <span class="comment">// iinitially declared as const</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> *ptr = &amp;val;</span><br><span class="line"><span class="type">int</span> *ptr1 = <span class="built_in">const_cast</span>&lt;<span class="type">int</span> *&gt;(ptr);</span><br><span class="line"><span class="built_in">func</span>(ptr1); <span class="comment">// pass a non-const data</span></span><br></pre></td></tr></table></figure>
+
+<p>It is fine to modify a value which is not initially declared as const:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> val = <span class="number">10</span>; <span class="comment">// initially declared as non-const</span></span><br><span class="line">...</span><br><span class="line"><span class="built_in">func</span>(ptr1); <span class="comment">// it&#x27;s fine</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="1-1-4-safer-then-simple-type-casting"><a href="#1-1-4-safer-then-simple-type-casting" class="headerlink" title="1.1.4 safer then simple type casting"></a>1.1.4 safer then simple type casting</h3><p>If the type of cast is not same as original object, the casting won’t happen.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">40</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> *b = &amp;a;</span><br><span class="line"><span class="type">char</span> *c = <span class="built_in">const_cast</span>&lt;<span class="type">char</span> *&gt;(b); <span class="comment">// complier error</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-1-4-can-be-used-to-cast-away-volatile-attribute"><a href="#1-1-4-can-be-used-to-cast-away-volatile-attribute" class="headerlink" title="1.1.4 can be used to cast away volatile attribute"></a>1.1.4 can be used to <strong>cast away volatile</strong> attribute</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">40</span>;</span><br><span class="line"><span class="type">const</span> <span class="keyword">volatile</span> <span class="type">int</span> *b = &amp;a;</span><br><span class="line"><span class="type">int</span> *c = <span class="built_in">const_cast</span>&lt;<span class="type">int</span> *&gt;(b); <span class="comment">// cast away volatile attribute</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="1-2-static-cast"><a href="#1-2-static-cast" class="headerlink" title="1.2 static_cast"></a>1.2 static_cast</h2><h3 id="1-2-1-cannot-used-to-cast-fro-primitive-data-type-pointers"><a href="#1-2-1-cannot-used-to-cast-fro-primitive-data-type-pointers" class="headerlink" title="1.2.1 cannot used to cast fro primitive data type pointers"></a>1.2.1 cannot used to cast fro primitive data type pointers</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Pass at compile time,</span></span><br><span class="line"><span class="comment">// may fail at run time</span></span><br><span class="line"><span class="type">int</span>* q = (<span class="type">int</span>*)&amp;c;</span><br><span class="line"><span class="type">int</span>* p = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>*&gt;(&amp;c);</span><br><span class="line"></span><br><span class="line"><span class="comment">// error: invalid &#x27;static_cast&#x27; from type &#x27;int*&#x27; to type &#x27;char*&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-2-able-to-call-the-conversion-operator-of-the-class-if-it-is-defined"><a href="#1-2-2-able-to-call-the-conversion-operator-of-the-class-if-it-is-defined" class="headerlink" title="1.2.2 able to call the conversion operator of the class if it is defined"></a>1.2.2 able to call the conversion operator of the class if it is defined</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&#123;</span><br><span class="line">    <span class="comment">// user defined conversion operator to string type</span></span><br><span class="line">    <span class="function"><span class="keyword">operator</span> <span class="title">string</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// using static_cast for typecasting</span></span><br><span class="line">string str2 = <span class="built_in">static_cast</span>&lt;string&gt;(obj);</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-3-used-cast-from-Derived-to-Base-class"><a href="#1-2-3-used-cast-from-Derived-to-Base-class" class="headerlink" title="1.2.3 used cast from Derived to Base class"></a>1.2.3 used cast from Derived to Base class</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Base</span> &#123;&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Derived</span> : <span class="keyword">public</span> Base &#123;&#125;;</span><br><span class="line"></span><br><span class="line">Derived d1;</span><br><span class="line">Base* b2 = <span class="built_in">static_cast</span>&lt;Base*&gt;(&amp;d1); <span class="comment">// upcasting</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-4-cast-to-and-from-void-pionter"><a href="#1-2-4-cast-to-and-from-void-pionter" class="headerlink" title="1.2.4 cast to and from void pionter"></a>1.2.4 cast to and from void pionter</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> i = <span class="number">10</span>;</span><br><span class="line"><span class="type">void</span>* v = <span class="built_in">static_cast</span>&lt;<span class="type">void</span>*&gt;(&amp;i);</span><br><span class="line"><span class="type">int</span>* ip = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>*&gt;(v);</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-3-dynamic-cast"><a href="#1-3-dynamic-cast" class="headerlink" title="1.3 dynamic_cast"></a>1.3 dynamic_cast</h2><p>downcasting</p>
+<h2 id="1-4-reinterpret-cast"><a href="#1-4-reinterpret-cast" class="headerlink" title="1.4 reinterpret_cast"></a>1.4 reinterpret_cast</h2>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/28/type-casting-operator/" title="type casting operator">https://suntus.github.io/2024/01/28/type-casting-operator/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cpp/" rel="tag"># cpp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/28/cpp-time/" rel="prev" title="cpp time">
+      <i class="fa fa-chevron-left"></i> cpp time
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="next" title="设计模式">
+      设计模式 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-basic-type-casting"><span class="nav-text">1 basic type casting</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-const-cast"><span class="nav-text">1.1 const_cast</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-change-non-const-class-members-inside-a-const-member-function"><span class="nav-text">1.1.1 change non-const class members inside a const member function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-pass-const-data-to-a-function-that-doesn%E2%80%99t-receive-const"><span class="nav-text">1.1.2 pass const data to a function that doesn’t receive const</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-3-undefined-behavior-to-modify-a-value-which-is-initially-declared-as-const"><span class="nav-text">1.1.3 undefined behavior to modify a value which is initially declared as const</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-4-safer-then-simple-type-casting"><span class="nav-text">1.1.4 safer then simple type casting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-4-can-be-used-to-cast-away-volatile-attribute"><span class="nav-text">1.1.4 can be used to cast away volatile attribute</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-static-cast"><span class="nav-text">1.2 static_cast</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-cannot-used-to-cast-fro-primitive-data-type-pointers"><span class="nav-text">1.2.1 cannot used to cast fro primitive data type pointers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2-able-to-call-the-conversion-operator-of-the-class-if-it-is-defined"><span class="nav-text">1.2.2 able to call the conversion operator of the class if it is defined</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-3-used-cast-from-Derived-to-Base-class"><span class="nav-text">1.2.3 used cast from Derived to Base class</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-4-cast-to-and-from-void-pionter"><span class="nav-text">1.2.4 cast to and from void pionter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-dynamic-cast"><span class="nav-text">1.3 dynamic_cast</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-reinterpret-cast"><span class="nav-text">1.4 reinterpret_cast</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">148</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

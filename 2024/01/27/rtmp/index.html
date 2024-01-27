@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1 简介Adobe开发的实时通信协议，基于TCP，提供双工通信服务，同时传输多路视频、音频、数据，并且附加时间信息。适用于一对一、一对多实时广播，VOD点播，交互式实时会议等应用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rtmp">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/rtmp/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="1 简介Adobe开发的实时通信协议，基于TCP，提供双工通信服务，同时传输多路视频、音频、数据，并且附加时间信息。适用于一对一、一对多实时广播，VOD点播，交互式实时会议等应用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://suntus.github.io/img/rtmp/rtmp-handshake-sequence.jpg">
+<meta property="og:image" content="https://suntus.github.io/img/rtmp/rtmp-handshake-raw.jpg">
+<meta property="og:image" content="https://suntus.github.io/img/rtmp/rtmp-chunk-format.jpg">
+<meta property="article:published_time" content="2024-01-27T15:40:23.000Z">
+<meta property="article:modified_time" content="2024-01-27T15:41:23.780Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="media">
+<meta property="article:tag" content="rtmp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://suntus.github.io/img/rtmp/rtmp-handshake-sequence.jpg">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/rtmp/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>rtmp | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/rtmp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          rtmp
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 23:40:23 / 修改时间：23:41:23" itemprop="dateCreated datePublished" datetime="2024-01-27T23:40:23+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>Adobe开发的实时通信协议，基于TCP，提供双工通信服务，同时传输多路视频、音频、数据，并且附加时间信息。适用于一对一、一对多实时广播，VOD点播，交互式实时会议等应用。</p>
+<span id="more"></span>
+
+<h1 id="2-Rtmp-Chunk-Stream"><a href="#2-Rtmp-Chunk-Stream" class="headerlink" title="2 Rtmp Chunk Stream"></a>2 Rtmp Chunk Stream</h1><p>为上层应用提供<strong>链路复用</strong>和<strong>分包</strong>机制。</p>
+<h2 id="2-1-Message-Format"><a href="#2-1-Message-Format" class="headerlink" title="2.1 Message Format"></a>2.1 Message Format</h2><h2 id="2-2-handshake"><a href="#2-2-handshake" class="headerlink" title="2.2 handshake"></a>2.2 handshake</h2><p>Client send C0, C1, C2; Server send S0, S1, S2</p>
+<h3 id="2-2-1-handshake-sequence"><a href="#2-2-1-handshake-sequence" class="headerlink" title="2.2.1 handshake sequence"></a>2.2.1 handshake sequence</h3><p><img src="/img/rtmp/rtmp-handshake-sequence.jpg" alt="rtmp handshake sequence"></p>
+<p>或者原文中的图:<br><img src="/img/rtmp/rtmp-handshake-raw.jpg" alt="rtmp handshak raw"></p>
+<h3 id="2-2-2-C0-and-S0-format"><a href="#2-2-2-C0-and-S0-format" class="headerlink" title="2.2.2 C0 and S0 format"></a>2.2.2 C0 and S0 format</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">version(1)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>version: 0-2弃用，当前是3， 4-31是保留, 32-255禁用。</li>
+</ul>
+<h3 id="2-2-3-C1-and-S1-format"><a href="#2-2-3-C1-and-S1-format" class="headerlink" title="2.2.3 C1 and S1 format"></a>2.2.3 C1 and S1 format</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">time(4) | zero(4) | random bytes(1528)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>time: 为之后的数据包提供基准时间，可以是0，也可以是随机值</li>
+<li>zero: 全0;</li>
+<li>random data: 随机值, 不用密码学安全，甚至可以是固定的，主要用于端点区分是否是自己发出去的握手包;</li>
+</ul>
+<h3 id="2-2-4-C2-and-S2-format"><a href="#2-2-4-C2-and-S2-format" class="headerlink" title="2.2.4 C2 and S2 format"></a>2.2.4 C2 and S2 format</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">time(4) | time2(4) | random echo(1528)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>time: 包含对端发过来的时间戳;</li>
+<li>time2: 包含自己上个包发出去的时间戳;</li>
+<li>random echo: 包含对端发过来的 random bytes</li>
+</ul>
+<h2 id="2-3-Chunking"><a href="#2-3-Chunking" class="headerlink" title="2.3 Chunking"></a>2.3 Chunking</h2><p>握手之后会发送分组包，这里会用 <code>stream ID</code> 做链路复用.</p>
+<p>分组可以将大的应用数据包分解成小片段，防止大的低优先级数据包(比如视频帧)阻塞小的高优先级数据(比如音频帧或者控制信令)发送;</p>
+<p><img src="/img/rtmp/rtmp-chunk-format.jpg"></p>
+<h3 id="2-3-1-Chunk-format"><a href="#2-3-1-Chunk-format" class="headerlink" title="2.3.1 Chunk format"></a>2.3.1 Chunk format</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Basic Header(1-3) | Message Header(0,3,7,11) | Extended Timestamp(0,4) | Chunk Data(variable size)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Basic Header: 包含 stream ID 和 chunk type(区分数据类型), 长度随数据类型不同而不同</li>
+<li>Message Header: 包含要发送消息的一些基本信息</li>
+<li>Extended Timestamp: 一些特定的场景中使用该字段;</li>
+<li>Chunk Data: 真正的数据</li>
+</ul>
+<h4 id="2-3-1-1-Basic-Header"><a href="#2-3-1-1-Basic-Header" class="headerlink" title="2.3.1.1 Basic Header"></a>2.3.1.1 Basic Header</h4><ol>
+<li><p>1字节id</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fmt(2b) | cs id(6b)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>2字节id</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fmt(2b) | 0(6b) | cs id-64(1)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>3字节id</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fmt(2b) | 1(6b) | cs id-64(2， 小端)</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>chunk stream ID:<br>0: 表示2bytes形式，真正的id是 <code>第2字节+64</code><br>1: 表示3bytes形式，真正的id是 <code>第3字节*256+第2字节+64</code><br>3-63: 标识完整的id<br>2: 用于底层协议控制消息和命令</p>
+<h4 id="2-3-1-2-chunk-message-header"><a href="#2-3-1-2-chunk-message-header" class="headerlink" title="2.3.1.2 chunk message header"></a>2.3.1.2 chunk message header</h4><p>根据<code>fmt</code>不同，有4种格式。</p>
+<ol>
+<li>fmt&#x3D;0 (11bytes)</li>
+</ol>
+<p>用于chunk流开始，或者 timestamp 回绕的时候。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">timestamp (3) | message length(3) | message type id(1) | msg stream id(4)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>timestamp: 绝对时间戳, 如果大于 0xFFFFFF, 必须是 0xFFFFFF，说明完整的4字节时间戳在 <code>Extended Timestamp</code> 字段</li>
+</ul>
+<ol start="2">
+<li>fmt&#x3D;1 (7bytes)</li>
+</ol>
+<p>去掉了 msg stream id, 用于可变长度数据(比如视频帧)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">timestamp delta(3) | message length(3) | msg type id(1)</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>fmt&#x3D;2 (3bytes)</li>
+</ol>
+<p>用于固定长度数据(比如音频帧).</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">timestamp delta(3)</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>fmt&#x3D;3 (0bytes)</li>
+</ol>
+<p>1个消息分成多个chunk的时候，除了第1个，后续的都应该用该格式。</p>
+<p><strong>统一字段说明:</strong></p>
+<ul>
+<li>timestamp delta: fmt-1,ftm-2 使用，跟前1个chunk的差值, 如果超过 0xFFFFFF, 就设置为 0xFFFFFF，完整的4字节时间戳在 <code>Extended Timestamp</code> 字段</li>
+<li>message length: fmt-0,fmt-1 使用。注意这个通常不是 payload 长度,可以看下边例子;</li>
+<li>message type id: 标记消息类型, 8(audio), 9(video);</li>
+<li>message stream id: 标记1个媒体流，通常1个 chunk stream id 中只会有1个 message stream id, 当然可以再进行链路复用;</li>
+</ul>
+<h3 id="2-3-2-例子"><a href="#2-3-2-例子" class="headerlink" title="2.3.2 例子"></a>2.3.2 例子</h3><p><strong>例子1</strong></p>
+<p>原始数据:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>message Stream ID</th>
+<th>Message Type ID</th>
+<th>Time</th>
+<th>Length</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>msg1</td>
+<td>12345</td>
+<td>8</td>
+<td>1000</td>
+<td>32</td>
+</tr>
+<tr>
+<td>msg2</td>
+<td>12345</td>
+<td>8</td>
+<td>1020</td>
+<td>32</td>
+</tr>
+<tr>
+<td>msg3</td>
+<td>12345</td>
+<td>8</td>
+<td>1040</td>
+<td>32</td>
+</tr>
+<tr>
+<td>msg4</td>
+<td>12345</td>
+<td>8</td>
+<td>1060</td>
+<td>32</td>
+</tr>
+</tbody></table>
+<p>编码成chunk后:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Chunk Stream ID</th>
+<th>Chunk Type</th>
+<th>Header Data</th>
+<th>No.of Bytes After Header</th>
+<th>Total No.of Bytes in the Chunk</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>chunk1</td>
+<td>3</td>
+<td>0</td>
+<td>delta: 1000 <br/> length:32 <br/> type: 8 <br/> stream ID: 12345(11 bytes)</td>
+<td>32</td>
+<td>44</td>
+</tr>
+<tr>
+<td>chunk2</td>
+<td>3</td>
+<td>2</td>
+<td>20(3 bytes)</td>
+<td>32</td>
+<td>36</td>
+</tr>
+<tr>
+<td>chunk3</td>
+<td>3</td>
+<td>2</td>
+<td>none(0 bytes)</td>
+<td>32</td>
+<td>33</td>
+</tr>
+<tr>
+<td>chunk4</td>
+<td>3</td>
+<td>2</td>
+<td>none(0 bytes)</td>
+<td>32</td>
+<td>33</td>
+</tr>
+</tbody></table>
+<p><strong>例子2</strong></p>
+<p>原始数据:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>message Stream ID</th>
+<th>Message Type ID</th>
+<th>Time</th>
+<th>Length</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>msg1</td>
+<td>12345</td>
+<td>9(video)</td>
+<td>1000</td>
+<td>307(超过128bytes chunk最大大小)</td>
+</tr>
+</tbody></table>
+<p>编码成chunk后:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Chunk Stream ID</th>
+<th>Chunk Type</th>
+<th>Header Data</th>
+<th>No.of Bytes After Header</th>
+<th>Total No.of Bytes in the Chunk</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>chunk1</td>
+<td>4</td>
+<td>0</td>
+<td>delta: 1000 <br/> length:307 <br/> type: 9 <br/> stream ID: 12346(11 bytes)</td>
+<td>128</td>
+<td>140</td>
+</tr>
+<tr>
+<td>chunk2</td>
+<td>4</td>
+<td>3</td>
+<td>none(0 bytes)</td>
+<td>128</td>
+<td>129</td>
+</tr>
+<tr>
+<td>chunk3</td>
+<td>4</td>
+<td>3</td>
+<td>none(0 bytes)</td>
+<td>51</td>
+<td>52</td>
+</tr>
+</tbody></table>
+<h2 id="2-4-protocol-control-messages"><a href="#2-4-protocol-control-messages" class="headerlink" title="2.4 protocol control messages"></a>2.4 protocol control messages</h2><p>chunk stream ID 2 用于底层控制流, message stream ID 0 表示控制信令, message-type-id 1,2,3,5,6 做为协议控制消息ID</p>
+<h3 id="2-4-1-Set-Chunk-Size-id-1"><a href="#2-4-1-Set-Chunk-Size-id-1" class="headerlink" title="2.4.1  Set Chunk Size (id-1)"></a>2.4.1  Set Chunk Size (id-1)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0(1b) | chunk size(31b)</span><br></pre></td></tr></table></figure>
+
+<p>设置chunk最大大小，默认 128bytes, 可以设置 <code>[0, 2147483647(0x7FFFFFFF)]</code>, 但没消息会大于 <code>0xFFFFFF</code>(message长度最大是3bytes)。控制的是自己发送过去的大小。</p>
+<h3 id="2-4-2-Abort-Message-id-2"><a href="#2-4-2-Abort-Message-id-2" class="headerlink" title="2.4.2 Abort Message (id-2)"></a>2.4.2 Abort Message (id-2)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chunk stream id(4)</span><br></pre></td></tr></table></figure>
+
+<p>终止某个 chunk 流</p>
+<h3 id="2-4-3-Acknowledgement-id-3"><a href="#2-4-3-Acknowledgement-id-3" class="headerlink" title="2.4.3 Acknowledgement (id-3)"></a>2.4.3 Acknowledgement (id-3)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sequence number(4)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-4-Window-Acknowledgement-Size-id-5"><a href="#2-4-4-Window-Acknowledgement-Size-id-5" class="headerlink" title="2.4.4 Window Acknowledgement Size(id-5)"></a>2.4.4 Window Acknowledgement Size(id-5)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Acknowledgement Window size(4)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-5-Set-Peer-Bandwidth-id-6"><a href="#2-4-5-Set-Peer-Bandwidth-id-6" class="headerlink" title="2.4.5 Set Peer Bandwidth(id-6)"></a>2.4.5 Set Peer Bandwidth(id-6)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Acknowledgement Window size(4) | Limit Type(1)</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="2-5-几个标记统一说明"><a href="#2-5-几个标记统一说明" class="headerlink" title="2.5 几个标记统一说明"></a>2.5 几个标记统一说明</h2><h3 id="2-5-1-Chunk-Stream-Id"><a href="#2-5-1-Chunk-Stream-Id" class="headerlink" title="2.5.1 Chunk Stream Id"></a>2.5.1 Chunk Stream Id</h3><p>在chunk层，在底层标记属于哪条数据流，1-3bytes.</p>
+<table>
+<thead>
+<tr>
+<th>cs id</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>表示2bytes形式，真正的id是 <code>第2字节+64</code>， 范围是 <code>64~319</code></td>
+</tr>
+<tr>
+<td>1</td>
+<td>表示3bytes形式，真正的id是 <code>第3字节*256 + 第2字节 + 64</code>, 范围是 <code>64~65599</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>用于底层协议控制消息和命令</td>
+</tr>
+<tr>
+<td>3~63</td>
+<td>表示1bytes形式，就是第1个字节的后 6bits</td>
+</tr>
+</tbody></table>
+<h3 id="2-5-2-Message-Stream-Id"><a href="#2-5-2-Message-Stream-Id" class="headerlink" title="2.5.2 Message Stream Id"></a>2.5.2 Message Stream Id</h3><p>在 message 层 (Message Header), 用于标记数据流，一般1个 <code>chunk stream id</code> 中只有1个 <code>message stream id</code>， 但应用也可以用 <code>message stream id</code> 再做链路复用。<br>4bytes, 小端.</p>
+<table>
+<thead>
+<tr>
+<th>message stream id</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>控制信令流</td>
+</tr>
+<tr>
+<td>其他</td>
+<td>数据流</td>
+</tr>
+</tbody></table>
+<h3 id="2-5-2-Message-Type-Id"><a href="#2-5-2-Message-Type-Id" class="headerlink" title="2.5.2 Message Type Id"></a>2.5.2 Message Type Id</h3><p>在 message 层(Message Header)，用于标记消息类型</p>
+<table>
+<thead>
+<tr>
+<th>message type id</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>set chunk size</td>
+</tr>
+<tr>
+<td>2</td>
+<td>abort message</td>
+</tr>
+<tr>
+<td>3</td>
+<td>acknowlodgement</td>
+</tr>
+<tr>
+<td>4</td>
+<td>user control message, 这个是应用层的控制信令，其他的控制信令是 RTMP 自己的</td>
+</tr>
+<tr>
+<td>5</td>
+<td>window acknowledgement size</td>
+</tr>
+<tr>
+<td>6</td>
+<td>set peer bandwidth</td>
+</tr>
+<tr>
+<td><strong>8</strong></td>
+<td><strong>audio message</strong></td>
+</tr>
+<tr>
+<td><strong>9</strong></td>
+<td><strong>video message</strong></td>
+</tr>
+<tr>
+<td>15</td>
+<td>AMF3编码, Metadata或者其他用户数据，描述音视频元信息</td>
+</tr>
+<tr>
+<td>16</td>
+<td>AMF3, Flash对象，共享数据，一组键值对, reserved</td>
+</tr>
+<tr>
+<td>17</td>
+<td>AMF3编码, 控制信令</td>
+</tr>
+<tr>
+<td>18</td>
+<td>AMF0编码, Metadata或者其他用户数据，描述音视频元信息</td>
+</tr>
+<tr>
+<td>19</td>
+<td>AMF0, Flash对象，共享数据，一组键值对</td>
+</tr>
+<tr>
+<td>20</td>
+<td>AMF0编码, 控制信令</td>
+</tr>
+<tr>
+<td>22</td>
+<td>aggregate message, 聚合信息，一组RTMP次级消息</td>
+</tr>
+</tbody></table>
+<h1 id="3-RTMP-Message-Formats"><a href="#3-RTMP-Message-Formats" class="headerlink" title="3 RTMP Message Formats"></a>3 RTMP Message Formats</h1><h2 id="3-1-Format"><a href="#3-1-Format" class="headerlink" title="3.1 Format"></a>3.1 Format</h2><p>RTMP message has two parts, a header and its payload.</p>
+<h3 id="3-1-1-Message-Header"><a href="#3-1-1-Message-Header" class="headerlink" title="3.1.1 Message Header"></a>3.1.1 Message Header</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Message Type(1) | Payload length(3) | Timestamp(4) | Stream ID(3)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Message Type: 标记数据类型，1-6保留用作协议控制信息;</li>
+<li>Length: payload的长度，大端;</li>
+<li>Timestamp: 消息的时间戳, 大端;</li>
+<li>Message Stream Id: 标记流id，大端;</li>
+</ul>
+<h3 id="3-1-2-Message-Payload"><a href="#3-1-2-Message-Payload" class="headerlink" title="3.1.2 Message Payload"></a>3.1.2 Message Payload</h3><p>消息其余部分就是负载，可以包含音频帧，视频帧等。</p>
+<h2 id="3-2-User-Control-Messages"><a href="#3-2-User-Control-Messages" class="headerlink" title="3.2 User Control Messages"></a>3.2 User Control Messages</h2><p>用户控制消息的 payload 格式为:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">event type(2) | event data</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>Stream Begin</td>
+<td>4bytes, 可以用的 stream ID, 通常在收到 connect 命令后发送</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Stream EOF</td>
+<td>4bytes, 流结束的 stream ID</td>
+</tr>
+<tr>
+<td>2</td>
+<td>StreamDry</td>
+<td>4bytes, 一定时间内没有流数据了， server通知客户端的</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Setbuffer Length</td>
+<td>4+4bytes, 前4表示 stream ID, 后4表示缓存长度(单位ms)，client通知server要缓存多长时间的数据</td>
+</tr>
+<tr>
+<td>4</td>
+<td>StreamIs Recorded</td>
+<td>4bytes, server 通知 client 这是个录制的流</td>
+</tr>
+<tr>
+<td>6</td>
+<td>PingRequest</td>
+<td>4bytes, server 本地时间戳, server检测client是否可达</td>
+</tr>
+<tr>
+<td>7</td>
+<td>PingResponse</td>
+<td>4bytes, client 本地时间戳</td>
+</tr>
+</tbody></table>
+<h1 id="4-命令"><a href="#4-命令" class="headerlink" title="4 命令"></a>4 命令</h1><p>一般都是一问一答。分两种: NetConnection, NetStream, 前者管理连接，后者描述动作。</p>
+<h2 id="4-1-NetConnection-命令"><a href="#4-1-NetConnection-命令" class="headerlink" title="4.1 NetConnection 命令"></a>4.1 NetConnection 命令</h2><p>用于在应用层描述连接。</p>
+<h3 id="4-1-1-connect"><a href="#4-1-1-connect" class="headerlink" title="4.1.1 connect"></a>4.1.1 connect</h3><p>client 发给 server，表示请求连接 server 实例.</p>
+<table>
+<thead>
+<tr>
+<th>Field Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Command Name</td>
+<td>String</td>
+<td>“connect”</td>
+</tr>
+<tr>
+<td>Transaction ID</td>
+<td>Number</td>
+<td>Always set to 1</td>
+</tr>
+<tr>
+<td>Command Object</td>
+<td>Object</td>
+<td>command information object which has the name-value pairs</td>
+</tr>
+<tr>
+<td>Optional User Arguments</td>
+<td>Object</td>
+<td>Any optional information</td>
+</tr>
+</tbody></table>
+<p><strong>Command Object:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+<th>Example Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>app</td>
+<td>String</td>
+<td>server application name</td>
+<td>testapp</td>
+</tr>
+<tr>
+<td>flashver</td>
+<td>String</td>
+<td>flash player version</td>
+<td>FMSc&#x2F;1.0</td>
+</tr>
+<tr>
+<td>swfUrl</td>
+<td>String</td>
+<td>URL of the source SWF file</td>
+<td></td>
+</tr>
+<tr>
+<td>tcUrl</td>
+<td>String</td>
+<td>URL of the Server</td>
+<td>rtmp:&#x2F;&#x2F;localhost:1935&#x2F;testapp&#x2F;instance1</td>
+</tr>
+<tr>
+<td>audioCodecs</td>
+<td>Number</td>
+<td>Indicates what audio codecs the client supports.</td>
+<td>SUPPORT_SND_MP3</td>
+</tr>
+<tr>
+<td>videoCodecs</td>
+<td>Number</td>
+<td>video codecs</td>
+<td>SUPPORT_VID_SORENSON</td>
+</tr>
+<tr>
+<td>object Encoding</td>
+<td>Number</td>
+<td>AMF encoding method</td>
+<td>AMF3</td>
+</tr>
+</tbody></table>
+<p><strong>audioCodecs:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Codec Flag</th>
+<th>Usage</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SUPPORT_SND_NONE</td>
+<td>Raw sound, no compression</td>
+<td>0x0001</td>
+</tr>
+<tr>
+<td>SUPPORT_SND_ADPCM</td>
+<td>ADPCM compression</td>
+<td>0x0002</td>
+</tr>
+<tr>
+<td>SUPPORT_SND_MP3</td>
+<td>mp3 compression</td>
+<td>0x0004</td>
+</tr>
+<tr>
+<td>SUPPORT_SND_INTEL</td>
+<td>not used</td>
+<td>0x0008</td>
+</tr>
+<tr>
+<td>SUPPORT_SND_UNUSED</td>
+<td>not used</td>
+<td>0x0010</td>
+</tr>
+<tr>
+<td>SUPPORT_SND_G711A</td>
+<td>G711A sound compression</td>
+<td>0x0080</td>
+</tr>
+<tr>
+<td>SUPPORT_SND_G711U</td>
+<td>G711U sound compression</td>
+<td>0x0100</td>
+</tr>
+<tr>
+<td>SUPPORT_SND_AAC</td>
+<td>AAC codec</td>
+<td>0x0400</td>
+</tr>
+<tr>
+<td>SUPPORT_SND_ALL</td>
+<td>All RTMP-supported audio codecs</td>
+<td>0x0FFF</td>
+</tr>
+</tbody></table>
+<p><strong>videoCodecs:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Codec Flag</th>
+<th>Usage</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SUPPORT_VID_UNUSED</td>
+<td>obsolete value</td>
+<td>0x0001</td>
+</tr>
+<tr>
+<td>SUPPORT_VID_JPEG</td>
+<td>obsolete value</td>
+<td>0x0002</td>
+</tr>
+<tr>
+<td>SUPPORT_VID_H264</td>
+<td>H264 video</td>
+<td>0x0080</td>
+</tr>
+<tr>
+<td>SUPPORT_VID_ALL</td>
+<td>All RTMP-supported video codecs</td>
+<td>0x00FF</td>
+</tr>
+</tbody></table>
+<h3 id="4-1-2-call"><a href="#4-1-2-call" class="headerlink" title="4.1.2 call"></a>4.1.2 call</h3><p>就是个RPC</p>
+<h3 id="4-1-3-createStream"><a href="#4-1-3-createStream" class="headerlink" title="4.1.3 createStream"></a>4.1.3 createStream</h3><p>client 通知 server 为推送的音视频数据创建逻辑通道。server在应答的时候会新建一个 <code>Stream ID</code>.</p>
+<h2 id="4-2-NetStream-命令"><a href="#4-2-NetStream-命令" class="headerlink" title="4.2 NetStream 命令"></a>4.2 NetStream 命令</h2><h3 id="4-2-1-play"><a href="#4-2-1-play" class="headerlink" title="4.2.1 play"></a>4.2.1 play</h3><p>可以发送多次，创建多个播放列表。</p>
+<p>client 发送给 server 的结构:</p>
+<table>
+<thead>
+<tr>
+<th>Field Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Command Name</td>
+<td>String</td>
+<td>“play”</td>
+</tr>
+<tr>
+<td>Transaction</td>
+<td>Number</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Command Object</td>
+<td>Null</td>
+<td>不需要</td>
+</tr>
+<tr>
+<td>Stream Name</td>
+<td>String</td>
+<td>mp3:sample.m4v</td>
+</tr>
+<tr>
+<td>Start</td>
+<td>Number</td>
+<td>开始时间，秒, 默认-2, 表示client先尝试LIVE, 再尝试VOD, 最后等着上流; -1表示只尝试LIVE, &gt;&#x3D;0表示只尝试VOD</td>
+</tr>
+<tr>
+<td>Duration</td>
+<td>Number</td>
+<td>默认-1s, 表示播放到LIVE结尾或者VOD结尾</td>
+</tr>
+<tr>
+<td>Reset</td>
+<td>Boolean</td>
+<td>是否重置之前的播放列表</td>
+</tr>
+</tbody></table>
+<p>server 发送应答后， 会发送 audio&#x2F;video 数据流。</p>
+<h3 id="4-2-2-play2"><a href="#4-2-2-play2" class="headerlink" title="4.2.2 play2"></a>4.2.2 play2</h3><p>改变当前播放的码率</p>
+<h3 id="4-2-3-deleteStream"><a href="#4-2-3-deleteStream" class="headerlink" title="4.2.3 deleteStream"></a>4.2.3 deleteStream</h3><p>client 请求 server 来删除流。</p>
+<h3 id="4-2-4-recvAudio"><a href="#4-2-4-recvAudio" class="headerlink" title="4.2.4 recvAudio"></a>4.2.4 recvAudio</h3><p>client 通知 server 是否要发送 audio.</p>
+<h3 id="4-2-6-recvVideo"><a href="#4-2-6-recvVideo" class="headerlink" title="4.2.6 recvVideo"></a>4.2.6 recvVideo</h3><p>client 通知 server 是否要发送 video.</p>
+<h3 id="4-2-7-publish"><a href="#4-2-7-publish" class="headerlink" title="4.2.7 publish"></a>4.2.7 publish</h3><p>client 通知 server, 要推流.</p>
+<table>
+<thead>
+<tr>
+<th>Field Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Command Name</td>
+<td>String</td>
+<td>“publish”</td>
+</tr>
+<tr>
+<td>Transaction ID</td>
+<td>Number</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Command Object</td>
+<td>Null</td>
+<td>does not exist</td>
+</tr>
+<tr>
+<td>Publishing Name</td>
+<td>String</td>
+<td>stream name</td>
+</tr>
+<tr>
+<td>Publishing Type</td>
+<td>String</td>
+<td>“live”, “record”, “append”</td>
+</tr>
+</tbody></table>
+<h3 id="4-2-8-seek"><a href="#4-2-8-seek" class="headerlink" title="4.2.8 seek"></a>4.2.8 seek</h3><p>跳转</p>
+<h3 id="4-2-9-pause"><a href="#4-2-9-pause" class="headerlink" title="4.2.9 pause"></a>4.2.9 pause</h3><p>是否暂停</p>
+<h1 id="5-总结"><a href="#5-总结" class="headerlink" title="5 总结"></a>5 总结</h1><p>RTMP 是比较简单的协议，在同一TCP链路中同时处理信令和数据。配合FLV格式，组成了相对简单的流媒体传输协议。</p>
+<h1 id="6-参考"><a href="#6-参考" class="headerlink" title="6 参考"></a>6 参考</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://rtmp.veriskope.com/pdf/rtmp_specification_1.0.pdf">https://rtmp.veriskope.com/pdf/rtmp_specification_1.0.pdf</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/rtmp/" title="rtmp">https://suntus.github.io/2024/01/27/rtmp/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/media/" rel="tag"># media</a>
+              <a href="/tags/rtmp/" rel="tag"># rtmp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/27/%E8%A7%86%E9%A2%91%E5%88%86%E8%BE%A8%E7%8E%87/" rel="prev" title="视频分辨率">
+      <i class="fa fa-chevron-left"></i> 视频分辨率
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84excel/" rel="next" title="用到的excel">
+      用到的excel <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="nav-text">1 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Rtmp-Chunk-Stream"><span class="nav-text">2 Rtmp Chunk Stream</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Message-Format"><span class="nav-text">2.1 Message Format</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-handshake"><span class="nav-text">2.2 handshake</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-handshake-sequence"><span class="nav-text">2.2.1 handshake sequence</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-C0-and-S0-format"><span class="nav-text">2.2.2 C0 and S0 format</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-C1-and-S1-format"><span class="nav-text">2.2.3 C1 and S1 format</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-4-C2-and-S2-format"><span class="nav-text">2.2.4 C2 and S2 format</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Chunking"><span class="nav-text">2.3 Chunking</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-Chunk-format"><span class="nav-text">2.3.1 Chunk format</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1-1-Basic-Header"><span class="nav-text">2.3.1.1 Basic Header</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1-2-chunk-message-header"><span class="nav-text">2.3.1.2 chunk message header</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-%E4%BE%8B%E5%AD%90"><span class="nav-text">2.3.2 例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-protocol-control-messages"><span class="nav-text">2.4 protocol control messages</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-1-Set-Chunk-Size-id-1"><span class="nav-text">2.4.1  Set Chunk Size (id-1)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-2-Abort-Message-id-2"><span class="nav-text">2.4.2 Abort Message (id-2)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-3-Acknowledgement-id-3"><span class="nav-text">2.4.3 Acknowledgement (id-3)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-4-Window-Acknowledgement-Size-id-5"><span class="nav-text">2.4.4 Window Acknowledgement Size(id-5)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-5-Set-Peer-Bandwidth-id-6"><span class="nav-text">2.4.5 Set Peer Bandwidth(id-6)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-%E5%87%A0%E4%B8%AA%E6%A0%87%E8%AE%B0%E7%BB%9F%E4%B8%80%E8%AF%B4%E6%98%8E"><span class="nav-text">2.5 几个标记统一说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-1-Chunk-Stream-Id"><span class="nav-text">2.5.1 Chunk Stream Id</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-2-Message-Stream-Id"><span class="nav-text">2.5.2 Message Stream Id</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-2-Message-Type-Id"><span class="nav-text">2.5.2 Message Type Id</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-RTMP-Message-Formats"><span class="nav-text">3 RTMP Message Formats</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Format"><span class="nav-text">3.1 Format</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-Message-Header"><span class="nav-text">3.1.1 Message Header</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-Message-Payload"><span class="nav-text">3.1.2 Message Payload</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-User-Control-Messages"><span class="nav-text">3.2 User Control Messages</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E5%91%BD%E4%BB%A4"><span class="nav-text">4 命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-NetConnection-%E5%91%BD%E4%BB%A4"><span class="nav-text">4.1 NetConnection 命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-1-connect"><span class="nav-text">4.1.1 connect</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-2-call"><span class="nav-text">4.1.2 call</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-3-createStream"><span class="nav-text">4.1.3 createStream</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-NetStream-%E5%91%BD%E4%BB%A4"><span class="nav-text">4.2 NetStream 命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-1-play"><span class="nav-text">4.2.1 play</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-2-play2"><span class="nav-text">4.2.2 play2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-3-deleteStream"><span class="nav-text">4.2.3 deleteStream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-4-recvAudio"><span class="nav-text">4.2.4 recvAudio</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-6-recvVideo"><span class="nav-text">4.2.6 recvVideo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-7-publish"><span class="nav-text">4.2.7 publish</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-8-seek"><span class="nav-text">4.2.8 seek</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-9-pause"><span class="nav-text">4.2.9 pause</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E6%80%BB%E7%BB%93"><span class="nav-text">5 总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E5%8F%82%E8%80%83"><span class="nav-text">6 参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">148</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
