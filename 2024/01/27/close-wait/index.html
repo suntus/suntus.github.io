@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="close_wait">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/close-wait/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="…">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T14:46:19.000Z">
+<meta property="article:modified_time" content="2024-01-27T14:46:43.927Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="net">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/close-wait/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>close_wait | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/close-wait/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          close_wait
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 22:46:19 / 修改时间：22:46:43" itemprop="dateCreated datePublished" datetime="2024-01-27T22:46:19+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>…</p>
+<span id="more"></span>
+
+<h1 id="1-CLOSE-WAIT是什么"><a href="#1-CLOSE-WAIT是什么" class="headerlink" title="1. CLOSE_WAIT是什么"></a>1. CLOSE_WAIT是什么</h1><p>TCP关闭时</p>
+<ul>
+<li>主动关闭: 发FIN(FIN_WAIT_1) –&gt; 收ACK(FIN_WAIT_2) –&gt; 收FIN(TIME_WAIT) –&gt; 发ACK， TIME_WAIT会持续 2*MSL(1-4分钟)</li>
+<li>被动关闭: 收FIN(CLOSE_WAIT) –&gt; 发ACK –&gt; 发FIN(LAST_ACK) –&gt; 收ACK(CLOSED)， 如果程序不主动调用 close(fd) 关闭套接字，就不会主动发送FIN，就会一直在 CLOSE_WAIT 状态</li>
+</ul>
+<p>所以 CLOSE_WAIT 存在于被动关闭连接的情况，一般是服务器被动关闭，所以一般需要服务器去解决。</p>
+<h1 id="2-产生的原因"><a href="#2-产生的原因" class="headerlink" title="2. 产生的原因"></a>2. 产生的原因</h1><p>主要有两点：</p>
+<ol>
+<li>代码中没有写关闭连接的代码，存在bug；</li>
+<li>该连接的业务代码处理事件太长，代码还在处理，对方已经发起断开连接的请求了；这时候会存在一段时间的 CLOS_WAIT,直到服务端处理到这里。</li>
+</ol>
+<p>总的来说，就是服务端没有及时调用<code>close()</code>关闭套接字。</p>
+<h1 id="3-一直不关闭，最多会存在多长时间"><a href="#3-一直不关闭，最多会存在多长时间" class="headerlink" title="3. 一直不关闭，最多会存在多长时间"></a>3. 一直不关闭，最多会存在多长时间</h1><p>内核会定时探测TCP连接是否存在，如果不存在，会自动关闭该TCP，回收系统资源。内核依靠如下参数来探测:</p>
+<ul>
+<li>tcp_keepalive_time(7200): 如果在该参数指定的秒数内，TCP连接一直处于空闲，内核就开始向对端发起探测，看对端是否还在;</li>
+<li>tcp_keepalive_intvl(75): 发起探测时，每隔这么多秒数，探测一次;</li>
+<li>tcp_keepalive_probes(9): 总共探测这么多次;</li>
+</ul>
+<p>所以 CLOSE_WAIT 状态最多维持 <code>tcp_keepalive_time + tcp_keepalive_intvl * tcp_keepalive_probes = 7200 +75*9 = 7875s</code>，约130分钟，2小时多一点。</p>
+<p>这只是内核的限制，还可以在程序里使用 <code>setsocketopt(fd, SOL_TCP, TCP_KEEPIDLE...)</code> 对每个TCP连接设置。</p>
+<h1 id="4-有什么影响"><a href="#4-有什么影响" class="headerlink" title="4. 有什么影响"></a>4. 有什么影响</h1><p>CLOSE_WAIT状态的端口表示正在被占用，如果没有设置端口复用，这个端口就变得不可用，过多的CLOSE_WAIT会耗尽系统的可用端口，新的连接进不来，服务变得不可用。</p>
+<h1 id="5-如何解决"><a href="#5-如何解决" class="headerlink" title="5. 如何解决"></a>5. 如何解决</h1><ol>
+<li>程序方面，需要及时处理连接被动关闭的状态，特别是 <code>recv()</code> 收到0字节，表示对端关闭了;</li>
+<li>系统方面，可以将 keepalive 相关的参数设置的小一些，让系统尽快探测到TCP不可用，尽快回收资源。</li>
+</ol>
+<h1 id="6-主动关闭时的两个较长的等待时间"><a href="#6-主动关闭时的两个较长的等待时间" class="headerlink" title="6. 主动关闭时的两个较长的等待时间"></a>6. 主动关闭时的两个较长的等待时间</h1><ul>
+<li>FIN_WAIT_2: 等待对端发送 FIN</li>
+<li>TIME_WAIT: 等待2MSL</li>
+</ul>
+<p>调用了<code>shutdown()</code>，但是没有调用<code>close()</code>，就会等在FIN_WAIT_2状态。跟这个状态有关的内核参数是：</p>
+<ul>
+<li>net.ipv4.tcp_fin_timeout(30): 注意，这个参数只对调用了<code>close()</code>的孤儿tcp有效，如果程序只是调用了<code>shutdown()</code>，但是没有<code>close()</code>，该参数并不起作用。</li>
+</ul>
+<p>一般主动关闭连接的一方较常见 TIME_WAIT，产生的原因是主动关闭的时候，要等着对端收到了最后一个ACK才回收相应资源，防止对端没有收到ACK又重新发送最后一个FIN。但这也是占用了一个端口，跟这个状态有关的参数是:</p>
+<ul>
+<li>net.ipv4.tcp_max_tw_buckets(180000): TIME_WAIT的最大数量，超过这个会被立刻清理，并打印警告信息</li>
+<li>net.ipv4.tcp_tw_timeout(60): TIME_WAIT的过期时间</li>
+<li>net.ipv4.tcp_tw_reuse(0): TIME_WAIT状态重用</li>
+<li>net.ipv4.tcp_recycle(0): 开启 TIME_WAT 快速回收。不再是2MSL，而是一个RTO(动态计算的数据包重传超时时间)。还需要tcp_timestamps保证旧连接的数据包不会被新连接接收。NAT环境可能导致drop掉SYN包，无法发起新的连接；</li>
+<li>net.ipv4.tcp_timestamps(1): 检查请求数据包的时间戳，快速回收需要配合这个时间戳选项；</li>
+</ul>
+<h1 id="7-net-ipv4-tcp-timestamps-1和net-ipv4-tcp-recycle-1在NAT环境下的影响"><a href="#7-net-ipv4-tcp-timestamps-1和net-ipv4-tcp-recycle-1在NAT环境下的影响" class="headerlink" title="7. net.ipv4.tcp_timestamps&#x3D;1和net.ipv4.tcp_recycle&#x3D;1在NAT环境下的影响"></a>7. net.ipv4.tcp_timestamps&#x3D;1和net.ipv4.tcp_recycle&#x3D;1在NAT环境下的影响</h1><p>简单来说就是NAT会修改目的IP,但有的不修改tcp头里的timestamp，导致不同的客户端通过NAT过来的数据包时间戳不一样，时间戳小的就接不进server，所以server一般不开启 net.ipv4.tcp_recycle。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/close-wait/" title="close_wait">https://suntus.github.io/2024/01/27/close-wait/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
+              <a href="/tags/net/" rel="tag"># net</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/27/awk%E4%BD%BF%E7%94%A8/" rel="prev" title="awk使用">
+      <i class="fa fa-chevron-left"></i> awk使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/dup/" rel="next" title="dup">
+      dup <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-CLOSE-WAIT%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">1. CLOSE_WAIT是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E4%BA%A7%E7%94%9F%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="nav-number">2.</span> <span class="nav-text">2. 产生的原因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E4%B8%80%E7%9B%B4%E4%B8%8D%E5%85%B3%E9%97%AD%EF%BC%8C%E6%9C%80%E5%A4%9A%E4%BC%9A%E5%AD%98%E5%9C%A8%E5%A4%9A%E9%95%BF%E6%97%B6%E9%97%B4"><span class="nav-number">3.</span> <span class="nav-text">3. 一直不关闭，最多会存在多长时间</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E6%9C%89%E4%BB%80%E4%B9%88%E5%BD%B1%E5%93%8D"><span class="nav-number">4.</span> <span class="nav-text">4. 有什么影响</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3"><span class="nav-number">5.</span> <span class="nav-text">5. 如何解决</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E4%B8%BB%E5%8A%A8%E5%85%B3%E9%97%AD%E6%97%B6%E7%9A%84%E4%B8%A4%E4%B8%AA%E8%BE%83%E9%95%BF%E7%9A%84%E7%AD%89%E5%BE%85%E6%97%B6%E9%97%B4"><span class="nav-number">6.</span> <span class="nav-text">6. 主动关闭时的两个较长的等待时间</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-net-ipv4-tcp-timestamps-1%E5%92%8Cnet-ipv4-tcp-recycle-1%E5%9C%A8NAT%E7%8E%AF%E5%A2%83%E4%B8%8B%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">7.</span> <span class="nav-text">7. net.ipv4.tcp_timestamps&#x3D;1和net.ipv4.tcp_recycle&#x3D;1在NAT环境下的影响</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

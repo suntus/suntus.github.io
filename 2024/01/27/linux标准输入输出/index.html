@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1234#include &lt;stdio.h&gt;extern FILE *stdin;extern FILE *stdout;extern FILE *stderr;   通常linux程序启动后都会有这3个打开的输入输出流，叫标准I&#x2F;O流。 对应的文件描述符为STDIN_FILENO(0),STDOUT_FILENO(1),STDERR_FILENO(2)。 文件描述符是内核的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux标准输入输出">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/linux%E6%A0%87%E5%87%86%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="1234#include &lt;stdio.h&gt;extern FILE *stdin;extern FILE *stdout;extern FILE *stderr;   通常linux程序启动后都会有这3个打开的输入输出流，叫标准I&#x2F;O流。 对应的文件描述符为STDIN_FILENO(0),STDOUT_FILENO(1),STDERR_FILENO(2)。 文件描述符是内核的">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T14:49:02.000Z">
+<meta property="article:modified_time" content="2024-01-27T14:49:29.591Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="c">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/linux%E6%A0%87%E5%87%86%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>linux标准输入输出 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/linux%E6%A0%87%E5%87%86%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          linux标准输入输出
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 22:49:02 / 修改时间：22:49:29" itemprop="dateCreated datePublished" datetime="2024-01-27T22:49:02+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">extern</span> FILE *<span class="built_in">stdin</span>;</span><br><span class="line"><span class="keyword">extern</span> FILE *<span class="built_in">stdout</span>;</span><br><span class="line"><span class="keyword">extern</span> FILE *<span class="built_in">stderr</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>通常linux程序启动后都会有这3个打开的输入输出流，叫标准I&#x2F;O流。</li>
+<li>对应的文件描述符为<code>STDIN_FILENO(0),STDOUT_FILENO(1),STDERR_FILENO(2)</code>。</li>
+<li>文件描述符是内核的，文件句柄<code>FILE</code> 是库对文件描述符的封装，子进程可以继承文件描述符，但不继承文件句柄。</li>
+<li>通常 <code>stdin,stdout,stderr</code> 用宏来实现的，对它们直接赋值不具有可移植性，标准做法是通过<code>freopen(3)</code>来重新打开。</li>
+<li>stderr无缓冲，stdout是行缓冲</li>
+</ul>
+<span id="more"></span>
+
+<hr>
+<p>控制终端 controlling terminal<br>&#x2F;dev&#x2F;tty 是一个进程的控制终端</p>
+<hr>
+<p>nohup</p>
+<ul>
+<li>让程序不受 hangups 信号影响，输出到non-tty</li>
+<li>如果标准输入是终端，就重定向到 &#x2F;dev&#x2F;null。如果标准输出是终端，就重定向到 nohup.out 文件。标准错误重定向到标准输出。</li>
+<li>要将输出保存到文件，用 “nohup COMAND &gt; FILE”</li>
+</ul>
+<hr>
+<p>shell重定向</p>
+<ul>
+<li>命令执行前，输入和输出可以用shell特定的符号重定向。</li>
+<li>从左到右按顺序执行重定向， <code>ls &gt; dirlist 2&gt;&amp;1</code> 会将标准输出和标准错误都重定向到文件 “dirlist” 中， <code>ls 2&gt;&amp;1 &gt; dirlist</code> 只会将标准输出重定向到文件中。</li>
+<li>如果重定向符号前不是文件描述符，而是一个变量名，shell会申请一个大于10的文件描述符给这个变量名。如果是 <code>&gt;&amp;- 或 &lt;&amp;-</code> 之前有变量，表示的是要关闭的文件描述符</li>
+<li>如果忽略文件描述符，<code>&lt;</code> 符号之前表示省略标准输入，<code>&gt;</code> 符号之前表示省略标准输出。</li>
+<li>使用大于9的文件描述符要小心，可能会跟shell内部使用的冲突</li>
+<li>重定向输入，<code>[n]&lt;word</code>，在文件描述符n上打开<code>word</code>表示的文件来读取。没有n，表示打开到标准输入</li>
+<li>重定向输出，<code>[n]&gt;word</code>，在文件描述符n上打开<code>word</code>表示的文件来写入。没有n，表示打开标准输出到文件 <code>word</code></li>
+<li>重定向追加，<code>[n]&gt;&gt;word</code></li>
+<li>重定向标准输出和标准错误，两种格式: <code>&amp;&gt;word</code>, 或者 <code>&gt;&amp;word</code>，推荐前一个，跟 <code>&gt;word 2&gt;&amp;1</code> 的作用一样</li>
+<li>重定向追加标准输出和标准错误， <code>&amp;&gt;&gt;word</code>, 跟 <code>&gt;&gt;word 2&gt;&amp;1</code> 的作用一样</li>
+<li>复制文件描述符，<code>[n]&lt;&amp;word</code>，复制输入文件描述符，在文件描述符 <code>n</code> 上复制文件<code>word</code>。如果 <code>word</code> 是 <code>-</code>，表示要关闭 n。 <code>[n]&gt;&amp;word</code>表示在文件描述符<code>n</code>上复制输出文件<code>word</code>。比如<code>2&gt;&amp;1</code>表示关闭2，并将1复制到2上，复制的意思是，2跟1一样，现在都指向1对应的标准输出。不管是输入还是输出，最终目标都指向后一个文件。比如 <code>2&gt;&amp;1</code>，最后都指向1，表示2也指向1，程序对2的输出，也输出到1。</li>
+<li>移动文件描述符，<code>[n]&lt;&amp;digit-</code>，表示移动digit到文件描述符n。移动后，digit文件会被关闭，n表示之前打开的文件。<code>[n]&gt;digit-</code>也一样</li>
+<li>打开文件描述符来读写，<code>[n]&lt;&gt;word</code>，用描述符n打开文件来读写，省略n表示用标准输入。</li>
+<li>here document, <code>&lt;&lt; delimiter \n document \n delimite</code></li>
+</ul>
+<p>参考：</p>
+<ol>
+<li>man 3 stdin</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/linux%E6%A0%87%E5%87%86%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA/" title="linux标准输入输出">https://suntus.github.io/2024/01/27/linux标准输入输出/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/c/" rel="tag"># c</a>
+              <a href="/tags/linux/" rel="tag"># linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/27/linux%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B%E8%8C%83%E4%BE%8B/" rel="prev" title="linux守护进程范例">
+      <i class="fa fa-chevron-left"></i> linux守护进程范例
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/poll%E7%9B%B8%E5%85%B3/" rel="next" title="poll相关">
+      poll相关 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

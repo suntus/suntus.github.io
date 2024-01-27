@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1.基本介绍 地址: https:&#x2F;&#x2F;github.com&#x2F;zsummer&#x2F;log4z 支持 windows&#x2F;linux&#x2F;mac&#x2F;android&#x2F;iOS 一个头文件，一个cpp 日志滚动, 可以按月分文件夹 线程安全 彩色输出 格式化或流形式的记录 热更新配置 多日志分流，可以输出到多个位置(logger) MIT协议，基本没限制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="log4z">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/log4z/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="1.基本介绍 地址: https:&#x2F;&#x2F;github.com&#x2F;zsummer&#x2F;log4z 支持 windows&#x2F;linux&#x2F;mac&#x2F;android&#x2F;iOS 一个头文件，一个cpp 日志滚动, 可以按月分文件夹 线程安全 彩色输出 格式化或流形式的记录 热更新配置 多日志分流，可以输出到多个位置(logger) MIT协议，基本没限制">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T08:16:08.000Z">
+<meta property="article:modified_time" content="2024-01-27T08:34:26.041Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tools">
+<meta property="article:tag" content="cpp">
+<meta property="article:tag" content="夜深人静读代码">
+<meta property="article:tag" content="log4z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/log4z/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>log4z | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/log4z/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          log4z
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 16:16:08 / 修改时间：16:34:26" itemprop="dateCreated datePublished" datetime="2024-01-27T16:16:08+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-基本介绍"><a href="#1-基本介绍" class="headerlink" title="1.基本介绍"></a>1.基本介绍</h1><ul>
+<li>地址: <a target="_blank" rel="noopener" href="https://github.com/zsummer/log4z">https://github.com/zsummer/log4z</a></li>
+<li>支持 windows&#x2F;linux&#x2F;mac&#x2F;android&#x2F;iOS</li>
+<li>一个头文件，一个cpp</li>
+<li>日志滚动, 可以按月分文件夹</li>
+<li>线程安全</li>
+<li>彩色输出</li>
+<li>格式化或流形式的记录</li>
+<li>热更新配置</li>
+<li>多日志分流，可以输出到多个位置(logger)</li>
+<li>MIT协议，基本没限制</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="2-配置项"><a href="#2-配置项" class="headerlink" title="2. 配置项"></a>2. 配置项</h1><p>放到单独的配置文件中: log4z.cfg</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[Main]              # logger名字，日志分流</span><br><span class="line">path = ./log/       # 日志目录</span><br><span class="line">level = trace       # trace, debug, info, warn/warning, error, alarm, fatal</span><br><span class="line">display = false/0   # 不输出到屏幕</span><br><span class="line">outfile = false/0   # 不输出到文件</span><br><span class="line">monthdir = false/0  # 不使用月文件夹滚动</span><br><span class="line">limitsize = 10      # MB, 日志文件滚动大小</span><br><span class="line">fileline = false/0  # 是否输出源文件行，便于排查函数</span><br><span class="line">enable = false/0    # 是否启用</span><br><span class="line">reserve = 60        # s, 日志保留时间</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-接口"><a href="#3-接口" class="headerlink" title="3. 接口"></a>3. 接口</h1><h2 id="3-1-ILog4zManager-是个总控，基础控制接口，下边的stream基于这个接口"><a href="#3-1-ILog4zManager-是个总控，基础控制接口，下边的stream基于这个接口" class="headerlink" title="3.1. ILog4zManager 是个总控，基础控制接口，下边的stream基于这个接口"></a>3.1. <code>ILog4zManager</code> 是个总控，基础控制接口，下边的stream基于这个接口</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">getRef</span>();</span><br><span class="line"><span class="built_in">config</span>(<span class="type">const</span> <span class="type">char</span> * configPath);    <span class="comment">// 加载配置</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 有个默认的logger: LOG4Z_MAIN_LOGGER_ID, 可以直接使用</span></span><br><span class="line"><span class="function">LoggerId <span class="title">createLogger</span><span class="params">(<span class="type">const</span> <span class="type">char</span>* key)</span></span>; <span class="comment">// 创建logger分流</span></span><br><span class="line"><span class="function">LoggerId <span class="title">findLogger</span><span class="params">(<span class="type">const</span> <span class="type">char</span>* key)</span></span>;   <span class="comment">// 获取</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">enableLogger</span><span class="params">(LoggerId id, <span class="type">bool</span> enable)</span> </span>= <span class="number">0</span>; <span class="comment">// immediately when enable, and queue up when disable.</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">setLoggerName</span><span class="params">(LoggerId id, <span class="type">const</span> <span class="type">char</span> * name)</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">setLoggerPath</span><span class="params">(LoggerId id, <span class="type">const</span> <span class="type">char</span> * path)</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">setLoggerLevel</span><span class="params">(LoggerId id, <span class="type">int</span> nLevel)</span> </span>= <span class="number">0</span>; <span class="comment">// immediately when enable, and queue up when disable.</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">setLoggerFileLine</span><span class="params">(LoggerId id, <span class="type">bool</span> enable)</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">setLoggerDisplay</span><span class="params">(LoggerId id, <span class="type">bool</span> enable)</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">setLoggerOutFile</span><span class="params">(LoggerId id, <span class="type">bool</span> enable)</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">setLoggerLimitsize</span><span class="params">(LoggerId id, <span class="type">unsigned</span> <span class="type">int</span> limitsize)</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">setLoggerMonthdir</span><span class="params">(LoggerId id, <span class="type">bool</span> enable)</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">setLoggerReserveTime</span><span class="params">(LoggerId id, <span class="type">time_t</span> sec)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">start</span><span class="params">()</span></span>;   <span class="comment">// 开启日志线程</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">stop</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-2-Log4zStream-支持流式输入"><a href="#3-2-Log4zStream-支持流式输入" class="headerlink" title="3.2. Log4zStream 支持流式输入"></a>3.2. <code>Log4zStream</code> 支持流式输入</h2><p>类似 stringstream<br>用各种重载<code>&lt;&lt;</code>操作符，来支持各个数据类型</p>
+<p>比如流式输出</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">LOGD</span>(<span class="string">&quot;char:&quot;</span> &lt;&lt; <span class="string">&#x27;c&#x27;</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, unsigned char:&quot;</span> &lt;&lt; (<span class="type">unsigned</span> <span class="type">char</span>) <span class="string">&#x27;c&#x27;</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, short:&quot;</span> &lt;&lt; (<span class="type">short</span>)<span class="number">-1</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, unsigned short:&quot;</span> &lt;&lt; (<span class="type">unsigned</span> <span class="type">short</span>)<span class="number">-1</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, int:&quot;</span> &lt;&lt; (<span class="type">int</span>)<span class="number">-1</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, unsigned int:&quot;</span> &lt;&lt; (<span class="type">unsigned</span> <span class="type">int</span>)<span class="number">-1</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, long:&quot;</span> &lt;&lt; (<span class="type">long</span>)<span class="number">-1</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, unsigned long:&quot;</span> &lt;&lt; (<span class="type">unsigned</span> <span class="type">long</span>)<span class="number">-1</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, long long:&quot;</span> &lt;&lt; (<span class="type">long</span> <span class="type">long</span>)<span class="number">-1</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, unsigned long long:&quot;</span> &lt;&lt; (<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>) - <span class="number">1</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, float:&quot;</span> &lt;&lt; (<span class="type">float</span>)<span class="number">-1.234567</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, double:&quot;</span> &lt;&lt; (<span class="type">double</span>)<span class="number">-2.34566</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, double:&quot;</span> &lt;&lt; <span class="built_in">pow</span>(<span class="number">2</span>, <span class="number">52</span>) - <span class="number">1.0</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, double:&quot;</span> &lt;&lt; <span class="built_in">pow</span>(<span class="number">2</span>, <span class="number">52</span>) * <span class="number">-1000</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, double:&quot;</span> &lt;&lt; <span class="built_in">pow</span>(<span class="number">2</span>, <span class="number">52</span>) / <span class="number">1000</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, double:&quot;</span> &lt;&lt; <span class="built_in">pow</span>(<span class="number">2</span>, <span class="number">52</span>) / <span class="number">-1000</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, double:&quot;</span> &lt;&lt; <span class="built_in">pow</span>(<span class="number">2</span>, <span class="number">-58</span>)</span><br><span class="line">    &lt;&lt; <span class="string">&quot;, double:&quot;</span> &lt;&lt; <span class="built_in">pow</span>(<span class="number">2</span>, <span class="number">-16</span>)*<span class="number">-1</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, std::string:&quot;</span> &lt;&lt; std::<span class="built_in">string</span>(<span class="string">&quot;fffff&quot;</span>)</span><br><span class="line">    &lt;&lt; <span class="string">&quot;, int *:&quot;</span> &lt;&lt; (<span class="type">int</span> *)argv</span><br><span class="line">    &lt;&lt; <span class="string">&quot;, const int *:&quot;</span> &lt;&lt; (<span class="type">const</span> <span class="type">int</span> *)argv</span><br><span class="line">    &lt;&lt; <span class="string">&quot;, constant:&quot;</span> &lt;&lt; <span class="number">1000</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, constant:&quot;</span> &lt;&lt; <span class="number">100.12345678</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, bool:&quot;</span> &lt;&lt; <span class="literal">true</span></span><br><span class="line">    &lt;&lt; <span class="string">&quot;, show hex data:&quot;</span> &lt;&lt; <span class="built_in">Log4zBinary</span>(<span class="string">&quot;1234567890abcdefghigklmnopqrstuvwxyz_zyw_zsummer_log4z&quot;</span>, <span class="number">50</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>遇到 <code>&lt;&lt; 1000</code>， 会去找</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">inline</span> Log4zStream &amp; <span class="keyword">operator</span> &lt;&lt;(<span class="type">int</span> t)&#123;<span class="keyword">return</span> <span class="built_in">writeLongLong</span>(t);&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">inline</span> Log4zStream &amp; <span class="title">Log4zStream::writeLongLong</span><span class="params">(<span class="type">long</span> <span class="type">long</span> t, <span class="type">int</span> width, <span class="type">int</span> dec)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (t &lt; <span class="number">0</span> )</span><br><span class="line">    &#123;</span><br><span class="line">        t = -t;</span><br><span class="line">        <span class="built_in">writeChar</span>(<span class="string">&#x27;-&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">writeULongLong</span>((<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>)t, width, dec);</span><br><span class="line">    <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">inline</span> Log4zStream &amp; zsummer::log4z::Log4zStream::<span class="built_in">writeChar</span>(<span class="type">char</span> ch)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (_end - _cur &gt; <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        _cur[<span class="number">0</span>] = ch;   <span class="comment">// 这里是实际写到一段内存，最后 logger 会将这段内存整体输出</span></span><br><span class="line">        _cur++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其他格式也是这样输出的。</p>
+<h2 id="3-3-方便使用的宏"><a href="#3-3-方便使用的宏" class="headerlink" title="3.3. 方便使用的宏"></a>3.3. 方便使用的宏</h2><p>支持流式输出的宏</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//! fast macro</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_TRACE(id, log) LOG_STREAM(id, LOG_LEVEL_TRACE, __FILE__, __LINE__, log)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_DEBUG(id, log) LOG_STREAM(id, LOG_LEVEL_DEBUG, __FILE__, __LINE__, log)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_INFO(id, log)  LOG_STREAM(id, LOG_LEVEL_INFO, __FILE__, __LINE__, log)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_WARN(id, log)  LOG_STREAM(id, LOG_LEVEL_WARN, __FILE__, __LINE__, log)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_ERROR(id, log) LOG_STREAM(id, LOG_LEVEL_ERROR, __FILE__, __LINE__, log)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_ALARM(id, log) LOG_STREAM(id, LOG_LEVEL_ALARM, __FILE__, __LINE__, log)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_FATAL(id, log) LOG_STREAM(id, LOG_LEVEL_FATAL, __FILE__, __LINE__, log)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//! super macro.</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGT( log ) LOG_TRACE(LOG4Z_MAIN_LOGGER_ID, log )</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGD( log ) LOG_DEBUG(LOG4Z_MAIN_LOGGER_ID, log )</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGI( log ) LOG_INFO(LOG4Z_MAIN_LOGGER_ID, log )</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGW( log ) LOG_WARN(LOG4Z_MAIN_LOGGER_ID, log )</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGE( log ) LOG_ERROR(LOG4Z_MAIN_LOGGER_ID, log )</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGA( log ) LOG_ALARM(LOG4Z_MAIN_LOGGER_ID, log )</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGF( log ) LOG_FATAL(LOG4Z_MAIN_LOGGER_ID, log )</span></span><br></pre></td></tr></table></figure>
+
+<p>支持格式化的宏</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//!format string</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMT_TRACE(id, fmt, ...)  LOG_FORMAT(id, LOG_LEVEL_TRACE, __FILE__, __LINE__, fmt, ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMT_DEBUG(id, fmt, ...)  LOG_FORMAT(id, LOG_LEVEL_DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMT_INFO(id, fmt, ...)  LOG_FORMAT(id, LOG_LEVEL_INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMT_WARN(id, fmt, ...)  LOG_FORMAT(id, LOG_LEVEL_WARN, __FILE__, __LINE__, fmt, ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMT_ERROR(id, fmt, ...)  LOG_FORMAT(id, LOG_LEVEL_ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMT_ALARM(id, fmt, ...)  LOG_FORMAT(id, LOG_LEVEL_ALARM, __FILE__, __LINE__, fmt, ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMT_FATAL(id, fmt, ...)  LOG_FORMAT(id, LOG_LEVEL_FATAL, __FILE__, __LINE__, fmt, ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMTT( fmt, ...) LOGFMT_TRACE(LOG4Z_MAIN_LOGGER_ID, fmt,  ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMTD( fmt, ...) LOGFMT_DEBUG(LOG4Z_MAIN_LOGGER_ID, fmt,  ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMTI( fmt, ...) LOGFMT_INFO(LOG4Z_MAIN_LOGGER_ID, fmt,  ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMTW( fmt, ...) LOGFMT_WARN(LOG4Z_MAIN_LOGGER_ID, fmt,  ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMTE( fmt, ...) LOGFMT_ERROR(LOG4Z_MAIN_LOGGER_ID, fmt,  ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMTA( fmt, ...) LOGFMT_ALARM(LOG4Z_MAIN_LOGGER_ID, fmt,  ##__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOGFMTF( fmt, ...) LOGFMT_FATAL(LOG4Z_MAIN_LOGGER_ID, fmt,  ##__VA_ARGS__)</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="4-线程模型"><a href="#4-线程模型" class="headerlink" title="4. 线程模型"></a>4. 线程模型</h1><p>一个后台线程持续往日志文件写; 各种接口线程安全。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">LogerManager::start</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (_runing)    <span class="comment">// 只会启动一个日志线程</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">showColorText</span>(<span class="string">&quot;log4z already start \r\n&quot;</span>, LOG_LEVEL_FATAL);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    _semaphore.<span class="built_in">create</span>(<span class="number">0</span>);</span><br><span class="line">    <span class="type">bool</span> ret = ThreadHelper::<span class="built_in">start</span>();       <span class="comment">// 启动日志线程</span></span><br><span class="line">    <span class="keyword">return</span> ret &amp;&amp; _semaphore.<span class="built_in">wait</span>(<span class="number">3000</span>);    <span class="comment">// 这里用信号量同步一下线程，等到日志线程启动后，这里再退出</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>ThreadHelper::start()</code> 进而调用 <code>int ret = pthread_create(&amp;_phtreadID, NULL, threadProc, (void*)this);</code> 启动 <code>threadProc()</code>，最后会调用<code>void LogerManager::run()</code>:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">LogerManager::run</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    _runing = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">LOGA</span>(<span class="string">&quot;-----------------  log4z thread started!   ----------------------------&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt;= _lastId; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (_loggers[i]._enable)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">LOGA</span>(<span class="string">&quot;logger id=&quot;</span> &lt;&lt; i</span><br><span class="line">                &lt;&lt; <span class="string">&quot; key=&quot;</span> &lt;&lt; _loggers[i]._key</span><br><span class="line">                &lt;&lt; <span class="string">&quot; name=&quot;</span> &lt;&lt; _loggers[i]._name</span><br><span class="line">                &lt;&lt; <span class="string">&quot; path=&quot;</span> &lt;&lt; _loggers[i]._path</span><br><span class="line">                &lt;&lt; <span class="string">&quot; level=&quot;</span> &lt;&lt; _loggers[i]._level</span><br><span class="line">                &lt;&lt; <span class="string">&quot; display=&quot;</span> &lt;&lt; _loggers[i]._display);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    _semaphore.<span class="built_in">post</span>(); <span class="comment">// 通知用户线程LogerManager::start() 函数可以返回了</span></span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>对线程和信号量都做了封装，以跨平台。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 线程封装</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ThreadHelper</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">ThreadHelper</span>()&#123;_hThreadID = <span class="number">0</span>;&#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">ThreadHelper</span>()&#123;&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">start</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">wait</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">run</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> _hThreadID;</span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> WIN32</span></span><br><span class="line">    <span class="type">pthread_t</span> _phtreadID;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 信号量封装</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SemHelper</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">SemHelper</span>();</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">SemHelper</span>();</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">create</span><span class="params">(<span class="type">int</span> initcount)</span></span>;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">wait</span><span class="params">(<span class="type">int</span> timeout = <span class="number">0</span>)</span></span>;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">post</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> WIN32</span></span><br><span class="line">    HANDLE _hSem;</span><br><span class="line"><span class="meta">#<span class="keyword">elif</span> defined(__APPLE__)</span></span><br><span class="line">    <span class="type">dispatch_semaphore_t</span> _semid;</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">    <span class="type">sem_t</span> _semid;</span><br><span class="line">    <span class="type">bool</span>  _isCreate;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/log4z/" title="log4z">https://suntus.github.io/2024/01/27/log4z/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tools/" rel="tag"># tools</a>
+              <a href="/tags/cpp/" rel="tag"># cpp</a>
+              <a href="/tags/%E5%A4%9C%E6%B7%B1%E4%BA%BA%E9%9D%99%E8%AF%BB%E4%BB%A3%E7%A0%81/" rel="tag"># 夜深人静读代码</a>
+              <a href="/tags/log4z/" rel="tag"># log4z</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/23/SM9%E5%9C%A8%E5%9B%BD%E5%AF%86SSL%E5%8D%8F%E8%AE%AE%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/" rel="prev" title="SM9在国密SSL协议中的应用">
+      <i class="fa fa-chevron-left"></i> SM9在国密SSL协议中的应用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/spdlog/" rel="next" title="spdlog">
+      spdlog <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">1.基本介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E9%85%8D%E7%BD%AE%E9%A1%B9"><span class="nav-number">2.</span> <span class="nav-text">2. 配置项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%8E%A5%E5%8F%A3"><span class="nav-number">3.</span> <span class="nav-text">3. 接口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-ILog4zManager-%E6%98%AF%E4%B8%AA%E6%80%BB%E6%8E%A7%EF%BC%8C%E5%9F%BA%E7%A1%80%E6%8E%A7%E5%88%B6%E6%8E%A5%E5%8F%A3%EF%BC%8C%E4%B8%8B%E8%BE%B9%E7%9A%84stream%E5%9F%BA%E4%BA%8E%E8%BF%99%E4%B8%AA%E6%8E%A5%E5%8F%A3"><span class="nav-number">3.1.</span> <span class="nav-text">3.1. ILog4zManager 是个总控，基础控制接口，下边的stream基于这个接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Log4zStream-%E6%94%AF%E6%8C%81%E6%B5%81%E5%BC%8F%E8%BE%93%E5%85%A5"><span class="nav-number">3.2.</span> <span class="nav-text">3.2. Log4zStream 支持流式输入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E6%96%B9%E4%BE%BF%E4%BD%BF%E7%94%A8%E7%9A%84%E5%AE%8F"><span class="nav-number">3.3.</span> <span class="nav-text">3.3. 方便使用的宏</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-number">4.</span> <span class="nav-text">4. 线程模型</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

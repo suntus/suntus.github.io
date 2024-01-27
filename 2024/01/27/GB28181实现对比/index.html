@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GB28181实现对比">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/GB28181%E5%AE%9E%E7%8E%B0%E5%AF%B9%E6%AF%94/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="…">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T08:38:08.000Z">
+<meta property="article:modified_time" content="2024-01-27T14:58:48.463Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tools">
+<meta property="article:tag" content="media">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/GB28181%E5%AE%9E%E7%8E%B0%E5%AF%B9%E6%AF%94/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>GB28181实现对比 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/GB28181%E5%AE%9E%E7%8E%B0%E5%AF%B9%E6%AF%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GB28181实现对比
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 16:38:08 / 修改时间：22:58:48" itemprop="dateCreated datePublished" datetime="2024-01-27T16:38:08+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>…</p>
+<span id="more"></span>
+
+<h1 id="1-GB28181转发基本功能"><a href="#1-GB28181转发基本功能" class="headerlink" title="1. GB28181转发基本功能"></a>1. GB28181转发基本功能</h1><ol>
+<li>系统注册: 下级平台注册登入到上级平台</li>
+<li>系统注销: 下级平台从上级平台注销登出</li>
+<li>系统心跳</li>
+<li>目录查询</li>
+<li>实时点播</li>
+<li>录像文件检索</li>
+<li>回放，回放控制</li>
+<li>文件下载</li>
+</ol>
+<h1 id="2-实现"><a href="#2-实现" class="headerlink" title="2. 实现"></a>2. 实现</h1><h2 id="2-1-wvp-GB28181-pro"><a href="#2-1-wvp-GB28181-pro" class="headerlink" title="2.1. wvp-GB28181-pro"></a>2.1. <a target="_blank" rel="noopener" href="https://github.com/648540858/wvp-GB28181-pro.git">wvp-GB28181-pro</a></h2><h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ol>
+<li>java</li>
+<li>完整的GB28181解决方案</li>
+<li>MIT协议，本身可用于商业，但有些模块用了第三方，需要看协议。</li>
+<li>自带web管理网站</li>
+<li>基于ZLMediaKit</li>
+</ol>
+<h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><ul>
+<li>视频预览;</li>
+<li>视频设备信息同步;</li>
+<li>录像查询与回放（基于NVR\DVR，暂不支持快进、seek操作）;</li>
+<li>支持UDP和TCP两种国标信令传输模式;</li>
+<li>支持udp&#x2F;tcp国标流传输模式;</li>
+<li>支持平台接入, 针对大平台大量设备的情况进行优化;</li>
+<li>支持检索,通道筛选;</li>
+<li>支持通道是否含有音频的设置;</li>
+<li>支持通道子目录查询;</li>
+<li>支持直接输出RTSP、RTMP、HTTP-FLV、Websocket-FLV、HLS多种协议流地址</li>
+<li>支持国标网络校时</li>
+<li>支持播放h265, g.711格式的流(需要将closeWaitRTPInfo设为false)</li>
+<li>支持固定流地址和自动点播，同时支持未点播时直接播放流地址，代码自动发起点播. ( 查看WIKI）</li>
+<li>支持订阅与通知方法<br>  移动位置订阅<br>  移动位置通知处理<br>  报警事件订阅<br>  报警事件通知处理<br>  设备目录订阅<br>  设备目录通知处理</li>
+<li>国标通道向上级联<br>  WEB添加上级平台<br>  注册<br>  心跳保活<br>  通道选择<br>  通道推送<br>  点播<br>  平台状态查询<br>  平台信息查询<br>  平台远程启动<br>  每个级联平台可自定义的虚拟目录<br>  目录订阅与通知<br>  录像查看与播放<br>  GPS订阅与通知（直播推流）</li>
+<li>多流媒体节点，自动选择负载最低的节点使用。</li>
+</ul>
+<h2 id="2-2-GB28181-Solution"><a href="#2-2-GB28181-Solution" class="headerlink" title="2.2. GB28181.Solution"></a>2.2. <a target="_blank" rel="noopener" href="https://github.com/GB28181/GB28181.Solution.git">GB28181.Solution</a></h2><h3 id="特点-1"><a href="#特点-1" class="headerlink" title="特点"></a>特点</h3><ol>
+<li>c#</li>
+<li>相当于SDK，需要二次开发;</li>
+<li>本身MIT，第三方库用到了GPL</li>
+<li>Streaming模块用golang</li>
+</ol>
+<h3 id="功能-1"><a href="#功能-1" class="headerlink" title="功能"></a>功能</h3><ol>
+<li>支持GB28181设备接入</li>
+<li>对接GB28181平台，实现完整的平台级联控制</li>
+<li>视频流模块不完整，好多基本功能没有实现</li>
+</ol>
+<h2 id="2-3-GB28181-python"><a href="#2-3-GB28181-python" class="headerlink" title="2.3. GB28181-python"></a>2.3. <a target="_blank" rel="noopener" href="https://github.com/10961020/GB28181.git">GB28181-python</a></h2><h3 id="特点-2"><a href="#特点-2" class="headerlink" title="特点"></a>特点</h3><ol>
+<li>python</li>
+<li>模拟上级平台</li>
+<li>小工具</li>
+</ol>
+<h2 id="2-4-eXosip"><a href="#2-4-eXosip" class="headerlink" title="2.4. eXosip"></a>2.4. <a target="_blank" rel="noopener" href="https://github.com/aurelihein/exosip.git">eXosip</a></h2><h3 id="特点-3"><a href="#特点-3" class="headerlink" title="特点"></a>特点</h3><ol>
+<li>c</li>
+<li>sip协议库</li>
+<li>GPL</li>
+</ol>
+<h2 id="2-5-ZLMediaKit"><a href="#2-5-ZLMediaKit" class="headerlink" title="2.5. ZLMediaKit"></a>2.5. <a target="_blank" rel="noopener" href="https://github.com/ZLMediaKit/ZLMediaKit.git">ZLMediaKit</a></h2><h3 id="特点-4"><a href="#特点-4" class="headerlink" title="特点"></a>特点</h3><ul>
+<li>基于C++11开发，避免使用裸指针，代码稳定可靠，性能优越。</li>
+<li>支持多种协议(RTSP&#x2F;RTMP&#x2F;HLS&#x2F;HTTP-FLV&#x2F;WebSocket-FLV&#x2F;GB28181&#x2F;HTTP-TS&#x2F;WebSocket-TS&#x2F;HTTP-fMP4&#x2F;WebSocket-fMP4&#x2F;MP4&#x2F;WebRTC),支持协议互转。</li>
+<li>使用多路复用&#x2F;多线程&#x2F;异步网络IO模式开发，并发性能优越，支持海量客户端连接。</li>
+<li>代码经过长期大量的稳定性、性能测试，已经在线上商用验证已久。</li>
+<li>支持linux、macos、ios、android、windows全平台。</li>
+<li>支持画面秒开、极低延时(500毫秒内，最低可达100毫秒)。</li>
+<li>提供完善的标准C API,可以作SDK用，或供其他语言调用。</li>
+<li>提供完整的MediaServer服务器，可以免开发直接部署为商用服务器。</li>
+<li>提供完善的restful api以及web hook，支持丰富的业务逻辑。</li>
+<li>打通了视频监控协议栈与直播协议栈，对RTSP&#x2F;RTMP支持都很完善。</li>
+<li>全面支持H265&#x2F;H264&#x2F;AAC&#x2F;G711&#x2F;OPUS。</li>
+<li>功能完善，支持集群、按需转协议、按需推拉流、先播后推、断连续推等功能。</li>
+<li>极致性能，单机10W级别播放器，100Gb&#x2F;s级别io带宽能力。</li>
+<li>只是视频流服务器，SIP信令需要自己再集成。</li>
+</ul>
+<h3 id="功能-2"><a href="#功能-2" class="headerlink" title="功能"></a>功能</h3><ul>
+<li>支持UDP&#x2F;TCP国标RTP(PS或TS)推流服务器，可以转换成RTSP&#x2F;RTMP&#x2F;HLS等协议</li>
+<li>支持RTSP&#x2F;RTMP&#x2F;HLS转国标推流客户端，支持TCP&#x2F;UDP模式，提供相应restful api</li>
+<li>支持H264&#x2F;H265&#x2F;AAC&#x2F;G711&#x2F;OPUS编码</li>
+<li>支持海康ehome推流</li>
+</ul>
+<h2 id="2-6-AKStream"><a href="#2-6-AKStream" class="headerlink" title="2.6. AKStream"></a>2.6. <a target="_blank" rel="noopener" href="https://github.com/chatop2020/AKStream.git">AKStream</a></h2><h3 id="特点-5"><a href="#特点-5" class="headerlink" title="特点"></a>特点</h3><ul>
+<li>c#</li>
+<li>MIT</li>
+<li>支持GB28181信令网关，支持向上级联，支持数据流转发。不支持历史相关功能</li>
+<li>基于ZLMediaKit</li>
+<li>带web</li>
+</ul>
+<h2 id="2-7-gosip"><a href="#2-7-gosip" class="headerlink" title="2.7. gosip"></a>2.7. <a target="_blank" rel="noopener" href="https://github.com/panjjo/gosip.git">gosip</a></h2><ul>
+<li>go</li>
+<li>基于ZLMediaKit</li>
+<li>GB28181服务器，不支持向上级联</li>
+</ul>
+<h2 id="2-8-GB28181-Node-Http"><a href="#2-8-GB28181-Node-Http" class="headerlink" title="2.8. GB28181_Node_Http"></a>2.8. <a target="_blank" rel="noopener" href="https://gitee.com/hfwudao/GB28181_Node_Http.git">GB28181_Node_Http</a></h2><ul>
+<li>nodejs</li>
+<li>基于ZLMediaKit</li>
+<li>GB28181服务器，不支持向上级联</li>
+<li>MIT</li>
+</ul>
+<h3 id="2-9-GB28181-Simulation-Tool"><a href="#2-9-GB28181-Simulation-Tool" class="headerlink" title="2.9. GB28181-Simulation-Tool"></a>2.9. <a target="_blank" rel="noopener" href="https://github.com/GB28181/GB28181-Simulation-Tool.git">GB28181-Simulation-Tool</a></h3><p>平台、设备模拟工具</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>语言</th>
+<th>定位</th>
+<th>主要功能</th>
+<th>是否支持级联</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>wvp-GB28181-pro</td>
+<td>java</td>
+<td>完整的GB28181解决方案</td>
+<td>基于ZLMediaKit，带web</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>GB28181.Solution</td>
+<td>c#</td>
+<td>SDK</td>
+<td>视频流用了golang, 基础功能支持不完整</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>GB28181-python</td>
+<td>python</td>
+<td>测试工具</td>
+<td>模拟上级平台</td>
+<td>-</td>
+</tr>
+<tr>
+<td>eXosip</td>
+<td>c</td>
+<td>SIP协议库</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ZLMediaKit</td>
+<td>c++11</td>
+<td>视频流服务器;SDK</td>
+<td>支持GB28181视频流，支持视频格式扩展；无SIP信令支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>AKStream</td>
+<td>c#</td>
+<td>GB28181 解决方案</td>
+<td>GB28181信令网关，支持数据流转发。不支持历史相关功能，带web</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>gosip</td>
+<td>go</td>
+<td>GB28181服务器</td>
+<td>设备接入</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>GB28181_Node_Http</td>
+<td>nodeJS</td>
+<td>GB28181服务器</td>
+<td>设备接入;带web</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>GB28181-Simulation-Tool</td>
+<td>java</td>
+<td>测试工具</td>
+<td>模拟设备和上级平台</td>
+<td>-</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/GB28181%E5%AE%9E%E7%8E%B0%E5%AF%B9%E6%AF%94/" title="GB28181实现对比">https://suntus.github.io/2024/01/27/GB28181实现对比/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tools/" rel="tag"># tools</a>
+              <a href="/tags/media/" rel="tag"># media</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/27/hexo%E5%BB%BA%E7%AB%99/" rel="prev" title="hexo建站">
+      <i class="fa fa-chevron-left"></i> hexo建站
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/cpp%E5%8F%B3%E5%80%BC/" rel="next" title="cpp右值">
+      cpp右值 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-GB28181%E8%BD%AC%E5%8F%91%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD"><span class="nav-number">1.</span> <span class="nav-text">1. GB28181转发基本功能</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">2. 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-wvp-GB28181-pro"><span class="nav-number">2.1.</span> <span class="nav-text">2.1. wvp-GB28181-pro</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E7%82%B9"><span class="nav-number">2.1.1.</span> <span class="nav-text">特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD"><span class="nav-number">2.1.2.</span> <span class="nav-text">功能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-GB28181-Solution"><span class="nav-number">2.2.</span> <span class="nav-text">2.2. GB28181.Solution</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E7%82%B9-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">功能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-GB28181-python"><span class="nav-number">2.3.</span> <span class="nav-text">2.3. GB28181-python</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E7%82%B9-2"><span class="nav-number">2.3.1.</span> <span class="nav-text">特点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-eXosip"><span class="nav-number">2.4.</span> <span class="nav-text">2.4. eXosip</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E7%82%B9-3"><span class="nav-number">2.4.1.</span> <span class="nav-text">特点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-ZLMediaKit"><span class="nav-number">2.5.</span> <span class="nav-text">2.5. ZLMediaKit</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E7%82%B9-4"><span class="nav-number">2.5.1.</span> <span class="nav-text">特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD-2"><span class="nav-number">2.5.2.</span> <span class="nav-text">功能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-AKStream"><span class="nav-number">2.6.</span> <span class="nav-text">2.6. AKStream</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E7%82%B9-5"><span class="nav-number">2.6.1.</span> <span class="nav-text">特点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-7-gosip"><span class="nav-number">2.7.</span> <span class="nav-text">2.7. gosip</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-8-GB28181-Node-Http"><span class="nav-number">2.8.</span> <span class="nav-text">2.8. GB28181_Node_Http</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-9-GB28181-Simulation-Tool"><span class="nav-number">2.8.1.</span> <span class="nav-text">2.9. GB28181-Simulation-Tool</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

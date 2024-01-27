@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1. 基本概念1.1. 4表5链防火墙由很多规则组成，每个规则匹配产生不同的动作，这些规则按功能共划分出4个表，一个表由多个相同功能的规则组成:  raw 控制NAT表中连接跟踪机制的启用状况 mangle 修改数据 filter 过滤 nat 地址转换  在数据经过的各个路径上，设置了5个关键卡点，每个卡点上按顺序有多个规则，共组成5条规则链:  PREROUTING: 外部数据刚进入 INPU">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iptables相关">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/iptables%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="1. 基本概念1.1. 4表5链防火墙由很多规则组成，每个规则匹配产生不同的动作，这些规则按功能共划分出4个表，一个表由多个相同功能的规则组成:  raw 控制NAT表中连接跟踪机制的启用状况 mangle 修改数据 filter 过滤 nat 地址转换  在数据经过的各个路径上，设置了5个关键卡点，每个卡点上按顺序有多个规则，共组成5条规则链:  PREROUTING: 外部数据刚进入 INPU">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T14:47:59.000Z">
+<meta property="article:modified_time" content="2024-01-27T14:58:03.902Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tools">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="net">
+<meta property="article:tag" content="iptables">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/iptables%E7%9B%B8%E5%85%B3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>iptables相关 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/iptables%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iptables相关
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 22:47:59 / 修改时间：22:58:03" itemprop="dateCreated datePublished" datetime="2024-01-27T22:47:59+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. 基本概念</h1><h2 id="1-1-4表5链"><a href="#1-1-4表5链" class="headerlink" title="1.1. 4表5链"></a>1.1. 4表5链</h2><p>防火墙由很多规则组成，每个规则匹配产生不同的动作，这些规则按功能共划分出4个表，一个表由多个相同功能的规则组成:</p>
+<ol>
+<li>raw 控制NAT表中连接跟踪机制的启用状况</li>
+<li>mangle 修改数据</li>
+<li>filter 过滤</li>
+<li>nat 地址转换</li>
+</ol>
+<p>在数据经过的各个路径上，设置了5个关键卡点，每个卡点上按顺序有多个规则，共组成5条规则链:</p>
+<ol>
+<li>PREROUTING: 外部数据刚进入</li>
+<li>INPUT: 经过路由决策，要进入本机的数据</li>
+<li>OUTPUT: 本机要出去的数据</li>
+<li>FORWARD: 经过路由决策，经过本机转发的数据</li>
+<li>POSTROUTING: 发送出去的数据</li>
+</ol>
+<span id="more"></span>
+
+<p>外部数据进入本机，会经过 PREROUTING, INPUT链</p>
+<p>本机数据出去，会经过 OUTPUT, POSTROUTING链</p>
+<p>外部数据经过本机路由转发出去，会经过 PREROUTING, FORWARD, POSTROUTING链</p>
+<table>
+<thead>
+<tr>
+<th>表</th>
+<th>控制的链</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>filter</td>
+<td>INPUT, FORWARD, OUTPUT</td>
+</tr>
+<tr>
+<td>nat</td>
+<td>PREROUTING, INPUT, OUTPUT, POSTROUTING</td>
+</tr>
+<tr>
+<td>mangle</td>
+<td>PREROUTING, INPUT, FORWARD, POSTROUTING</td>
+</tr>
+<tr>
+<td>raw</td>
+<td>PREROUTING, OUTPUT</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>raw</th>
+<th>mangle</th>
+<th>nat</th>
+<th>filter</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PREROUTING</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td></td>
+</tr>
+<tr>
+<td>INPUT</td>
+<td></td>
+<td>√</td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td>OUTPUT</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>FORWARD</td>
+<td></td>
+<td>√</td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td>POSTROUTING</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>在同一条链上，各个表中的规则会按顺序执行，表的优先级为:</p>
+<p>raw –&gt; mangle –&gt; nat –&gt; filter</p>
+<p>可以自定义链，但是自定义的子链需要当做默认链中一个规则的动作才能被调用到。</p>
+<h2 id="1-2-基本语法"><a href="#1-2-基本语法" class="headerlink" title="1.2. 基本语法"></a>1.2. 基本语法</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables [-t table]  COMMAND [chain] CRETIRIA -j ACTION</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>-t: 指定要维护的表，默认filter</li>
+<li>COMMAND: 子命令，定义对规则的管理</li>
+<li>chain: 指定链</li>
+<li>CRETIRIA: 匹配参数</li>
+<li>ACTION: 要触发的动作</li>
+</ul>
+<h3 id="常用命令-COMMAND"><a href="#常用命令-COMMAND" class="headerlink" title="常用命令 COMMAND"></a>常用命令 COMMAND</h3><table>
+<thead>
+<tr>
+<th>选项</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-A</td>
+<td>添加防火墙规则</td>
+</tr>
+<tr>
+<td>-D</td>
+<td>删除防火墙规则</td>
+</tr>
+<tr>
+<td>-I</td>
+<td>插入防火墙规则</td>
+</tr>
+<tr>
+<td>-F</td>
+<td>清空防火墙规则</td>
+</tr>
+<tr>
+<td>-L</td>
+<td>列出防火墙规则</td>
+</tr>
+<tr>
+<td>-R</td>
+<td>替换防火墙规则</td>
+</tr>
+<tr>
+<td>-Z</td>
+<td>清空防火墙数据表统计信息</td>
+</tr>
+<tr>
+<td>-P</td>
+<td>设置链默认规则</td>
+</tr>
+<tr>
+<td>-E</td>
+<td>给子链改名</td>
+</tr>
+<tr>
+<td>-X</td>
+<td>删除一个没有被引用、规则为空的子链</td>
+</tr>
+</tbody></table>
+<h3 id="常用匹配参数-CRETIRIA"><a href="#常用匹配参数-CRETIRIA" class="headerlink" title="常用匹配参数 CRETIRIA"></a>常用匹配参数 CRETIRIA</h3><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[!]-p</td>
+<td>匹配协议，!表示取反</td>
+</tr>
+<tr>
+<td>[!]-s</td>
+<td>匹配源地址</td>
+</tr>
+<tr>
+<td>[!]-d</td>
+<td>匹配目标地址</td>
+</tr>
+<tr>
+<td>[!]-i</td>
+<td>匹配入站网卡接口</td>
+</tr>
+<tr>
+<td>[!]-o</td>
+<td>匹配出站网卡接口</td>
+</tr>
+<tr>
+<td>[!]–sport</td>
+<td>匹配源端口</td>
+</tr>
+<tr>
+<td>[!]–dport</td>
+<td>匹配目标端口</td>
+</tr>
+<tr>
+<td>[!]–src-range</td>
+<td>匹配源地址范围</td>
+</tr>
+<tr>
+<td>[!]–dst-range</td>
+<td>匹配目标地址范围</td>
+</tr>
+<tr>
+<td>[!]–limit</td>
+<td>匹配数据表速率</td>
+</tr>
+<tr>
+<td>[!]–mac-source</td>
+<td>匹配源MAC地址</td>
+</tr>
+<tr>
+<td>[!]–state</td>
+<td>匹配状态(INVALID, ESTABLISHED, NEW, RELATED)</td>
+</tr>
+<tr>
+<td>[!]–string</td>
+<td>匹配应用层字符串</td>
+</tr>
+</tbody></table>
+<h3 id="常用动作"><a href="#常用动作" class="headerlink" title="常用动作"></a>常用动作</h3><table>
+<thead>
+<tr>
+<th>触发动作</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ACCEPT</td>
+<td>允许数据包通过</td>
+</tr>
+<tr>
+<td>DROP</td>
+<td>丢弃数据包</td>
+</tr>
+<tr>
+<td>REJECT</td>
+<td>拒绝数据包通过</td>
+</tr>
+<tr>
+<td>LOG</td>
+<td>将数据包信息记录syslog日志</td>
+</tr>
+<tr>
+<td>DNAT</td>
+<td>目标地址转换</td>
+</tr>
+<tr>
+<td>SNAT</td>
+<td>源地址转换</td>
+</tr>
+<tr>
+<td>MASQUERADE</td>
+<td>地址欺骗</td>
+</tr>
+<tr>
+<td>REDIRECT</td>
+<td>重定向</td>
+</tr>
+</tbody></table>
+<p>内核按照顺序检查 iptables 防火墙规则，如果匹配，就执行相关动作， 停止向下继续查找，如果都没有匹配，就按默认处理</p>
+<h1 id="2-iptables-和-firewalld"><a href="#2-iptables-和-firewalld" class="headerlink" title="2. iptables 和 firewalld"></a>2. iptables 和 firewalld</h1><ul>
+<li>都是linux防火墙服务，早期的是 iptables，新的系统一般都是 firewalld。 firewalld 操作会反应到 iptables 规则。</li>
+<li>iptables 只能一条一条规则添加，firewalld 支持将不同的规则组成区域(zone，共9个，默认public)，在不同的网络环境使用不同的区域，快速切换。</li>
+<li>都可以用 systemctl 管理，firewalld 是 centos7自带的，可以直接使用 <code>systemctl status firewalld</code>， iptables 需要安装一个服务配置:</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y iptables-services</span><br></pre></td></tr></table></figure>
+
+<p>然后就能用 systemctl 管理了。</p>
+<ul>
+<li>iptables 和 firewalld 都是服务，iptables 和 firewall-cmd 都是用户命令行接口，用于控制这两个服务, 只不过 firewalld 的服务和前端是两个名字， iptables 是一个名字。</li>
+<li>centos7 默认使用 firewalld， 使用 firewall-cmd 配置的规则，也能用 iptables 查看，反过来也一样。</li>
+</ul>
+<h1 id="3-iptables-例子"><a href="#3-iptables-例子" class="headerlink" title="3. iptables 例子"></a>3. iptables 例子</h1><h2 id="3-1-导入导出当前规则"><a href="#3-1-导入导出当前规则" class="headerlink" title="3.1. 导入导出当前规则"></a>3.1. 导入导出当前规则</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">iptables-save</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Generated by iptables-save v1.4.21 on Sun Jun 12 08:08:48 2022</span></span><br><span class="line">*filter</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下面是 filter 表的规则</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">filter 表中 INPUT 链默认规则是 ACCEPT， [0:0] 表示[packet, bytes]， 当前有多少个包经过 filter 表的这个链</span></span><br><span class="line">:INPUT ACCEPT [0:0]</span><br><span class="line">:FORWARD ACCEPT [0:0]</span><br><span class="line">:OUTPUT ACCEPT [1437:138710]</span><br><span class="line">-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT</span><br><span class="line">-A INPUT -p icmp -j ACCEPT</span><br><span class="line">-A INPUT -i lo -j ACCEPT</span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT</span><br><span class="line">-A INPUT -j REJECT --reject-with icmp-host-prohibited</span><br><span class="line">-A FORWARD -j REJECT --reject-with icmp-host-prohibited</span><br><span class="line">COMMIT</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Completed on Sun Jun 12 08:08:48 2022</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">保存到文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">iptables-save &gt; ipt.save</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">从文件恢复</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">iptables-restore &lt; ipt.save</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">重启机器后失效，需要保存到文件，重启时导入</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">这里会保存到 /etc/sysconfig/iptables， 相当于使用 iptables-save &gt; /etc/sysconfig/iptables</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">service iptables save</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">保存到其他位置，需要重启的时候增加一个启动项，将配置恢复，一般是放到 /etc/rc.local 中</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="3-2-查"><a href="#3-2-查" class="headerlink" title="3.2. 查"></a>3.2. 查</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看 filter 表所有规则, -v 显示统计值， -n 不解析地址， -L 列出规则</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">结果: policy 表示 filter 表 INPUT 链的默认规则是 ACCEPT</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">iptables -vnL</span></span><br><span class="line">Chain INPUT (policy ACCEPT 0 packets, 0 bytes)</span><br><span class="line"> pkts bytes target     prot opt in     out     source               destination</span><br><span class="line"> 2566  182K ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            state RELATED,ESTABLISHED</span><br><span class="line">    0     0 ACCEPT     icmp --  *      *       0.0.0.0/0            0.0.0.0/0</span><br><span class="line">    6   438 ACCEPT     all  --  lo     *       0.0.0.0/0            0.0.0.0/0</span><br><span class="line">    1    52 ACCEPT     tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            state NEW tcp dpt:22</span><br><span class="line">   33  3006 REJECT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            reject-with icmp-host-prohibited</span><br><span class="line"></span><br><span class="line">Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)</span><br><span class="line"> pkts bytes target     prot opt in     out     source               destination</span><br><span class="line">    0     0 REJECT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            reject-with icmp-host-prohibited</span><br><span class="line"></span><br><span class="line">Chain OUTPUT (policy ACCEPT 2244 packets, 222K bytes)</span><br><span class="line"> pkts bytes target     prot opt in     out     source               destination</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">列出 filter 表 INPUT 链的所有规则, --line-numbers(有时候可以用--line匹配) 列出规则序号，方便中间插入时使用</span></span><br><span class="line">iptables -vnL INPUT --line-numbers</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">列出 nat 表的所有规则</span></span><br><span class="line">iptables -t nat -vnL</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-3-增"><a href="#3-3-增" class="headerlink" title="3.3. 增"></a>3.3. 增</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在 filter 表 INPUT 链开头插入一条规则， 匹配源地址， 动作是丢弃报文. DROP是直接丢弃, REJECT 是会通知对端该报文被拒绝</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">iptables -t filter -I INPUT -s 192.168.1.145 -j DROP</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在 filter 表 INPUT 链的第2个位置插入规则</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">iptables -t filter -I INPUT 2 -s 192.168.1.145 -j DROP</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在最后增加规则</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">iptables -t filter -A INPUT -s 192.168.1.145 -j DROP</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-4-删"><a href="#3-4-删" class="headerlink" title="3.4. 删"></a>3.4. 删</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除 filter 表 INPUT 链第3条规则</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">iptables -t filter -D INPUT 3</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除 filter 表 INPUT 链所有规则</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">iptables -t filter -F INPUT</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-5-改"><a href="#3-5-改" class="headerlink" title="3.5. 改"></a>3.5. 改</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">改的时候，需要带上原来的规则匹配语句，这里的改，相当于删掉之前的语句，重写一个规则，所以即使有规则序号，也要写完整原来的规则</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">iptables -t filter -R INPUT 1 -s 192.168.1.146 -j REJECT</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改链的默认策略</span></span><br><span class="line">iptables -t filter -P FORWARD DROP</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-4-条件匹配"><a href="#3-4-条件匹配" class="headerlink" title="3.4. 条件匹配"></a>3.4. 条件匹配</h2><p>基本匹配</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">匹配源地址</span></span><br><span class="line">-s 192.168.1.145</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">指定多个源地址，逗号隔开, 会变成两条相邻的规则</span></span><br><span class="line">-s 192.168.1.123,192.168.1.124</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">指定网段</span></span><br><span class="line">-s 10.6.0.0/16</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">条件取反，只是规定了不是这个IP的会怎样，没有规定是这个IP会怎样</span></span><br><span class="line">! -s 192.168.1.123</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">匹配目标地址</span></span><br><span class="line">-d 192.168.1.101</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">一个规则多个条件，必须都满足才算匹配</span></span><br><span class="line">-s 1.2.3.4 -d 2.3.4.5</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">匹配协议, tcp, udp, udplite, icmp, icmpv6,esp, ah, sctp, mh, 或者 -p all，默认是所有协议</span></span><br><span class="line">-p tcp</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">匹配入口网卡， -o  匹配出口网卡，指定数据从哪个网卡出去</span></span><br><span class="line">-i eth0</span><br></pre></td></tr></table></figure>
+
+<p>扩展匹配</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tcp: 匹配端口，必须用 -p 指定协议, 用 -m 指定扩展模块(协议名和模块名一致的话，可以省略 -m)</span></span><br><span class="line">-p tcp -m tcp --dport 9999</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tcp: 反选</span></span><br><span class="line">! --dport 22</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tcp: 匹配端口段，:22 表示0-22的段, 80: 表示 80以后的段， 22:25 表示 22-25的段，tcp模块只能指定连续的段</span></span><br><span class="line">--dport 22:25</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tcp: 匹配tcp-flags，前一段表示要匹配的位，后一段表示哪一位必须位1。以下两条匹配效果一样，都匹配三次握手的第2个包。</span></span><br><span class="line">-p tcp -m tcp --dport 22 --tcp-flags SYN,ACK,FIN,RST,URG,PSH SYN,ACK</span><br><span class="line">-p tcp -m tcp --dport 22 --tcp-flags ALL SYN,ACK</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tcp: 匹配三次握手第一个包</span></span><br><span class="line">-p tcp -m tcp --dport 22 --syn</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">multiport: 匹配零散的端口段，需要用到 multiport 模块, 只能用于 tcp, udp协议</span></span><br><span class="line">-p tcp -m multiport --dports 22,36,80</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">iprange: 匹配IP地址段, --src-range, --dst-range</span></span><br><span class="line">-m iprange --src-range 192.168.1.127-192.168.1.146</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">string: 匹配字符串， --algo bm 指定匹配算法</span></span><br><span class="line">-m string --algo bm --string &quot;OOXX&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">time: 匹配时间段</span></span><br><span class="line">-p tcp --dport 80 -m time --timestart 09:00:00 --timestop 18:00:00</span><br><span class="line">-p tcp --dport 80 -m time --weekdays 6,7</span><br><span class="line">-p tcp --dport 80 -m time --monthdays 22,23</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">connlimit: 限制每个IP地址同时连接到服务器的数量，不能指定IP。限制每个ip不能连接超过2个ssh通道</span></span><br><span class="line">-p tcp --dport 22 -m connlimit --connlimit-above 2</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">limit</span>: 限制单位时间内包速率，使用令牌桶算法进行限速， --<span class="built_in">limit</span> 限制令牌产生速度， --limit-burst 限制令牌最大个数</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/second, /minute, /hour, /day</span></span><br><span class="line">-p icmp -m limit --limit 10/minute --limit-burst 3</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">state: 连接状态跟踪，tcp,udp,icmp 都有状态，状态有5种:</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">  NEW: 连接第一个包</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">  ESTABLISHED: NEW状态之后的包的状态，连接已建立</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">  RELATED: 相关联的连接</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">  INVALID: 无法被识别状态的包</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">  UNTRACKED: 未被跟踪的包，无法找到相关连接</span></span><br></pre></td></tr></table></figure>
+
+
+<h1 id="4-自定义子链"><a href="#4-自定义子链" class="headerlink" title="4. 自定义子链"></a>4. 自定义子链</h1><p>用于集合一组规则。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加子链</span></span><br><span class="line">-t filter -I IN_WEB -s 192.168.1.123 -j REJECT</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">必须在默认链中使用子链，子链才生效</span></span><br><span class="line">-I INPUT -p tcp --dport 80 -j IN_WEB</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">给子链改名</span></span><br><span class="line">-E IN_WEB WEB</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除子链</span></span><br><span class="line">-X WEB</span><br></pre></td></tr></table></figure>
+
+<h1 id="5-动作"><a href="#5-动作" class="headerlink" title="5. 动作"></a>5. 动作</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">-j REJECT --reject-with: 提示对方为什么会被拒绝， 默认是icmp-port-unreachable</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">icmp-net-unreachable icmp-host-unreachable icmp-port-unreachable icmp-proto-unreachable icmp-net-prohibited icmp-host-pro-hibited icmp-admin-prohibited</span></span><br><span class="line">-j REJECT --reject-with icmp-port-unreachable</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">LOG: 记录匹配的数据包到日志 syslog 中,  /var/log/messages, 不进行其他动作</span></span><br><span class="line">-j LOG --log-level info --log-prefix &#x27;want-in-from-port-22&#x27;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">SNAT, DNAT</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">MASQUERADE 动态做SNAT，SNAT需要指定转换的目标地址，但有时候目标地址是动态的，用 MASQUERADE 可以自动选择可用地址进行转换.</span></span><br></pre></td></tr></table></figure>
+
+
+<h1 id="6-firewalld-使用"><a href="#6-firewalld-使用" class="headerlink" title="6. firewalld 使用"></a>6. firewalld 使用</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">基本操作</span></span><br><span class="line">firewall-cmd --state    # 显示状态</span><br><span class="line">firewall-cmd --reload  # 重新加载服务</span><br><span class="line">firewall-cmd --runtime-to-permanent  # 将当前防火墙规则永久保存</span><br><span class="line">firewall-cmd --check-config # 检查配置正确性</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">区域操作</span></span><br><span class="line">firewall-cmd --get-zones    # 所有支持的区域</span><br><span class="line">firewall-cmd  --get-active-zones  # 查看当前使用的区域信息</span><br><span class="line">firewall-cmd --set-default-zone=public  # 设置默认接口区域，立即生效无需重启</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">服务操作, 类似于将端口可视化，服务需要在配置文件中添加，/etc/firewalld 目录下有services文件夹</span></span><br><span class="line">--add-service=smtp          # 添加服务</span><br><span class="line">--remove-service=smtp       # 移除服务</span><br><span class="line">firewall-cmd --get-services # 获取所有可以支持的服务列表</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">端口操作</span></span><br><span class="line">firewall-cmd --add-port=443/tcp # 打开443/TCP端口，这里直接生效，不需要 --reload，但没有写入配置永久生效，可以执行 --runtime-to-permanent，写入配置文件</span><br><span class="line">firewall-cmd --permanent --add-port=3690/tcp    # 永久打开3690/TCP端口, 这里是写入到配置文件，并没有生效，需要 --reload</span><br><span class="line">firewall-cmd --zone=public --add-port=0-65535/tcp --permanent   # 打开所有端口</span><br><span class="line">firewall-cmd --remove-port 9999/tcp</span><br><span class="line">firewall-cmd --list-ports</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">FirewallD包括一种直接模式，直接用iptables的规则，例如打开TCP协议的9999端口</span></span><br><span class="line">firewall-cmd --direct -add-rule ipv4 filter INPUT 0 -p tcp --dport 9000 -j ACCEPT</span><br><span class="line">firewall-cmd --reload</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">限制IP 192.168.0.200 访问 80 的tcp端口</span></span><br><span class="line">firewall-cmd --permanent --add-rich-rule=&quot;rule family=&quot;ipv4&quot; source address=&quot;192.168.0.200&quot; port protocol=&quot;tcp&quot; port=&quot;80&quot; reject&quot;</span><br><span class="line">firewall-cmd --permanent --remove-rich-rule=&quot;rule family=&quot;ipv4&quot; source address=&quot;192.168.0.200&quot; port protocol=&quot;tcp&quot; port=&quot;80&quot; accept&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">限制IP 192.168.0.200 访问</span></span><br><span class="line">firewall-cmd --permanent --add-rich-rule=&quot;rule family=&quot;ipv4&quot; source address=&quot;192.168.0.200&quot; reject&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">限制 IP 段访问</span></span><br><span class="line">firewall-cmd --permanent --add-rich-rule=&quot;rule family=&quot;ipv4&quot; source address=&quot;192.168.0.0/24&quot; reject&quot;</span><br></pre></td></tr></table></figure>
+
+<h1 id="7-一个例子"><a href="#7-一个例子" class="headerlink" title="7. 一个例子"></a>7. 一个例子</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动，加开机启动项</span></span><br><span class="line">systemctl start firewalld</span><br><span class="line">systemctl enable firewalld</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动后，默认值打开 ssh 端口，下面打开所有端口的访问</span></span><br><span class="line">firewall-cmd --permanent --add-port=0-65535/tcp</span><br><span class="line">firewall-cmd --permanent --add-port=0-65535/udp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">限制某个IP访问</span></span><br><span class="line">firewall-cmd --permanent --add-rich-rule=&quot;rule family=&quot;ipv4&quot; source address=&quot;192.168.0.200&quot; reject&quot;</span><br><span class="line">firewall-cmd --reload</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">以下可以删除限制</span></span><br><span class="line">firewall-cmd --permanent --remove-rich-rule=&quot;rule family=&quot;ipv4&quot; source address=&quot;192.168.0.200&quot; reject&quot;</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.zsythink.net/archives/1199">https://www.zsythink.net/archives/1199</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/iptables%E7%9B%B8%E5%85%B3/" title="iptables相关">https://suntus.github.io/2024/01/27/iptables相关/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tools/" rel="tag"># tools</a>
+              <a href="/tags/linux/" rel="tag"># linux</a>
+              <a href="/tags/net/" rel="tag"># net</a>
+              <a href="/tags/iptables/" rel="tag"># iptables</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/27/epoll%E7%9B%B8%E5%85%B3/" rel="prev" title="epoll相关">
+      <i class="fa fa-chevron-left"></i> epoll相关
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/linux%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B%E8%8C%83%E4%BE%8B/" rel="next" title="linux守护进程范例">
+      linux守护进程范例 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">1. 基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-4%E8%A1%A85%E9%93%BE"><span class="nav-number">1.1.</span> <span class="nav-text">1.1. 4表5链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">1.2. 基本语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4-COMMAND"><span class="nav-number">1.2.1.</span> <span class="nav-text">常用命令 COMMAND</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%8C%B9%E9%85%8D%E5%8F%82%E6%95%B0-CRETIRIA"><span class="nav-number">1.2.2.</span> <span class="nav-text">常用匹配参数 CRETIRIA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%8A%A8%E4%BD%9C"><span class="nav-number">1.2.3.</span> <span class="nav-text">常用动作</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-iptables-%E5%92%8C-firewalld"><span class="nav-number">2.</span> <span class="nav-text">2. iptables 和 firewalld</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-iptables-%E4%BE%8B%E5%AD%90"><span class="nav-number">3.</span> <span class="nav-text">3. iptables 例子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA%E5%BD%93%E5%89%8D%E8%A7%84%E5%88%99"><span class="nav-number">3.1.</span> <span class="nav-text">3.1. 导入导出当前规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E6%9F%A5"><span class="nav-number">3.2.</span> <span class="nav-text">3.2. 查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E5%A2%9E"><span class="nav-number">3.3.</span> <span class="nav-text">3.3. 增</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E5%88%A0"><span class="nav-number">3.4.</span> <span class="nav-text">3.4. 删</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-%E6%94%B9"><span class="nav-number">3.5.</span> <span class="nav-text">3.5. 改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E6%9D%A1%E4%BB%B6%E5%8C%B9%E9%85%8D"><span class="nav-number">3.6.</span> <span class="nav-text">3.4. 条件匹配</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%90%E9%93%BE"><span class="nav-number">4.</span> <span class="nav-text">4. 自定义子链</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%8A%A8%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">5. 动作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-firewalld-%E4%BD%BF%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">6. firewalld 使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="nav-number">7.</span> <span class="nav-text">7. 一个例子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

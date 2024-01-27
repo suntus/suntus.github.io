@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1. 定义同步IO多路复用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="select相关">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/select%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="1. 定义同步IO多路复用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T14:52:10.000Z">
+<meta property="article:modified_time" content="2024-01-27T14:52:29.901Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="c">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="net">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/select%E7%9B%B8%E5%85%B3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>select相关 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/select%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          select相关
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 22:52:10 / 修改时间：22:52:29" itemprop="dateCreated datePublished" datetime="2024-01-27T22:52:10+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-定义"><a href="#1-定义" class="headerlink" title="1. 定义"></a>1. 定义</h1><p>同步IO多路复用。</p>
+<span id="more"></span>
+
+<p><code>select(2)</code> 和 <code>pselect(2)</code> 的区别：</p>
+<ul>
+<li>时间精度不同，<code>select(2)</code> 用 <code>struct timeval</code>，精确到us，<code>pselect(2)</code> 用 <code>struct timespec</code><br>，精确到ns</li>
+<li><code>select(2)</code> 会更新 <code>timeout</code> ，提示还剩下多长时间，<code>pselect()</code> 不会更新参数</li>
+<li><code>select(2)</code> 不会捕获信号，没有 <code>sigmask</code> 参数</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* According to POSIX.1-2001 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/select.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* According to earlier standards */</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/time.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">timeval</span> &#123;</span></span><br><span class="line">    <span class="type">time_t</span> tv_sec;    <span class="comment">/* seconds */</span></span><br><span class="line">    <span class="type">long</span> tv_usec;     <span class="comment">/* microseconds */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">select</span><span class="params">(<span class="type">int</span> nfds, fd_set *readfds, fd_set *writefds,</span></span><br><span class="line"><span class="params">            fd_set *exceptfds, <span class="keyword">struct</span> timeval *timeout)</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">FD_CLR</span><span class="params">(<span class="type">int</span> fd, fd_set *<span class="built_in">set</span>)</span>;</span><br><span class="line"><span class="type">int</span>  <span class="title function_">FD_ISSET</span><span class="params">(<span class="type">int</span> fd, fd_set *<span class="built_in">set</span>)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">FD_SET</span><span class="params">(<span class="type">int</span> fd, fd_set *<span class="built_in">set</span>)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">FD_ZERO</span><span class="params">(fd_set *<span class="built_in">set</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/select.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">timespec</span> &#123;</span></span><br><span class="line">    <span class="type">long</span> tv_sec;    <span class="comment">/* seconds */</span></span><br><span class="line">    <span class="type">long</span> tv_nsec;   <span class="comment">/* nanoseconds */</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="type">int</span> <span class="title function_">pselect</span><span class="params">(<span class="type">int</span> nfds, fd_set *readfds, fd_set *writefds,</span></span><br><span class="line"><span class="params">            fd_set *exceptfds, <span class="type">const</span> <span class="keyword">struct</span> timespec *timeout,</span></span><br><span class="line"><span class="params">            <span class="type">const</span> <span class="type">sigset_t</span> *sigmask)</span>;</span><br><span class="line"></span><br><span class="line">Feature Test Macro Requirements <span class="keyword">for</span> <span class="title function_">glibc</span> <span class="params">(see feature_test_macros(<span class="number">7</span>))</span>:</span><br><span class="line"></span><br><span class="line"><span class="title function_">pselect</span><span class="params">()</span>: _POSIX_C_SOURCE &gt;= <span class="number">200112L</span> || _XOPEN_SOURCE &gt;= <span class="number">600</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="2-使用"><a href="#2-使用" class="headerlink" title="2. 使用"></a>2. 使用</h1><h2 id="2-1-输入"><a href="#2-1-输入" class="headerlink" title="2.1. 输入"></a>2.1. 输入</h2><p>监听三组相互独立的fd组：可读事件组，可写事件组，异常事件组。<code>FD_()</code>函数族可以控制<code>fd_set</code>。返回也是在这些地方，因此如果再循环中使用<code>select()</code>时，需要每次都重新初始化希望监听的组。返回的fd在可读事件组中，表示该fd上可以立刻读出数据；在可写事件组中，表示该fd有空间可以写。</p>
+<p><code>nfds</code>是三组中fd编号最大的值再+1。</p>
+<p><code>timeout</code>控制阻塞时间，NULL表示一直阻塞，0表示不阻塞，立刻返回。</p>
+<p><code>sigmask</code>不为NULL时，<code>pselect(2)</code>会先将当前监听的信号组保存，替换成<code>sigmask</code>指向的信号组，然后进行<code>select</code>，返回后再恢复之前的信号组。也就是说，这样的调用:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ready = pselect(nfds, &amp;readfds, &amp;writefds, &amp;exceptfds, timeout, &amp;sigmask);</span><br></pre></td></tr></table></figure>
+<p>会等价于 <em><strong>原子性</strong></em> 的执行:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sigset_t origmask;</span><br><span class="line"></span><br><span class="line">pthread_sigmask(SIG_SETMASK, &amp;sigmask, &amp;origmask);</span><br><span class="line">ready = select(nfds, &amp;readfds, &amp;writefds, &amp;exceptfds, timeout);</span><br><span class="line">pthread_sigmask(SIG_SETMASK, &amp;origmask, NULL);</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-输出"><a href="#2-2-输出" class="headerlink" title="2.2. 输出"></a>2.2. 输出</h2><p>大于0：表示三个返回的fd组中fd的总个数，需要用<code>FD_ISSET()</code>检查某个fd是否有事件返回<br>0: 超时<br>-1: 失败，并设置<code>errno</code>，此时fd组和<code>timeout</code>未定义，不能使用</p>
+<p>errno:</p>
+<ul>
+<li>EBADF: 输入的fd组中有无效的fd(fd已关闭，或者已经发生了错误)。</li>
+<li>EINTR: 产生信号</li>
+<li>EINVAL: <code>nfds</code>是负数或者<code>timeout</code>无效</li>
+<li>ENOMEM: 没有内存创建内部表</li>
+</ul>
+<h1 id="3-为什么要有pselect-2"><a href="#3-为什么要有pselect-2" class="headerlink" title="3. 为什么要有pselect(2)"></a>3. 为什么要有<code>pselect(2)</code></h1><p>UNIX网络编程给了个例子。这个程序的<code>SIGINT</code>信号处理函数设置全局变量<code>intr_flag</code>并返回，然后程序主逻辑检查<code>intr_flag</code>是否设置，如果设置了就进行处理。如果主逻辑阻塞在<code>select()</code>调用，此时产生了<code>SIGINT</code>信号，<code>select()</code>会返回<code>EINTR</code>错误，返回之后，可以继续检查<code>intr_flag</code>是否设置了。代码大致长这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">if (intr_flag)      // 1</span><br><span class="line">    handle_intr();  // 处理SIGINT信号</span><br><span class="line">if ((nready = select(...)) &lt; 0) &#123;   // 2</span><br><span class="line">    if (errno == EINTR) &#123;</span><br><span class="line">        if (intr_flag)</span><br><span class="line">            handle_intr();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但有个问题，如果主逻辑在测试<code>intr_flag</code>(1)和调用<code>select</code>(2) 之间有信号发生的话，并且如果<code>select</code>永远阻塞，该信号将丢失。使用<code>pselect</code>就可以安全处理这种情况：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">sigset_t newmask, oldmask, zeromask;</span><br><span class="line"></span><br><span class="line">sigemptyset(&amp;zeromask);</span><br><span class="line">sigemptyset(&amp;newmask);</span><br><span class="line">sigaddset(&amp;newmask, SIGINT);</span><br><span class="line"></span><br><span class="line">sigprocmask(SIG_BLOCK, &amp;newmask, &amp;oldmask);  // block SIGINT</span><br><span class="line">if (intr_flag)      // 1</span><br><span class="line">    handle_intr();</span><br><span class="line">if ((nready = pselect(..., &amp;zeromask)) &lt; 0) &#123;   // 2</span><br><span class="line">    if (errno == EINTR) &#123;</span><br><span class="line">        if (intr_flag)</span><br><span class="line">            handle_intr();</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在测试<code>intr_flag</code>之前，阻塞掉<code>SIGINT</code>，当调用<code>pselect</code>时，将阻塞的信号集替换为空集<code>zeromask</code>，解除对<code>SIGINT</code>的屏蔽，<code>pselect</code>返回时，又会将<code>SIGINT</code>屏蔽掉，这样，<code>SIGINT</code>信号只会在(1)之前和<code>pselect()</code>被阻塞时(2)捕获，保证不会错过对信号的处理。</p>
+<p>在<code>man 2 select_tut</code>中有个完整些的例子，可以看看。</p>
+<h1 id="4-多线程"><a href="#4-多线程" class="headerlink" title="4. 多线程"></a>4. 多线程</h1><p>如果正在被<code>select()</code>监听的fd在另一个线程中被关闭，结果无定义。一些UNIX系统上，<code>select()</code>解除阻塞，立即返回，并且表明该fd上有事件发生(但接下来对该fd的操作可能失败，因为已经关闭了。除非另一个线程在<code>select()</code>返回和对fd操作之间重新打开了这个fd)。linux上，另一个线程关闭fd对<code>select()</code>无影响。总体来说，别在多个线程上同时处理同一个fd。</p>
+<p><code>select()</code>返回可读事件后，后续的读操作仍有可能阻塞，比如数据已经到了，但上层检查的时候，因为校验和错误而丢掉该数据。因此最好是配合非阻塞IO操作。</p>
+<h1 id="5-例子"><a href="#5-例子" class="headerlink" title="5. 例子"></a>5. 例子</h1><p>这个是 manual 中给的例子，监听stdin是否有输入</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;sys/time.h&gt;</span><br><span class="line">#include &lt;sys/types.h&gt;</span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line"></span><br><span class="line">int</span><br><span class="line">main(void)</span><br><span class="line">&#123;</span><br><span class="line">    fd_set rfds;</span><br><span class="line">    struct timeval tv;</span><br><span class="line">    int retval;</span><br><span class="line"></span><br><span class="line">    /* Watch stdin (fd 0) to see when it has input. */</span><br><span class="line">    FD_ZERO(&amp;rfds);</span><br><span class="line">    FD_SET(0, &amp;rfds);</span><br><span class="line"></span><br><span class="line">    /* Wait up to five seconds. */</span><br><span class="line">    tv.tv_sec = 5;</span><br><span class="line">    tv.tv_usec = 0;</span><br><span class="line"></span><br><span class="line">    retval = select(1, &amp;rfds, NULL, NULL, &amp;tv);</span><br><span class="line">    /* Don&#x27;t rely on the value of tv now! */</span><br><span class="line"></span><br><span class="line">    if (retval == -1)</span><br><span class="line">        perror(&quot;select()&quot;);</span><br><span class="line">    else if (retval)</span><br><span class="line">        printf(&quot;Data is available now.\n&quot;);</span><br><span class="line">        /* FD_ISSET(0, &amp;rfds) will be true. */</span><br><span class="line">    else</span><br><span class="line">        printf(&quot;No data within five seconds.\n&quot;);</span><br><span class="line"></span><br><span class="line">    exit(EXIT_SUCCESS);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/select%E7%9B%B8%E5%85%B3/" title="select相关">https://suntus.github.io/2024/01/27/select相关/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/c/" rel="tag"># c</a>
+              <a href="/tags/linux/" rel="tag"># linux</a>
+              <a href="/tags/net/" rel="tag"># net</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/27/select-poll-epoll%E6%80%BB%E7%BB%93/" rel="prev" title="select,poll,epoll总结">
+      <i class="fa fa-chevron-left"></i> select,poll,epoll总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/setsid/" rel="next" title="setsid">
+      setsid <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">1. 定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E4%BD%BF%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">2. 使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E8%BE%93%E5%85%A5"><span class="nav-number">2.1.</span> <span class="nav-text">2.1. 输入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E8%BE%93%E5%87%BA"><span class="nav-number">2.2.</span> <span class="nav-text">2.2. 输出</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9C%89pselect-2"><span class="nav-number">3.</span> <span class="nav-text">3. 为什么要有pselect(2)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">4. 多线程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E4%BE%8B%E5%AD%90"><span class="nav-number">5.</span> <span class="nav-text">5. 例子</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

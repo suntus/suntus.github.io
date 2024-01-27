@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ros图像处理相关">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/ros%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="…">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T14:50:18.000Z">
+<meta property="article:modified_time" content="2024-01-27T14:50:51.087Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="media">
+<meta property="article:tag" content="ros">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/ros%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E7%9B%B8%E5%85%B3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ros图像处理相关 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/ros%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ros图像处理相关
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 22:50:18 / 修改时间：22:50:51" itemprop="dateCreated datePublished" datetime="2024-01-27T22:50:18+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>…</p>
+<span id="more"></span>
+
+<h1 id="1-image-transport"><a href="#1-image-transport" class="headerlink" title="1. image_transport"></a>1. image_transport</h1><p>ros规定了多种基本的数据结构，用于node之间的传输。图像也是一种常用的数据，image_transport package就是用来处理图像数据传输的，它本身是个框架，只提供最基本的原始图像数据(raw)，如果需要降低传输时的带宽，还需要压缩格式，由框架下集成的各种插件来完成。</p>
+<p>image_transport 会发布 <a target="_blank" rel="noopener" href="http://docs.ros.org/en/api/sensor_msgs/html/msg/Image.html">sensor_msgs&#x2F;Image</a> 格式的数据，其他压缩格式由插件提供。</p>
+<hr>
+<p>ROS中原始图像格式”sensor_msgs&#x2F;Image”如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">                        # This message contains an uncompressed image</span><br><span class="line">                        # (0, 0) is at top-left corner of image</span><br><span class="line">                        #</span><br><span class="line">Header header           # std_msgs/Header</span><br><span class="line"></span><br><span class="line">uint32 height           # image height, that is, number of rows</span><br><span class="line">uint32 width            # image width, that is, number of columns</span><br><span class="line"></span><br><span class="line">                        # The legal values for encoding are in file src/image_encodings.cpp</span><br><span class="line">                        # If you want to standardize a new string format, join</span><br><span class="line">                        # ros-users@lists.sourceforge.net and send an email proposing a new encoding.</span><br><span class="line">string encoding         # Encoding of pixels -- channel meaning, ordering, size</span><br><span class="line">                        # taken from the list of strings in include/sensor_msgs/image_encodings.h</span><br><span class="line"></span><br><span class="line">uint8 is_bigendian      # is this data bigendian?</span><br><span class="line">uint32 step             # Full row length in bytes</span><br><span class="line">uint8[] data            # actual matrix data, size is (step * rows)</span><br></pre></td></tr></table></figure>
+
+<p>其中 header 是标准结构:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">                        # Standard metadata for higher-level stamped data types.</span><br><span class="line">                        # This is generally used to communicate timestamped data</span><br><span class="line">                        # in a particular coordinate frame.</span><br><span class="line">                        #</span><br><span class="line">                        # sequence ID: consecutively increasing ID</span><br><span class="line">uint32 seq</span><br><span class="line"></span><br><span class="line">                        #Two-integer timestamp that is expressed as:</span><br><span class="line">                        # * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called &#x27;secs&#x27;)</span><br><span class="line">                        # * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called &#x27;nsecs&#x27;)</span><br><span class="line">                        # time-handling sugar is provided by the client library</span><br><span class="line">time stamp</span><br><span class="line"></span><br><span class="line">                        #Frame this data is associated with</span><br><span class="line">string frame_id</span><br></pre></td></tr></table></figure>
+
+
+<p>一个具体例子:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@suntus:~# rostopic echo -n 1 /cv_camera/image_raw --noarr</span><br><span class="line">header:</span><br><span class="line">  seq: 293              # 当前帧序号</span><br><span class="line">  stamp:                # 获取图像的时间戳</span><br><span class="line">    secs: 1636868180</span><br><span class="line">    nsecs:  53476744</span><br><span class="line">  frame_id: &quot;camera&quot;    # frame_id</span><br><span class="line">height: 480             # 行数</span><br><span class="line">width: 640              # 列数</span><br><span class="line">encoding: &quot;bgr8&quot;        # 像素点的压缩格式，通道数3，顺序是BGR，深度是24。按照这个可以知道data数组中值的意义</span><br><span class="line">is_bigendian: 0         # 是否大端排序</span><br><span class="line">step: 1920              # 步长，一行的字节数，宽度(640) x 像素点字节数(3) = 1920bytes。图像总共 480行，也就是 1920x480=921600字节，也是下边data数组长度</span><br><span class="line">data: &quot;&lt;array type: uint8, length: 921600&gt;&quot;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>使用上的例子<br>不使用 image_transport 的订阅发布：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Do not communicate images this way!</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">imageCallback</span><span class="params">(<span class="type">const</span> sensor_msgs::ImageConstPtr&amp; msg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ros::NodeHandle nh;</span><br><span class="line">ros::Subscriber sub = nh.<span class="built_in">subscribe</span>(<span class="string">&quot;in_image_topic&quot;</span>, <span class="number">1</span>, imageCallback);</span><br><span class="line">ros::Publisher pub = nh.<span class="built_in">advertise</span>&lt;sensor_msgs::Image&gt;(<span class="string">&quot;out_image_topic&quot;</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+
+<p>使用 image_transport 的订阅发布:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Use the image_transport classes instead.</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;image_transport/image_transport.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">imageCallback</span><span class="params">(<span class="type">const</span> sensor_msgs::ImageConstPtr&amp; msg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ros::NodeHandle nh;</span><br><span class="line"><span class="function">image_transport::ImageTransport <span class="title">it</span><span class="params">(nh)</span></span>;  <span class="comment">// 相当于将原始的nh封装了一次</span></span><br><span class="line">image_transport::Subscriber sub = it.<span class="built_in">subscribe</span>(<span class="string">&quot;in_image_base_topic&quot;</span>, <span class="number">1</span>, imageCallback);</span><br><span class="line">image_transport::Publisher pub = it.<span class="built_in">advertise</span>(<span class="string">&quot;out_image_base_topic&quot;</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+
+<hr>
+<p>提供的东西:</p>
+<p><strong>API</strong></p>
+<p><strong>publisher</strong></p>
+<p>image_transport::Publisher<br>image_transport本身只在基础topic: &lt;base topic&gt; 上发布 sensor_msgs&#x2F;Image 原始格式的图像，如果有其他插件，会自动在基础topic下的其他topic发布:&lt;base topic&gt;&#x2F;&lt;transport name&gt;，比如基础topic是 “&#x2F;cv_camera”,<br>image_transport 会发布 “&#x2F;cv_camera&#x2F;image_raw” 原始格式的topic，插件compressed_image_transport 会在 “&#x2F;cv_camera&#x2F;image_raw&#x2F;compressed” 发布压缩格式的图像。</p>
+<p><strong>subscriber</strong><br>image_transport::Subscriber<br>订阅基础topic后，会自动订阅其他相关topic。</p>
+<p><strong>parameter</strong></p>
+<p>image_transport 本身不发布参数，但插件会发布各种参数，比如帧率、压缩等级等，需要看插件本身。<br>发布者应该使用动态参数机制，让参数更容易被订阅者使用。<br>参数格式一般是: &lt;base topic&gt;&#x2F;&lt;transport name&gt;&#x2F;&lt;parameter name&gt;<br>比如: &#x2F;cv_camera&#x2F;image_raw&#x2F;compressed&#x2F;parameter_descriptions</p>
+<p><strong>node</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rosrun image_transport republish [in_transport] <span class="keyword">in</span>:=&lt;in_base_topic&gt; [out_transport] out:=&lt;out_base_topic&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>比如将 theora 格式的topic图像解压，重新发布到另一个topic，可以这样写:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rosrun image_transport republish theora <span class="keyword">in</span>:=camera/image raw out:=camera/image_decompressed</span></span><br></pre></td></tr></table></figure>
+
+<p>如果一个node只发布原始的图像格式，可以用 image_transport 重新发布成多种格式的topic。</p>
+<p><strong>命令行工具</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rosrun image_transport list_transports</span></span><br></pre></td></tr></table></figure>
+<p>可以查看当前所有的package，看看是否有可用的图像处理插件，以及插件状态。</p>
+<hr>
+<p>下边的插件介绍<br>使用  image_transport 提供的一个node命令： list_transports，可以查看当前有的topic和对应的插件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">root@suntus:~# rosrun image_transport list_transports</span><br><span class="line">Declared transports:</span><br><span class="line">image_transport/compressed</span><br><span class="line">image_transport/compressedDepth</span><br><span class="line">image_transport/ffmpeg (*): Not available. Try &#x27;catkin_make --pkg ffmpeg_image_transport&#x27;.</span><br><span class="line">image_transport/raw</span><br><span class="line">image_transport/theora</span><br><span class="line"></span><br><span class="line">Details:</span><br><span class="line">----------</span><br><span class="line">&quot;image_transport/compressed&quot;</span><br><span class="line"> - Provided by package: compressed_image_transport</span><br><span class="line"> - Publisher:</span><br><span class="line">      This plugin publishes a CompressedImage using either JPEG or PNG compression.</span><br><span class="line"></span><br><span class="line"> - Subscriber:</span><br><span class="line">      This plugin decompresses a CompressedImage topic.</span><br><span class="line"></span><br><span class="line">----------</span><br><span class="line">&quot;image_transport/compressedDepth&quot;</span><br><span class="line"> - Provided by package: compressed_depth_image_transport</span><br><span class="line"> - Publisher:</span><br><span class="line">      This plugin publishes a compressed depth images using PNG compression.</span><br><span class="line"></span><br><span class="line"> - Subscriber:</span><br><span class="line">      This plugin decodes a compressed depth images.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">----------</span><br><span class="line">&quot;image_transport/ffmpeg&quot;</span><br><span class="line">*** Plugins are not built. ***</span><br><span class="line"> - Provided by package: ffmpeg_image_transport</span><br><span class="line"> - Publisher:</span><br><span class="line">      This plugin encodes frame into ffmpeg compressed packets</span><br><span class="line"></span><br><span class="line"> - Subscriber:</span><br><span class="line">      This plugin decodes frame from ffmpeg compressed packets</span><br><span class="line"></span><br><span class="line">----------</span><br><span class="line">&quot;image_transport/raw&quot;</span><br><span class="line"> - Provided by package: image_transport</span><br><span class="line"> - Publisher:</span><br><span class="line">      This is the default publisher. It publishes the Image as-is on the base topic.</span><br><span class="line"></span><br><span class="line"> - Subscriber:</span><br><span class="line">      This is the default pass-through subscriber for topics of type sensor_msgs/Image.</span><br><span class="line"></span><br><span class="line">----------</span><br><span class="line">&quot;image_transport/theora&quot;</span><br><span class="line"> - Provided by package: theora_image_transport</span><br><span class="line"> - Publisher:</span><br><span class="line">      This plugin publishes a video packet stream encoded using Theora.</span><br><span class="line"></span><br><span class="line"> - Subscriber:</span><br><span class="line">      This plugin decodes a video packet stream encoded using Theora.</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>compressed_image_transport(“compressed”):<br>发布和订阅 JPEG 或 PNG 压缩格式的图像，支持运行时改变图片质量。</p>
+<p>压缩格式:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">                    # This message contains a compressed image</span><br><span class="line">Header header       # std_msgs/Header</span><br><span class="line">string format       # Specifies the format of the data</span><br><span class="line">                    #   Acceptable values:</span><br><span class="line">                    #     jpeg, png</span><br><span class="line">uint8[] data        # Compressed image buffer</span><br></pre></td></tr></table></figure>
+
+<p>一个例子:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">root@suntus:~# rostopic echo -n 1 /cv_camera/image_raw/compressed --noarr</span><br><span class="line">header:</span><br><span class="line">  seq: 0</span><br><span class="line">  stamp:</span><br><span class="line">    secs: 1636880329</span><br><span class="line">    nsecs: 751462995</span><br><span class="line">  frame_id: &quot;camera&quot;</span><br><span class="line">format: &quot;bgr8; jpeg compressed bgr8&quot;</span><br><span class="line">data: &quot;&lt;array type: uint8, length: 43548&gt;&quot;</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>提供的东西：</p>
+<p><strong>发布插件</strong></p>
+<p><strong>发布topic:</strong></p>
+<p>&lt;base_topic&gt;&#x2F;compressed (sensor_msgs&#x2F;CompressedImage)</p>
+<p><strong>参数</strong></p>
+<ul>
+<li>&lt;base_topic&gt;&#x2F;compressed&#x2F;format (string, default: jpeg) Compression format to use, “jpeg” or “png”.</li>
+<li>&lt;base_topic&gt;&#x2F;compressed&#x2F;jpeg_quality (int, default: 80) JPEG quality percentile, in the range [1, 100]. Lower values trade image quality for space savings.</li>
+<li>&lt;base_topic&gt;&#x2F;compressed&#x2F;png_level (int, default: 9) PNG compression level, in the range [1, 9]. Higher values trade computation time for space savings.</li>
+</ul>
+<p><strong>订阅插件</strong></p>
+<p>订阅topic:<br>&lt;base_topic&gt;&#x2F;compressed (sensor_msgs&#x2F;CompressedImage)</p>
+<hr>
+<p>compressed_depth_image_transport<br>提供深度图像(depth image),主要用于3D领域，带距离的图像格式。</p>
+<hr>
+<p>theora_image_transport<br>发布成视频流<br>theora视频编码格式的视频流数据<br>theora是个视频编码格式，类似H264这种<br>对应的声音编码技术是vorbis<br>对应的文件封装格式是ogg</p>
+<p>发布topic<br>&lt;base topic&gt;&#x2F;theora (theora_image_transport&#x2F;Packet)</p>
+<p>参数</p>
+<ul>
+<li>&lt;base topic&gt;&#x2F;theora&#x2F;optimize_for (int, default: Quality (1))<br>Controls whether to use constant bitrate (CBR) encoding, aiming for ~theora&#x2F;target_bitrate; or variable bitrate (VBR) encoding, aiming for ~theora&#x2F;quality. Values are Bitrate (0) and Quality (1).</li>
+<li>&lt;base topic&gt;&#x2F;theora&#x2F;target_bitrate (int, default: 800000)<br>Target bitrate. Used if optimize_for is set to Bitrate.</li>
+<li>&lt;base topic&gt;&#x2F;theora&#x2F;quality (int, default: 31)<br>Encoding quality level, in the range [0, 63]. Used if optimize_for is set to Quality.</li>
+<li>&lt;base topic&gt;&#x2F;theora&#x2F;keyframe_frequency (int, default: 64)<br>Maximum distance between key frames. If set to 1, every frame is a keyframe.</li>
+</ul>
+<p>订阅topic:<br>&lt;base topic&gt;&#x2F;theora (theora_image_transport&#x2F;Packet)</p>
+<p>提供有一个node: ogg_saver，可以保存成 .ogv 格式的封装文件，用其他播放器播放。</p>
+<hr>
+<p>ffmpeg_image_transport<br>使用ffmpe将图像转换成h264或h265格式，并且支持nvidia GPU硬件加速。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/daniilidis-group/ffmpeg_image_transport">https://github.com/daniilidis-group/ffmpeg_image_transport</a></p>
+<hr>
+<p>cv_bridge<br>在ROS Image messages 和 OpenCV images 格式之间进行转换。</p>
+<p>ros图像格式基础的是 sensor_msgs&#x2F;Image, 还有 sensor_msgs&#x2F;CompressedImage,  opencv中用到的格式为 cv::Mat 矩阵，需要进行转换，才能放到opencv中使用。</p>
+<p>opencv中支持的像素编码格式有：<br>8UC[1-4]<br>8SC[1-4]<br>16UC[1-4]<br>16SC[1-4]<br>32SC[1-4]<br>32FC[1-4]<br>64FC[1-4]</p>
+<p>cv_bridge有时候会进行必要的像素格式转换，可以使用如下的字符串来表示目标格式：</p>
+<ul>
+<li>mono8: CV_8UC1, grayscale image</li>
+<li>mono16: CV_16UC1, 16-bit grayscale image</li>
+<li>bgr8: CV_8UC3, color image with blue-green-red color order</li>
+<li>rgb8: CV_8UC3, color image with red-green-blue color order</li>
+<li>bgra8: CV_8UC4, BGR color image with an alpha channel</li>
+<li>rgba8: CV_8UC4, RGB color image with an alpha channel</li>
+</ul>
+<p>其中 mono8和bgr8是opencv中常用的格式。</p>
+<hr>
+<p>roscpp</p>
+<p>初始化和停止<br>ros::init(argc, argv, “my_node_name”);<br>ros::shutdown();<br>ros::ok() 用于检查node是否shutdown</p>
+<p><strong>timer</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定时器，周期性执行回调。</span></span><br><span class="line">ros::Timer ros::NodeHandle::<span class="built_in">createTimer</span>(ros::Duration period, &lt;callback&gt;, <span class="type">bool</span> oneshot = <span class="literal">false</span>);</span><br><span class="line">ros::Timer timer = nh.<span class="built_in">createTimer</span>(ros::<span class="built_in">Duration</span>(<span class="number">0.1</span>), timerCallback); <span class="comment">// 创建timer</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 回调签名:</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">callback</span><span class="params">(<span class="type">const</span> ros::TimerEvent&amp;)</span></span>;</span><br><span class="line"><span class="comment">// 其中 ros::TimerEvent:</span></span><br><span class="line"><span class="comment">//      ros::Time last_expected     -- 理想中前一个回调应该被执行的时间</span></span><br><span class="line"><span class="comment">//      ros::Time last_real         -- 实际上前一个回调执行的时间</span></span><br><span class="line"><span class="comment">//      ros::Time current_expected  -- 理想中当前回调应该被执行的时间</span></span><br><span class="line"><span class="comment">//      ros::Time current_real      -- 实际上当前回调执行的时间</span></span><br><span class="line"><span class="comment">//      ros::WallTime profile.last_duration -- 前一个回调执行的耗时</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>线程</strong></p>
+<p><strong>单线程</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 单线程调用</span></span><br><span class="line">ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;my_node&quot;</span>);</span><br><span class="line">ros::NodeHandle nh;</span><br><span class="line">ros::Subscriber sub = nh.<span class="built_in">subscribe</span>(...);</span><br><span class="line">...</span><br><span class="line">ros::<span class="built_in">spin</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 自己实现 spin()</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/callback_queue.h&gt;</span></span></span><br><span class="line">ros::NodeHandle n;</span><br><span class="line"><span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">&#123;</span><br><span class="line">  ros::<span class="built_in">getGlobalCallbackQueue</span>()-&gt;<span class="built_in">callAvailable</span>(ros::<span class="built_in">WallDuration</span>(<span class="number">0.1</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 另一种形式的单线程调用</span></span><br><span class="line"><span class="function">ros::Rate <span class="title">r</span><span class="params">(<span class="number">10</span>)</span></span>; <span class="comment">// 10 hz</span></span><br><span class="line"><span class="keyword">while</span> (should_continue)</span><br><span class="line">&#123;</span><br><span class="line">  ... <span class="keyword">do</span> some work, publish some messages, etc. ...</span><br><span class="line">  ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">  r.<span class="built_in">sleep</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 自己实现 spinOnce()</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/callback_queue.h&gt;</span></span></span><br><span class="line">ros::<span class="built_in">getGlobalCallbackQueue</span>()-&gt;<span class="built_in">callAvailable</span>(ros::<span class="built_in">WallDuration</span>(<span class="number">0</span>));</span><br></pre></td></tr></table></figure>
+
+<p><strong>多线程</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 同步spin，阻塞</span></span><br><span class="line"><span class="function">ros::MultiThreadedSpinner <span class="title">spinner</span><span class="params">(<span class="number">4</span>)</span></span>; <span class="comment">// Use 4 threads</span></span><br><span class="line">spinner.<span class="built_in">spin</span>(); <span class="comment">// spin() will not return until the node has been shutdown</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 异步spin</span></span><br><span class="line"><span class="function">ros::AsyncSpinner <span class="title">spinner</span><span class="params">(<span class="number">4</span>)</span></span>; <span class="comment">// Use 4 threads</span></span><br><span class="line">spinner.<span class="built_in">start</span>();</span><br><span class="line">ros::<span class="built_in">waitForShutdown</span>(); <span class="comment">// 这里会阻塞</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>调用队列</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ros有个全局默认队列, 所有回调都会挂到这个上边</span></span><br><span class="line">ros::<span class="built_in">getGlobalCallbackQueue</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建自己的调用队列，有两层次:</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/callback_queue.h&gt;</span></span></span><br><span class="line">ros::CallbackQueue my_queue;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 层次1: 每个 subscribe(), advertise(), advertiseService()</span></span><br><span class="line"><span class="comment">// 使用 Options 结构体传入自己的队列</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 层次2: 每个 NodeHandle，更常用. ros::spin() 不会自动触发这些回调，需要手动去触发</span></span><br><span class="line">ros::NodeHandle nh;</span><br><span class="line">nh.<span class="built_in">setCallbackQueue</span>(&amp;my_callback_queue);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 一次调用所有的回调</span></span><br><span class="line"><span class="built_in">callAvailable</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 一次调用一个回调</span></span><br><span class="line"><span class="built_in">callOne</span>()</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/ros%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E7%9B%B8%E5%85%B3/" title="ros图像处理相关">https://suntus.github.io/2024/01/27/ros图像处理相关/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/media/" rel="tag"># media</a>
+              <a href="/tags/ros/" rel="tag"># ros</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/27/poll%E7%9B%B8%E5%85%B3/" rel="prev" title="poll相关">
+      <i class="fa fa-chevron-left"></i> poll相关
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/ros%E5%9F%BA%E7%A1%80/" rel="next" title="ros基础">
+      ros基础 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-image-transport"><span class="nav-number">1.</span> <span class="nav-text">1. image_transport</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

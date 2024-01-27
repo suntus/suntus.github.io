@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="IO多路复用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="poll相关">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/poll%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="IO多路复用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T14:49:39.000Z">
+<meta property="article:modified_time" content="2024-01-27T14:50:28.056Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="c">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="net">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/poll%E7%9B%B8%E5%85%B3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>poll相关 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/poll%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          poll相关
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 22:49:39 / 修改时间：22:50:28" itemprop="dateCreated datePublished" datetime="2024-01-27T22:49:39+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>IO多路复用。</p>
+<span id="more"></span>
+
+<h1 id="1-定义"><a href="#1-定义" class="headerlink" title="1. 定义"></a>1. 定义</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;poll.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">pollfd</span> &#123;</span></span><br><span class="line">    <span class="type">int</span>   fd;         <span class="comment">/* file descriptor */</span></span><br><span class="line">    <span class="type">short</span> events;     <span class="comment">/* requested events */</span></span><br><span class="line">    <span class="type">short</span> revents;    <span class="comment">/* returned events */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">poll</span><span class="params">(<span class="keyword">struct</span> pollfd *fds, <span class="type">nfds_t</span> nfds, <span class="type">int</span> timeout)</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> _GNU_SOURCE         <span class="comment">/* See feature_test_macros(7) */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;poll.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">timespec</span> &#123;</span></span><br><span class="line">    <span class="type">long</span>    tv_sec;         <span class="comment">/* seconds */</span></span><br><span class="line">    <span class="type">long</span>    tv_nsec;        <span class="comment">/* nanoseconds */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">ppoll</span><span class="params">(<span class="keyword">struct</span> pollfd *fds, <span class="type">nfds_t</span> nfds,</span></span><br><span class="line"><span class="params">        <span class="type">const</span> <span class="keyword">struct</span> timespec *timeout_ts, <span class="type">const</span> <span class="type">sigset_t</span> *sigmask)</span>;</span><br></pre></td></tr></table></figure>
+
+<h1 id="2-基本使用"><a href="#2-基本使用" class="headerlink" title="2. 基本使用"></a>2. 基本使用</h1><p>跟<code>select(2)</code>类似，等待一组文件描述符上的事件。</p>
+<p>如果 <code>fd</code> 是负数，<code>poll(2)</code> 会忽略 <code>events</code>，并且返回的<code>revents</code>是0，可以在单次<code>poll(2)</code>调用中，忽略某一个<code>fd</code><br><code>events</code> 是入参，输入对<code>fd</code>上感兴趣的事件，是个bitmask，0表示对所有事件都不感兴趣。</p>
+<p><code>revents</code>是出参，表示哪些事件发生了，也是个bitmask，可能会比 <code>events</code> 多出来三个值 <code>POLLER, POLLHUP, POLLNVAL</code>。</p>
+<p><code>timeout</code>是ms，表示<code>poll(2)</code>最少会阻塞的时间，0表示非阻塞，立刻返回，即使没有事件发生也会返回；负数表示一直阻塞，直到有事件发生。</p>
+<p>bitmask可以有的值为:</p>
+<ul>
+<li>POLLIN: 有数据可以读</li>
+<li>POLLPRI: 紧急数据可读(TCP上的带外数据等)</li>
+<li>POLLOUT: 数据可写，这时候进行写操作不会阻塞</li>
+<li>POLLRDHUP(&gt;&#x3D;2.6.17): 流式socket的对端断开连接或者关闭了写操作。比如有 <code>_GNU_SOURCE</code> 宏才能使用该定义</li>
+<li>POLLERR(out): 有错误发生</li>
+<li>POLLHUP(out): 挂起。写端关闭，在读端<code>poll()</code>时，会出现该错误。</li>
+<li>POLLNVAL(out): 非法请求，fd未打开。等价于EBADF。</li>
+</ul>
+<p><code>ppoll(2)</code> 允许应用安全的等待fd上事件发生，或者捕获了信号。类似 <code>select(2)</code> 和 <code>pselect(2)</code> 的关系。<br>这样的调用:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ready = ppoll(&amp;fds, nfds, timeout_ts, &amp;sigmask);</span><br></pre></td></tr></table></figure>
+<p>等价于 <em><strong>原子性</strong></em> 的执行:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sigset_t origmask;</span><br><span class="line">int timeout;</span><br><span class="line"></span><br><span class="line">timeout = (timeout_ts == NULL) ? -1 :</span><br><span class="line">            (timeout_ts.tv_sec * 1000 + timeout_ts.tv_nsec / 1000000);</span><br><span class="line">sigprocmask(SIG_SETMASK, &amp;sigmask, &amp;origmask);</span><br><span class="line">ready = poll(&amp;fds, nfds, timeout);</span><br><span class="line">sigprocmask(SIG_SETMASK, &amp;origmask, NULL);</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-返回值"><a href="#3-返回值" class="headerlink" title="3. 返回值"></a>3. 返回值</h1><p>大于0: 成功，有事件发生的fd的个数(这些fd上的 revents 非0)。<br>0: 超时，没有事件发生<br>-1: 失败，需要检查对应的errno。</p>
+<p>errno:</p>
+<ul>
+<li>EFAULT: 参数数组地址无效</li>
+<li>EINTR: 有信号发生</li>
+<li>EINVAL: nfds 值超出了 <code>RLIMIT_NOFILE</code> 的值</li>
+<li>ENOMEM: 没有内存来申请fd表</li>
+</ul>
+<h1 id="4-其他"><a href="#4-其他" class="headerlink" title="4. 其他"></a>4. 其他</h1><p>有些实现定义了 timeout 参数无穷大值 <code>INFTIM</code>，值为-1， glibc 没有定义。</p>
+<p>linux提供的 <code>ppoll(2)</code> 系统调用接口会更新 <code>timeout_ts</code> 参数，glibc封装的时候不会更新，需要注意</p>
+<h1 id="5-关于POLLHUP"><a href="#5-关于POLLHUP" class="headerlink" title="5. 关于POLLHUP"></a>5. 关于POLLHUP</h1><p>这里稍详细的解释了POLLHUP: <a target="_blank" rel="noopener" href="https://pubs.opengroup.org/onlinepubs/9699919799/functions/poll.html">https://pubs.opengroup.org/onlinepubs/9699919799/functions/poll.html</a></p>
+<blockquote>
+<p>POLLHUP<br>A device has been disconnected, or a pipe or FIFO has been closed by the last process that had it open for writing. Once set, the hangup state of a FIFO shall persist until some process opens the FIFO for writing or until all read-only file descriptors for the FIFO are closed. This event and POLLOUT are mutually-exclusive; a stream can never be writable if a hangup has occurred. However, this event and POLLIN, POLLRDNORM, POLLRDBAND, or POLLPRI are not mutually-exclusive. This flag is only valid in the revents bitmask; it shall be ignored in the events member.<br>POLLNVAL</p>
+</blockquote>
+<p>也就是写端关闭，在读端进行<code>poll()</code>时，会报出这个错，然后在写端重新打开后，该fd还会正常，<a target="_blank" rel="noopener" href="https://stackoverflow.com/a/25147531">有人提供了个示例</a>，演示了如何触发 <code>POLLHUP</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">// 打开pipe, 关闭写端，在读端进行poll()</span><br><span class="line"></span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;poll.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;errno.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    int p[2];</span><br><span class="line">    struct pollfd ufd;</span><br><span class="line"></span><br><span class="line">    if (pipe(p) &lt; 0) &#123;</span><br><span class="line">        perror(&quot;pipe&quot;);</span><br><span class="line">        return EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line">    if (close(p[1]) &lt; 0) &#123; /* close the write fd */</span><br><span class="line">        perror(&quot;close&quot;);</span><br><span class="line">        return EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    memset(&amp;ufd, 0, sizeof ufd);</span><br><span class="line">    ufd.fd = p[0]; /* poll the read fd after the write fd is closed */</span><br><span class="line">    ufd.events = POLLIN;</span><br><span class="line">    if (poll(&amp;ufd, 1, 1000) &lt; 0) &#123;</span><br><span class="line">        perror(&quot;poll&quot;);</span><br><span class="line">        return EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    switch(ufd.revents &amp; (POLLIN|POLLHUP)) &#123;</span><br><span class="line">        case POLLIN: printf(&quot;POLLIN\n&quot;); break;</span><br><span class="line">        case POLLHUP: printf(&quot;POLLHUP\n&quot;); break;</span><br><span class="line">        case POLLIN|POLLHUP: printf(&quot;POLLIN|POLLHUP\n&quot;); break;</span><br><span class="line">        case POLLERR: printf(&quot;POLLERR\n&quot;); break;</span><br><span class="line">        default: printf(&quot;%#x\n&quot;, (unsigned)ufd.revents); break;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return EXIT_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/poll%E7%9B%B8%E5%85%B3/" title="poll相关">https://suntus.github.io/2024/01/27/poll相关/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/c/" rel="tag"># c</a>
+              <a href="/tags/linux/" rel="tag"># linux</a>
+              <a href="/tags/net/" rel="tag"># net</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/27/linux%E6%A0%87%E5%87%86%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA/" rel="prev" title="linux标准输入输出">
+      <i class="fa fa-chevron-left"></i> linux标准输入输出
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/ros%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E7%9B%B8%E5%85%B3/" rel="next" title="ros图像处理相关">
+      ros图像处理相关 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">1. 定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">2. 基本使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="nav-number">3.</span> <span class="nav-text">3. 返回值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E5%85%B6%E4%BB%96"><span class="nav-number">4.</span> <span class="nav-text">4. 其他</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%85%B3%E4%BA%8EPOLLHUP"><span class="nav-number">5.</span> <span class="nav-text">5. 关于POLLHUP</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

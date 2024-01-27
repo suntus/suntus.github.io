@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="判断大小端">
+<meta property="og:url" content="https://suntus.github.io/2024/01/27/%E5%88%A4%E6%96%AD%E5%A4%A7%E5%B0%8F%E7%AB%AF/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="…">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-27T08:34:40.000Z">
+<meta property="article:modified_time" content="2024-01-27T14:59:02.779Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="c">
+<meta property="article:tag" content="cpp">
+<meta property="article:tag" content="夜深人静读代码">
+<meta property="article:tag" content="libhv">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/27/%E5%88%A4%E6%96%AD%E5%A4%A7%E5%B0%8F%E7%AB%AF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>判断大小端 | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/%E5%88%A4%E6%96%AD%E5%A4%A7%E5%B0%8F%E7%AB%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          判断大小端
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 16:34:40 / 修改时间：22:59:02" itemprop="dateCreated datePublished" datetime="2024-01-27T16:34:40+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>…</p>
+<span id="more"></span>
+
+<h1 id="1-编译时判断"><a href="#1-编译时判断" class="headerlink" title="1. 编译时判断"></a>1. 编译时判断</h1><p>编译器没有统一的定义来区分大小端，只能限制一些特定环境</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">if</span> defined(__BYTE_ORDER) &amp;&amp; __BYTE_ORDER == __BIG_ENDIAN || \</span></span><br><span class="line"><span class="meta">    defined(__BIG_ENDIAN__) || \</span></span><br><span class="line"><span class="meta">    defined(__ARMEB__) || \</span></span><br><span class="line"><span class="meta">    defined(__THUMBEB__) || \</span></span><br><span class="line"><span class="meta">    defined(__AARCH64EB__) || \</span></span><br><span class="line"><span class="meta">    defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)</span></span><br><span class="line"><span class="comment">// It&#x27;s a big-endian target architecture</span></span><br><span class="line"><span class="meta">#<span class="keyword">elif</span> defined(__BYTE_ORDER) &amp;&amp; __BYTE_ORDER == __LITTLE_ENDIAN || \</span></span><br><span class="line"><span class="meta">    defined(__LITTLE_ENDIAN__) || \</span></span><br><span class="line"><span class="meta">    defined(__ARMEL__) || \</span></span><br><span class="line"><span class="meta">    defined(__THUMBEL__) || \</span></span><br><span class="line"><span class="meta">    defined(__AARCH64EL__) || \</span></span><br><span class="line"><span class="meta">    defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)</span></span><br><span class="line"><span class="comment">// It&#x27;s a little-endian target architecture</span></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">error</span> <span class="string">&quot;I don&#x27;t know what architecture this is!&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<h1 id="2-运行时判断"><a href="#2-运行时判断" class="headerlink" title="2. 运行时判断"></a>2. 运行时判断</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">bool</span> <span class="title function_">isLittleEndian</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">short</span> <span class="type">int</span> number = <span class="number">0x1</span>;</span><br><span class="line">    <span class="type">char</span> *numPtr = (<span class="type">char</span>*)&amp;number;</span><br><span class="line">    <span class="keyword">return</span> (numPtr[<span class="number">0</span>] == <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>libhv中的</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">int</span> <span class="title">detect_endian</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">        <span class="type">char</span> c;</span><br><span class="line">        <span class="type">short</span> s;</span><br><span class="line">    &#125; u;</span><br><span class="line">    u.s = <span class="number">0x1122</span>;</span><br><span class="line">    <span class="keyword">if</span> (u.c == <span class="number">0x11</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> BIG_ENDIAN;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> LITTLE_ENDIAN;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-参考"><a href="#3-参考" class="headerlink" title="3. 参考"></a>3. 参考</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/a/27054190">https://stackoverflow.com/a/27054190</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/a/4240014">https://stackoverflow.com/a/4240014</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/27/%E5%88%A4%E6%96%AD%E5%A4%A7%E5%B0%8F%E7%AB%AF/" title="判断大小端">https://suntus.github.io/2024/01/27/判断大小端/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/c/" rel="tag"># c</a>
+              <a href="/tags/cpp/" rel="tag"># cpp</a>
+              <a href="/tags/%E5%A4%9C%E6%B7%B1%E4%BA%BA%E9%9D%99%E8%AF%BB%E4%BB%A3%E7%A0%81/" rel="tag"># 夜深人静读代码</a>
+              <a href="/tags/libhv/" rel="tag"># libhv</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/27/spdlog/" rel="prev" title="spdlog">
+      <i class="fa fa-chevron-left"></i> spdlog
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/27/%E5%AF%BC%E5%87%BA%E7%AC%A6%E5%8F%B7/" rel="next" title="导出符号">
+      导出符号 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%BC%96%E8%AF%91%E6%97%B6%E5%88%A4%E6%96%AD"><span class="nav-number">1.</span> <span class="nav-text">1. 编译时判断</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E8%BF%90%E8%A1%8C%E6%97%B6%E5%88%A4%E6%96%AD"><span class="nav-number">2.</span> <span class="nav-text">2. 运行时判断</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">3. 参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
