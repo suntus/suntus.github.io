@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"suntus.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用到的js">
+<meta property="og:url" content="https://suntus.github.io/2024/01/29/%E7%94%A8%E5%88%B0%E7%9A%84js/index.html">
+<meta property="og:site_name" content="Morning~Sun.">
+<meta property="og:description" content="…">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-29T02:09:03.000Z">
+<meta property="article:modified_time" content="2024-08-14T13:48:41.142Z">
+<meta property="article:author" content="suntus">
+<meta property="article:tag" content="tools">
+<meta property="article:tag" content="web">
+<meta property="article:tag" content="js">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://suntus.github.io/2024/01/29/%E7%94%A8%E5%88%B0%E7%9A%84js/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>用到的js | Morning~Sun.</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-55322469-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Morning~Sun.</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/29/%E7%94%A8%E5%88%B0%E7%9A%84js/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用到的js
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-01-29 10:09:03" itemprop="dateCreated datePublished" datetime="2024-01-29T10:09:03+08:00">2024-01-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-08-14 21:48:41" itemprop="dateModified" datetime="2024-08-14T21:48:41+08:00">2024-08-14</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>…</p>
+<span id="more"></span>
+
+<h1 id="1-基本用法"><a href="#1-基本用法" class="headerlink" title="1. 基本用法"></a>1. 基本用法</h1><h2 id="1-1-基本概念"><a href="#1-1-基本概念" class="headerlink" title="1.1. 基本概念"></a>1.1. 基本概念</h2><ul>
+<li>用于操作html和css; node.js扩展了js，可以跟操作系统API打通;</li>
+<li>位于 html页面的 <code>&lt;body&gt;</code> 和 <code>&lt;head&gt;</code> 内, <code>&lt;script&gt;</code> 之间;</li>
+</ul>
+<h2 id="1-2-输出"><a href="#1-2-输出" class="headerlink" title="1.2. 输出"></a>1.2. 输出</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">indow.<span class="title function_">alert</span>() <span class="comment">// 弹出警告框。</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">write</span>() <span class="comment">// 方法将内容写到 HTML 文档中。</span></span><br><span class="line">innerHTML <span class="comment">// 写入到 HTML 元素。</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>() <span class="comment">// 写入到浏览器的控制台。</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="1-3-变量"><a href="#1-3-变量" class="headerlink" title="1.3. 变量"></a>1.3. 变量</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ES6之前，只有两种作用域，全局, 函数内</span></span><br><span class="line"><span class="keyword">var</span> a=<span class="string">&quot;hi&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ES6, </span></span><br><span class="line"><span class="keyword">let</span> b=<span class="number">123</span>   <span class="comment">// 有作用域</span></span><br><span class="line"><span class="keyword">const</span> c=<span class="number">545</span> <span class="comment">// 常亮</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="1-4-数据类型"><a href="#1-4-数据类型" class="headerlink" title="1.4. 数据类型"></a>1.4. 数据类型</h2><ol>
+<li>Primitive</li>
+</ol>
+<ul>
+<li>String</li>
+<li>Number, 所有 JavaScript 数字均为 64 位</li>
+<li>Boolean</li>
+<li>Null</li>
+<li>Undefined</li>
+<li>Symbol, ES6,独一无二的值</li>
+</ul>
+<ol start="2">
+<li>Object</li>
+</ol>
+<ul>
+<li>Array</li>
+<li>Object</li>
+<li>Function</li>
+<li>Date</li>
+<li>Regex</li>
+<li>…</li>
+</ul>
+<h2 id="1-5-字符串"><a href="#1-5-字符串" class="headerlink" title="1.5. 字符串"></a>1.5. 字符串</h2><ul>
+<li>字符串模板</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> name = <span class="string">&#x27;Runoob&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> age = <span class="number">30</span>;</span><br><span class="line"><span class="keyword">const</span> message = <span class="string">`My name is <span class="subst">$&#123;name&#125;</span> </span></span><br><span class="line"><span class="string">and I&#x27;m <span class="subst">$&#123;age&#125;</span> years old.`</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-6-严格模式"><a href="#1-6-严格模式" class="headerlink" title="1.6. 严格模式"></a>1.6. 严格模式</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ES5之后</span></span><br><span class="line"><span class="meta">&quot;use strict&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-7-箭头函数"><a href="#1-7-箭头函数" class="headerlink" title="1.7. 箭头函数"></a>1.7. 箭头函数</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="title function_">add</span> = (<span class="params">a,b</span>) =&gt; a+b;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="title function_">plus</span> = (<span class="params">a,b</span>)  =&gt; &#123; <span class="keyword">return</span> a+b;&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="2-异步"><a href="#2-异步" class="headerlink" title="2. 异步"></a>2. 异步</h1><h2 id="2-1-setTimeout"><a href="#2-1-setTimeout" class="headerlink" title="2.1. setTimeout"></a>2.1. setTimeout</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">print</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;demo&quot;</span>).<span class="property">innerHTML</span>=<span class="string">&quot;RUNOOB!&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">setTimeout</span>(print, <span class="number">3000</span>); <span class="comment">// 产生子线程</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="2-2-AJAX"><a href="#2-2-AJAX" class="headerlink" title="2.2. AJAX"></a>2.2. AJAX</h2><p><code>Asynchronous JavaScript and XML</code>; 可以在不重新加载整个页面的情况下，与服务器交互并更新部分网页内容;</p>
+<p><code>XMLHttpRequest</code>  用于在后台与服务器交换数据, 只是实现 Ajax 的一种方式。所有现代浏览器均支持 XMLHttpRequest 对象（IE5 和 IE6 使用 ActiveXObject）。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> xhr = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>(); </span><br><span class="line"> </span><br><span class="line">xhr.<span class="property">onload</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="comment">// 输出接收到的文字数据</span></span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;demo&quot;</span>).<span class="property">innerHTML</span>=xhr.<span class="property">responseText</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">xhr.<span class="property">onerror</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;demo&quot;</span>).<span class="property">innerHTML</span>=<span class="string">&quot;请求出错&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 发送异步 GET 请求</span></span><br><span class="line">xhr.<span class="title function_">open</span>(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;https://www.runoob.com/try/ajax/ajax_info.txt&quot;</span>, <span class="literal">true</span>);</span><br><span class="line">xhr.<span class="title function_">send</span>();</span><br></pre></td></tr></table></figure>
+
+<p>更现代的是 <code>await fetch(url);</code></p>
+<h2 id="2-3-Promise"><a href="#2-3-Promise" class="headerlink" title="2.3. Promise"></a>2.3. Promise</h2><p>ES6新增的类. 构造函数用函数做参数, 该函数是同步的并且会被立即执行，所以我们称之为起始函数，起始函数包含两个参数 resolve 和 reject，分别表示 Promise 成功和失败的状态, 用于返返回成功还是失败的通知。</p>
+<p>起始函数执行成功时，它应该调用 resolve 函数并传递成功的结果。当起始函数执行失败时，它应该调用 reject 函数并传递失败的原因。</p>
+<p>Promise 构造函数返回一个 Promise 对象，该对象具有以下几个方法：</p>
+<ul>
+<li>then：用于处理 Promise 成功状态的回调函数。</li>
+<li>catch：用于处理 Promise 失败状态的回调函数。</li>
+<li>finally：无论 Promise 是成功还是失败，都会执行的回调函数。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="keyword">function</span> (<span class="params">resolve, reject</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1111</span>);</span><br><span class="line">    <span class="title function_">resolve</span>(<span class="number">2222</span>);</span><br><span class="line">&#125;).<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params">value</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(value);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">3333</span>;</span><br><span class="line">&#125;).<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params">value</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(value);</span><br><span class="line">    <span class="keyword">throw</span> <span class="string">&quot;An error&quot;</span>;</span><br><span class="line">&#125;).<span class="title function_">catch</span>(<span class="keyword">function</span> (<span class="params">err</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(err);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><code>Promise</code> 本身不是异步执行流程，只不过是变换了函数的编程方式，将原来的回调嵌套变成了用 <code>.then()</code> 顺序连接的形式。</p>
+<h2 id="2-4-async"><a href="#2-4-async" class="headerlink" title="2.4. async"></a>2.4. async</h2><p>ES2017标准规范, 要配合 <code>Promise</code> 一起使用。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">print</span>(<span class="params">delay, message</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="keyword">function</span> (<span class="params">resolve, reject</span>) &#123;</span><br><span class="line">        <span class="built_in">setTimeout</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(message);</span><br><span class="line">            <span class="title function_">resolve</span>();</span><br><span class="line">        &#125;, delay);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用 Promise 本身</span></span><br><span class="line"><span class="title function_">print</span>(<span class="number">1000</span>, <span class="string">&quot;First&quot;</span>).<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">print</span>(<span class="number">4000</span>, <span class="string">&quot;Second&quot;</span>);</span><br><span class="line">&#125;).<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="title function_">print</span>(<span class="number">3000</span>, <span class="string">&quot;Third&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用 async</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">asyncFunc</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">print</span>(<span class="number">1000</span>, <span class="string">&quot;First&quot;</span>);</span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">print</span>(<span class="number">4000</span>, <span class="string">&quot;Second&quot;</span>);</span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">print</span>(<span class="number">3000</span>, <span class="string">&quot;Third&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_">asyncFunc</span>();</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-HTML-DOM"><a href="#3-HTML-DOM" class="headerlink" title="3. HTML DOM"></a>3. HTML DOM</h1><p>可以用js通过 HTML DOM 访问 HTML 所有元素。</p>
+<h2 id="3-1-找到-DOM-元素"><a href="#3-1-找到-DOM-元素" class="headerlink" title="3.1. 找到 DOM 元素"></a>3.1. 找到 DOM 元素</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 通过ID</span></span><br><span class="line"><span class="keyword">var</span> x=<span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;intro&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 通过标签</span></span><br><span class="line"><span class="keyword">var</span> x=<span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;main&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> y=x.<span class="title function_">getElementsByTagName</span>(<span class="string">&quot;p&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 通过类名</span></span><br><span class="line"><span class="keyword">var</span> x=<span class="variable language_">document</span>.<span class="title function_">getElementsByClassName</span>(<span class="string">&quot;intro&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-2-改变HTML内容"><a href="#3-2-改变HTML内容" class="headerlink" title="3.2. 改变HTML内容"></a>3.2. 改变HTML内容</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 改变内容</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;p1&quot;</span>).<span class="property">innerHTML</span>=<span class="string">&quot;新文本!&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 改变属性</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;image&quot;</span>).<span class="property">src</span>=<span class="string">&quot;landscape.jpg&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 改变样式</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;p2&quot;</span>).<span class="property">style</span>.<span class="property">color</span>=<span class="string">&quot;blue&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-3-DOM事件"><a href="#3-3-DOM事件" class="headerlink" title="3.3. DOM事件"></a>3.3. DOM事件</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;myBtn&quot;</span>).<span class="property">onclick</span>=<span class="keyword">function</span>(<span class="params"></span>)&#123;<span class="title function_">displayDate</span>()&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 或者 addEventListener</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;myBtn&quot;</span>).<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, displayDate);</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>鼠标事件</li>
+</ol>
+<p><code>onclick, oncontextmenu, ondblclick, onmnousedown...</code></p>
+<ol start="2">
+<li>键盘事件</li>
+</ol>
+<p><code>onkeydown, onkeypress, onkeyup</code></p>
+<ol start="3">
+<li>框架&#x2F;对象事件</li>
+</ol>
+<p><code>onload, onscroll, onresize, onpagehide...</code></p>
+<ol start="4">
+<li>表单事件</li>
+</ol>
+<p><code>onchange, onfucus, onreset, onselect, onsubmit...</code></p>
+<ol start="5">
+<li>剪贴板事件</li>
+</ol>
+<p><code>oncopy, oncut, onpaste</code></p>
+<ol start="6">
+<li>打印事件</li>
+</ol>
+<p><code>onafterprint, onbeforeprint</code></p>
+<ol start="7">
+<li>拖动事件</li>
+</ol>
+<p><code>ondrag, ondragend, ondrop...</code></p>
+<ol start="8">
+<li>多媒体事件</li>
+</ol>
+<p><code>onpause, onplay, onprogeess, onsuspend, onseeking...</code></p>
+<ol start="9">
+<li>动画事件</li>
+</ol>
+<p><code>animationend, animationiteration, animationstart</code></p>
+<ol start="10">
+<li>其他事件</li>
+</ol>
+<p><code>onmessage, online...</code></p>
+<h1 id="4-浏览器对象模型-BOM"><a href="#4-浏览器对象模型-BOM" class="headerlink" title="4. 浏览器对象模型(BOM)"></a>4. 浏览器对象模型(BOM)</h1><p>BOM使js能与浏览器通信. </p>
+<h2 id="window"><a href="#window" class="headerlink" title="window"></a>window</h2><p>它表示浏览器窗口。</p>
+<ul>
+<li>window.screen 对象包含有关用户屏幕的信息。</li>
+<li>window.location 对象用于获得当前页面的地址 (URL)</li>
+<li>window.history 对象包含浏览器的历史。</li>
+<li>window.navigator 对象包含有关访问者浏览器的信息。</li>
+</ul>
+<h2 id="navigator"><a href="#navigator" class="headerlink" title="navigator"></a>navigator</h2><p>浏览器本身的信息</p>
+<p>navigator.appName：浏览器名称；<br>navigator.appVersion：浏览器版本；<br>navigator.language：浏览器设置的语言；<br>navigator.platform：操作系统类型；<br>navigator.userAgent：浏览器设定的User-Agent字符串。</p>
+<h2 id="screen"><a href="#screen" class="headerlink" title="screen"></a>screen</h2><p>设备屏幕信息</p>
+<p>screen.width：屏幕宽度，以像素为单位；<br>screen.height：屏幕高度，以像素为单位；<br>screen.colorDepth：返回颜色位数，如8、16、24。</p>
+<h2 id="location"><a href="#location" class="headerlink" title="location"></a>location</h2><p>当前页面的URL信息</p>
+<p>location.protocol; &#x2F;&#x2F; ‘http’<br>location.host; &#x2F;&#x2F; ‘<a target="_blank" rel="noopener" href="http://www.example.com/">www.example.com</a>‘<br>location.port; &#x2F;&#x2F; ‘8080’<br>location.pathname; &#x2F;&#x2F; ‘&#x2F;path&#x2F;index.html’<br>location.search; &#x2F;&#x2F; ‘?a&#x3D;1&amp;b&#x3D;2’<br>location.hash; &#x2F;&#x2F; ‘TOP’</p>
+<h2 id="document"><a href="#document" class="headerlink" title="document"></a>document</h2><p>当前页面, 以DOM形式表示</p>
+<h2 id="history"><a href="#history" class="headerlink" title="history"></a>history</h2><p>保存浏览器的历史记录</p>
+<h1 id="5-常用操作"><a href="#5-常用操作" class="headerlink" title="5. 常用操作"></a>5. 常用操作</h1><h2 id="5-1-遍历数组"><a href="#5-1-遍历数组" class="headerlink" title="5.1. 遍历数组"></a>5.1. 遍历数组</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// for</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i=<span class="number">0</span>; i&lt; arr.<span class="property">length</span>; ++i&gt;)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(arr[i]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// for in</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i <span class="keyword">in</span> arr)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(arr[i]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// for of -- 最好用这个</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> v <span class="keyword">of</span> arr)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(v);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> [i,v] <span class="keyword">of</span> arr.<span class="title function_">entries</span>())</span><br><span class="line">&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(i,v);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// forEach</span></span><br><span class="line">arr.<span class="title function_">forEach</span>(<span class="function">(<span class="params">v,i</span>)=&gt;</span><span class="variable language_">console</span>.<span class="title function_">log</span>(v));</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h1 id="跨域访问"><a href="#跨域访问" class="headerlink" title="跨域访问"></a>跨域访问</h1><p>指从本网址访问外部网址数据，需要外部网站同意，才能获取外部网站内容</p>
+<h1 id="jquery"><a href="#jquery" class="headerlink" title="jquery"></a>jquery</h1>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>suntus
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://suntus.github.io/2024/01/29/%E7%94%A8%E5%88%B0%E7%9A%84js/" title="用到的js">https://suntus.github.io/2024/01/29/用到的js/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tools/" rel="tag"># tools</a>
+              <a href="/tags/web/" rel="tag"># web</a>
+              <a href="/tags/js/" rel="tag"># js</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="prev" title="设计模式">
+      <i class="fa fa-chevron-left"></i> 设计模式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/29/%E7%94%A8%E5%88%B0%E7%9A%84html/" rel="next" title="用到的html">
+      用到的html <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="nav-text">1. 基本用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">1.1. 基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E8%BE%93%E5%87%BA"><span class="nav-text">1.2. 输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E5%8F%98%E9%87%8F"><span class="nav-text">1.3. 变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-text">1.4. 数据类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-text">1.5. 字符串</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-6-%E4%B8%A5%E6%A0%BC%E6%A8%A1%E5%BC%8F"><span class="nav-text">1.6. 严格模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-7-%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0"><span class="nav-text">1.7. 箭头函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%BC%82%E6%AD%A5"><span class="nav-text">2. 异步</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-setTimeout"><span class="nav-text">2.1. setTimeout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-AJAX"><span class="nav-text">2.2. AJAX</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Promise"><span class="nav-text">2.3. Promise</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-async"><span class="nav-text">2.4. async</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-HTML-DOM"><span class="nav-text">3. HTML DOM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E6%89%BE%E5%88%B0-DOM-%E5%85%83%E7%B4%A0"><span class="nav-text">3.1. 找到 DOM 元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E6%94%B9%E5%8F%98HTML%E5%86%85%E5%AE%B9"><span class="nav-text">3.2. 改变HTML内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-DOM%E4%BA%8B%E4%BB%B6"><span class="nav-text">3.3. DOM事件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-BOM"><span class="nav-text">4. 浏览器对象模型(BOM)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#window"><span class="nav-text">window</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#navigator"><span class="nav-text">navigator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#screen"><span class="nav-text">screen</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#location"><span class="nav-text">location</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#document"><span class="nav-text">document</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#history"><span class="nav-text">history</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C"><span class="nav-text">5. 常用操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E9%81%8D%E5%8E%86%E6%95%B0%E7%BB%84"><span class="nav-text">5.1. 遍历数组</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B7%A8%E5%9F%9F%E8%AE%BF%E9%97%AE"><span class="nav-text">跨域访问</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#jquery"><span class="nav-text">jquery</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">suntus</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">155</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">suntus</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

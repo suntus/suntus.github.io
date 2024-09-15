@@ -22,19 +22,19 @@
 
   <meta name="description" content="原文: https:&#x2F;&#x2F;blog.m-ou.se&#x2F;super-let&#x2F; Rust中临时变量的生命周期相当复杂,但是个容易被忽略的话题.通常Rust会把临时变量维持足够长的时间,不需要我们关心；但也很多情况并不是我们期望的. 这篇文章中,我们会(重新)了解临时变量生命周期的规则,学习几种临时变量生命周期延长的情况,并探索一种新的语言想法,super let,让我们能对这些情况有更多控制.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[tr]rust-临时变量生命周期和super let">
-<meta property="og:url" content="https://suntus.github.io/2024/09/15/[tr]rust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/index.html">
+<meta property="og:title" content="rust临时变量生命周期和super let【翻译】">
+<meta property="og:url" content="https://suntus.github.io/2024/09/15/rust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/index.html">
 <meta property="og:site_name" content="Morning~Sun.">
 <meta property="og:description" content="原文: https:&#x2F;&#x2F;blog.m-ou.se&#x2F;super-let&#x2F; Rust中临时变量的生命周期相当复杂,但是个容易被忽略的话题.通常Rust会把临时变量维持足够长的时间,不需要我们关心；但也很多情况并不是我们期望的. 这篇文章中,我们会(重新)了解临时变量生命周期的规则,学习几种临时变量生命周期延长的情况,并探索一种新的语言想法,super let,让我们能对这些情况有更多控制.">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-09-14T23:58:00.000Z">
-<meta property="article:modified_time" content="2024-09-15T00:04:41.853Z">
+<meta property="article:modified_time" content="2024-09-15T00:19:01.569Z">
 <meta property="article:author" content="suntus">
-<meta property="article:tag" content="rust">
 <meta property="article:tag" content="tr">
+<meta property="article:tag" content="rust">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://suntus.github.io/2024/09/15/[tr]rust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/">
+<link rel="canonical" href="https://suntus.github.io/2024/09/15/rust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/">
 
 
 <script id="page-configurations">
@@ -47,7 +47,7 @@
   };
 </script>
 
-  <title>[tr]rust-临时变量生命周期和super let | Morning~Sun.</title>
+  <title>rust临时变量生命周期和super let【翻译】 | Morning~Sun.</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55322469-1"></script>
     <script>
@@ -166,7 +166,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/09/15/[tr]rust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/09/15/rust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -179,7 +179,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          [tr]rust-临时变量生命周期和super let
+          rust临时变量生命周期和super let【翻译】
         </h1>
 
         <div class="post-meta">
@@ -190,7 +190,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-09-15 07:58:00 / 修改时间：08:04:41" itemprop="dateCreated datePublished" datetime="2024-09-15T07:58:00+08:00">2024-09-15</time>
+              <time title="创建时间：2024-09-15 07:58:00 / 修改时间：08:19:01" itemprop="dateCreated datePublished" datetime="2024-09-15T07:58:00+08:00">2024-09-15</time>
             </span>
 
           
@@ -422,7 +422,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://suntus.github.io/2024/09/15/[tr]rust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/" title="[tr]rust-临时变量生命周期和super let">https://suntus.github.io/2024/09/15/[tr]rust-临时变量生命周期和super let/</a>
+    <a href="https://suntus.github.io/2024/09/15/rust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/" title="rust临时变量生命周期和super let【翻译】">https://suntus.github.io/2024/09/15/rust-临时变量生命周期和super let/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -433,8 +433,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/rust/" rel="tag"># rust</a>
               <a href="/tags/tr/" rel="tag"># tr</a>
+              <a href="/tags/rust/" rel="tag"># rust</a>
           </div>
 
         
@@ -443,10 +443,13 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2024/02/28/cpp-enum-class/" rel="prev" title="cpp-enum class">
-      <i class="fa fa-chevron-left"></i> cpp-enum class
+    <a href="/2024/03/06/rust-%E7%A6%BB%E7%BA%BF%E7%8E%AF%E5%A2%83%E4%BD%BF%E7%94%A8/" rel="prev" title="rust离线环境使用">
+      <i class="fa fa-chevron-left"></i> rust离线环境使用
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2024/09/15/%E7%94%A8%E5%88%B0%E7%9A%84react/" rel="next" title="用到的react">
+      用到的react <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -519,14 +522,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-count">155</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-count">44</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

@@ -159,7 +159,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/09/15/[tr]rust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/09/15/rust-%E5%BC%80%E5%8F%91%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%BA%AFrust%E5%BA%94%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -173,7 +173,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2024/09/15/%5Btr%5Drust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/" class="post-title-link" itemprop="url">[tr]rust-临时变量生命周期和super let</a>
+            <a href="/2024/09/15/rust-%E5%BC%80%E5%8F%91%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%BA%AFrust%E5%BA%94%E7%94%A8/" class="post-title-link" itemprop="url">开发第一个纯rust应用</a>
         </h2>
 
         <div class="post-meta">
@@ -184,7 +184,219 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-09-15 07:58:00 / 修改时间：08:04:41" itemprop="dateCreated datePublished" datetime="2024-09-15T07:58:00+08:00">2024-09-15</time>
+              <time title="创建时间：2024-09-15 08:18:00 / 修改时间：08:19:35" itemprop="dateCreated datePublished" datetime="2024-09-15T08:18:00+08:00">2024-09-15</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a target="_blank" rel="noopener" href="https://kaisery.github.io/trpl-zh-cn/">rust程序设计语言</a> 介绍了关于rust的方方面面, 我跟着学了两遍,中间隔了差不多一年,每次都是从零开始入门, 最近两个月用rust实际开发了个应用,才算真的入门. 这里记录下使用中的一些体验.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/09/15/rust-%E5%BC%80%E5%8F%91%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%BA%AFrust%E5%BA%94%E7%94%A8/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/09/15/rust-%E5%AD%97%E7%AC%A6%E4%B8%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/09/15/rust-%E5%AD%97%E7%AC%A6%E4%B8%B2/" class="post-title-link" itemprop="url">rust字符串</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-09-15 08:14:00 / 修改时间：08:15:44" itemprop="dateCreated datePublished" datetime="2024-09-15T08:14:00+08:00">2024-09-15</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <span id="more"></span>
+
+<h1 id="1-字符串"><a href="#1-字符串" class="headerlink" title="1 字符串"></a>1 字符串</h1><p>参考: <a target="_blank" rel="noopener" href="https://fasterthanli.me/articles/working-with-strings-in-rust">https://fasterthanli.me/articles/working-with-strings-in-rust</a></p>
+<p>UTF8字符表和UTF8编码是两个东西, 字符表是一个,也叫 Unicode; 编码方式有很多种，UTF-8，UTF-16等等，目前通用的编码方式是UTF8, 这个是变长字节，1个unicode字符可以编码成1-4字节的长度.<br>而UTF-32每个字符都是4字节表示，这样可以跟字符表一一对应，缺点就是浪费空间。</p>
+<p>rust的 String 都是 utf-8 编码的，影响就是跟c++的 <code>char</code> 不等价, 不能理所当然的取长度.</p>
+<h2 id="1-1-String"><a href="#1-1-String" class="headerlink" title="1.1 String"></a>1.1 String</h2><p>底层相当于用 <code>Vec&lt;u8&gt;</code> 存储，不能索引，取出来的长度是底层编码后的长度，比如<code>你好</code>打印出6字节:</p>
+<figure class="highlight rs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">hello</span> = <span class="string">&quot;你好&quot;</span>.<span class="title function_ invoke__">to_string</span>();</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;len:&#123;&#125;&quot;</span>, hello.<span class="title function_ invoke__">len</span>()); <span class="comment">// len:6</span></span><br></pre></td></tr></table></figure>
+
+<p>注意: <code>&quot;&quot;</code> 也是有效的<code>String</code></p>
+<h2 id="1-2-char"><a href="#1-2-char" class="headerlink" title="1.2 char"></a>1.2 char</h2><p>是个 u32 类型的，用于表示 unicode 字符，注意这个不是UTF8编码，而是字符表中的字符序号。</p>
+<h2 id="1-3-str-和-str"><a href="#1-3-str-和-str" class="headerlink" title="1.3 str 和 &amp;str"></a>1.3 str 和 &amp;str</h2><p>str是rust内部的类型，一般用的是 <code>&amp;str</code> 引用。</p>
+<h2 id="1-4-b”abc”"><a href="#1-4-b”abc”" class="headerlink" title="1.4 b”abc”"></a>1.4 b”abc”</h2><p><code>&quot;abc&quot;</code>是 <code>&amp;str</code> 类型, 引用的是utf8;<br><code>b&quot;abc&quot;</code>是 <code>&amp;[u8]</code> 类型, 引用的是u8数组, 这个保证都是ascii字符;</p>
+<p>注意这两个不是同一个类型</p>
+<p>总结一下</p>
+<ul>
+<li>String: rust内部字符串类型，是个单纯的字符串，utf8编码</li>
+<li>str, &amp;str: 字符串切片, 是 String 的索引;</li>
+<li>char: 可以表示unicode 字符序号，u32(4字节足够存储所有的unicode编码);</li>
+<li>Vec<u8>: u8数组，字节流;</li>
+<li>[u8;3]: 3字节的 u8 定长数组, 长度也是类型的一部分，因此 <code>[u8;3]</code> 和 <code>[u8;4]</code> 不是一个类型，不能传参;</li>
+<li>&amp;[u8]: 是定长数组的切片引用, 类似 <code>&amp;str</code>;</li>
+</ul>
+<h1 id="2-字面值和转义"><a href="#2-字面值和转义" class="headerlink" title="2 字面值和转义"></a>2 字面值和转义</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 用 \x 转义二进制</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">a</span> = <span class="string">&quot;I&#x27;m writing \x52\x75\x73\x74!&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 用\u 转义unicode</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">unicode_codepoint</span> = <span class="string">&quot;\u&#123;211D&#125;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 可以换行</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">long_string</span> = <span class="string">&quot;String literals</span></span><br><span class="line"><span class="string">                        can span multiple lines.</span></span><br><span class="line"><span class="string">                        The linebreak and indentation here -&gt;\</span></span><br><span class="line"><span class="string">                        &lt;- can be escaped too!&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 不要转义,前边加个&quot;r&quot;</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">raw_str</span> = <span class="string">r&quot;Escapes don&#x27;t work here: \x3F \u&#123;211D&#125;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 5. 不要转义，字符串里有双引号&quot;, 前后加个&quot;#&quot;</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">quotes</span> = <span class="string">r#&quot;And then I said: &quot;There is no escape!&quot;&quot;#</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 6. 字符串里有n个连续的&quot;#&quot;, 就可以在前后加 n+1 个&quot;#&quot;，最多可以有65535个....</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">longer_delimiter</span> = <span class="string">r###&quot;A string with &quot;# in it. And even &quot;##!&quot;###</span>;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/09/15/%E7%94%A8%E5%88%B0%E7%9A%84react/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/09/15/%E7%94%A8%E5%88%B0%E7%9A%84react/" class="post-title-link" itemprop="url">用到的react</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-09-15 08:07:00 / 修改时间：08:22:08" itemprop="dateCreated datePublished" datetime="2024-09-15T08:07:00+08:00">2024-09-15</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>知道组件,了解<code>state</code>和<code>props</code>,基本就可以知道react怎么工作了.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/09/15/%E7%94%A8%E5%88%B0%E7%9A%84react/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/09/15/rust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/09/15/rust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/" class="post-title-link" itemprop="url">rust临时变量生命周期和super let【翻译】</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-09-15 07:58:00 / 修改时间：08:19:01" itemprop="dateCreated datePublished" datetime="2024-09-15T07:58:00+08:00">2024-09-15</time>
             </span>
 
           
@@ -203,7 +415,80 @@
 <p>这篇文章中,我们会(重新)了解临时变量生命周期的规则,学习几种<em>临时变量生命周期延长</em>的情况,并探索一种新的语言想法,<code>super let</code>,让我们能对这些情况有更多控制.</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2024/09/15/%5Btr%5Drust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/#more" rel="contents">
+              <a class="btn" href="/2024/09/15/rust-%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8Csuper%20let/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/03/06/rust-%E7%A6%BB%E7%BA%BF%E7%8E%AF%E5%A2%83%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/03/06/rust-%E7%A6%BB%E7%BA%BF%E7%8E%AF%E5%A2%83%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">rust离线环境使用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-03-06 13:17:25" itemprop="dateCreated datePublished" datetime="2024-03-06T13:17:25+08:00">2024-03-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-09-15 08:20:17" itemprop="dateModified" datetime="2024-09-15T08:20:17+08:00">2024-09-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="1-需要下载-rustup-和-rustc"><a href="#1-需要下载-rustup-和-rustc" class="headerlink" title="1. 需要下载 rustup 和 rustc"></a>1. 需要下载 <code>rustup</code> 和 <code>rustc</code></h1><p><code>rustup</code> 是 rust 的工具链管理工具，方便切换rustc的版本，可以从<a target="_blank" rel="noopener" href="https://rust-lang.github.io/rustup/installation/other.html">这里</a>下载离线版本;</p>
+<p><code>rustc</code> 本体需要下载 standalone 版本，从<a target="_blank" rel="noopener" href="https://forge.rust-lang.org/infra/other-installation-methods.html#standalone-installers">这里</a>下载;</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/03/06/rust-%E7%A6%BB%E7%BA%BF%E7%8E%AF%E5%A2%83%E4%BD%BF%E7%94%A8/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -276,6 +561,150 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/02/28/cpp-enum-class/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/29/%E7%94%A8%E5%88%B0%E7%9A%84html/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/01/29/%E7%94%A8%E5%88%B0%E7%9A%84html/" class="post-title-link" itemprop="url">用到的html</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-01-29 13:13:07" itemprop="dateCreated datePublished" datetime="2024-01-29T13:13:07+08:00">2024-01-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-02-11 09:11:40" itemprop="dateModified" datetime="2024-02-11T09:11:40+08:00">2024-02-11</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>…</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/01/29/%E7%94%A8%E5%88%B0%E7%9A%84html/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/29/%E7%94%A8%E5%88%B0%E7%9A%84js/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/01/29/%E7%94%A8%E5%88%B0%E7%9A%84js/" class="post-title-link" itemprop="url">用到的js</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-01-29 10:09:03" itemprop="dateCreated datePublished" datetime="2024-01-29T10:09:03+08:00">2024-01-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-08-14 21:48:41" itemprop="dateModified" datetime="2024-08-14T21:48:41+08:00">2024-08-14</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>…</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/01/29/%E7%94%A8%E5%88%B0%E7%9A%84js/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1119,408 +1548,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84ffmpeg/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="suntus">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Morning~Sun.">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84ffmpeg/" class="post-title-link" itemprop="url">用到的ffmpeg</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-01-27 23:45:11" itemprop="dateCreated datePublished" datetime="2024-01-27T23:45:11+08:00">2024-01-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-30 22:33:59" itemprop="dateModified" datetime="2024-01-30T22:33:59+08:00">2024-01-30</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>…</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84ffmpeg/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84excel/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="suntus">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Morning~Sun.">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/27/%E7%94%A8%E5%88%B0%E7%9A%84excel/" class="post-title-link" itemprop="url">用到的excel</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2024-01-27 23:43:41 / 修改时间：23:44:23" itemprop="dateCreated datePublished" datetime="2024-01-27T23:43:41+08:00">2024-01-27</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="字符串转日期"><a href="#字符串转日期" class="headerlink" title="字符串转日期"></a>字符串转日期</h1><p>&#x3D;DATE(LEFT(A1,4),MID(A1,5,2),MID(A1,7,2))+TIME(MID(A1,10,2),RIGHT(A1,2),0)</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/rtmp/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="suntus">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Morning~Sun.">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/27/rtmp/" class="post-title-link" itemprop="url">rtmp</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-01-27 23:40:23" itemprop="dateCreated datePublished" datetime="2024-01-27T23:40:23+08:00">2024-01-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-30 22:33:59" itemprop="dateModified" datetime="2024-01-30T22:33:59+08:00">2024-01-30</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>Adobe开发的实时通信协议，基于TCP，提供双工通信服务，同时传输多路视频、音频、数据，并且附加时间信息。适用于一对一、一对多实时广播，VOD点播，交互式实时会议等应用。</p>
-<p>控制和数据都在一条TCP链路中传输，控制消息使用 <code>AMF</code> 消息编码, 数据使用 FLV 格式, 也都比较简单。RTMP加上了会话协商和时间戳，方便传输实时数据。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/27/rtmp/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/%E8%A7%86%E9%A2%91%E5%88%86%E8%BE%A8%E7%8E%87/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="suntus">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Morning~Sun.">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/27/%E8%A7%86%E9%A2%91%E5%88%86%E8%BE%A8%E7%8E%87/" class="post-title-link" itemprop="url">视频分辨率</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2024-01-27 23:26:39 / 修改时间：23:39:25" itemprop="dateCreated datePublished" datetime="2024-01-27T23:26:39+08:00">2024-01-27</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1 介绍"></a>1 介绍</h1><p>视频分辨率(video resolution), 指一帧画面包含的像素(pixel)数量。一帧画面有宽和高，分辨率表示宽有多少个像素，高有多少个像素点。<br>通常来说，分辨率越高，视频画面越清晰，文件越大。影响大小的还有位深(color depth)，表示一个像素可以包含多少种颜色, 也就是编码1个像素需要多少位，常用的有 24bits 和 36bits。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/27/%E8%A7%86%E9%A2%91%E5%88%86%E8%BE%A8%E7%8E%87/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/why-44-1khz-is-the-minimum-high-fidelity-sampleing-rate-in-audio/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="suntus">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Morning~Sun.">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/27/why-44-1khz-is-the-minimum-high-fidelity-sampleing-rate-in-audio/" class="post-title-link" itemprop="url">why-44.1khz-is-the-minimum-high-fidelity-sampleing-rate-in-audio</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2024-01-27 23:16:40 / 修改时间：23:17:01" itemprop="dateCreated datePublished" datetime="2024-01-27T23:16:40+08:00">2024-01-27</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Nyquist-Shannon-sampling-theorem"><a href="#Nyquist-Shannon-sampling-theorem" class="headerlink" title="Nyquist-Shannon sampling theorem"></a>Nyquist-Shannon sampling theorem</h1><p>dicates that to reproduce a sound accrtately, it must be sampled at <strong>twice the rate</strong> of the sound’s frequency. Since the range of <strong>human hearing</strong> is from around 20Hz to 20,000Hz, reproducing the heighest-pitched sounds people can generally hear requires a sample rate of more than 40,000 Hz.</p>
-<p>To provide additional room for a low-pass filter in order to avoid distortion caused by aliasing, an additional 2.05kHz tarnsition band is added to the pre-smapling frequency(resulting in 22,050Hz). Doubling tha per the Nyquist theorem results in a final minimun frequency of (you guessed it) 44.1kHz.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="suntus">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Morning~Sun.">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/27/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81/" class="post-title-link" itemprop="url">音频编码</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-01-27 23:14:42" itemprop="dateCreated datePublished" datetime="2024-01-27T23:14:42+08:00">2024-01-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-29 20:01:54" itemprop="dateModified" datetime="2024-01-29T20:01:54+08:00">2024-01-29</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h1><p>这里说的音频编码(或者说音频格式)指的是现实中的声音保存在计算机中的形式，模拟信号经过数字化转换后，才能保存到计算机中。数字化的过程叫 PCM(Pulse-code modulation, 脉冲编码调制), 形成的最原始的编码也叫 <code>PCM</code> 。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/27/%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1590,14 +1617,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-count">155</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-count">44</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
