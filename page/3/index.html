@@ -159,6 +159,68 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81imp%E5%AE%9E%E7%8E%B0%E7%B1%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/01/27/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81imp%E5%AE%9E%E7%8E%B0%E7%B1%BB/" class="post-title-link" itemprop="url">为什么要imp实现类</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-27 16:43:51 / 修改时间：16:44:32" itemprop="dateCreated datePublished" datetime="2024-01-27T16:43:51+08:00">2024-01-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <span id="more"></span>
+
+<p>C++的接口与非侵入式接口 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/76862132">https://zhuanlan.zhihu.com/p/76862132</a><br>使用Imp模式避免c++中的改类成员数据导致大规模重新编译 <a target="_blank" rel="noopener" href="https://blog.csdn.net/killer4747/article/details/81195403">https://blog.csdn.net/killer4747/article/details/81195403</a><br>C++ Pimpl惯用法（桥接模式特例） <a target="_blank" rel="noopener" href="https://www.cnblogs.com/fortunely/p/16391686.html">https://www.cnblogs.com/fortunely/p/16391686.html</a></p>
+<p>主要是为了分离接口和实现，如果放在一起，实现变动时，所有引用接口的其他文件都会重新编译一遍</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/shared-from-this/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -417,6 +479,83 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/01/27/cpp%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%93%8D%E4%BD%9C/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2024/01/27/cpp-%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8,move,forward/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="suntus">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Morning~Sun.">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/01/27/cpp-%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8,move,forward/" class="post-title-link" itemprop="url">cpp-右值引用,move和forward</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-01-27 16:39:30" itemprop="dateCreated datePublished" datetime="2024-01-27T16:39:30+08:00">2024-01-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-09-15 08:06:03" itemprop="dateModified" datetime="2024-09-15T08:06:03+08:00">2024-09-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在c++03及之前,临时值被认为不可被修改, 跟<code>const T&amp;</code>无法区分开; c++11引入的一个新类型: 右值引用, 之前只有:</p>
+<ul>
+<li>左值: <code>int a = 3;</code>;</li>
+<li>左值引用: <code>int a = 3; int&amp; b = a;</code>, <code>b</code>是右值引用;</li>
+<li>右值: <code>3;</code>, 也是临时值, 包含临时值和纯右值;</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/01/27/cpp-%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8,move,forward/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1437,150 +1576,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2020/11/11/dtls12%E8%B7%9Ftls12%E7%9A%84%E4%B8%8D%E5%90%8C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="suntus">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Morning~Sun.">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/11/dtls12%E8%B7%9Ftls12%E7%9A%84%E4%B8%8D%E5%90%8C/" class="post-title-link" itemprop="url">dtls1.2跟tls1.2的不同</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-11-11 18:50:25" itemprop="dateCreated datePublished" datetime="2020-11-11T18:50:25+08:00">2020-11-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-20 23:52:05" itemprop="dateModified" datetime="2021-06-20T23:52:05+08:00">2021-06-20</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>备忘。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/11/dtls12%E8%B7%9Ftls12%E7%9A%84%E4%B8%8D%E5%90%8C/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://suntus.github.io/2020/05/08/getopt%E7%9B%B8%E5%85%B3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="suntus">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Morning~Sun.">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/08/getopt%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">getopt相关</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-08 21:39:06" itemprop="dateCreated datePublished" datetime="2020-05-08T21:39:06+08:00">2020-05-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-09 22:28:59" itemprop="dateModified" datetime="2020-11-09T22:28:59+08:00">2020-11-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>c解析命令行用的.</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/05/08/getopt%E7%9B%B8%E5%85%B3/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1650,14 +1645,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">147</span>
+          <span class="site-state-item-count">149</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">40</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
